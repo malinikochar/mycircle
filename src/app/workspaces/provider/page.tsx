@@ -15,14 +15,14 @@ export default async function ProviderWorkspacePage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
           Separated Role Workspace • Local Service Provider Desk (SRV-01..06)
         </span>
-        <h1 className="text-2xl font-bold text-[#0F172A]">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">
           Service Provider Enquiries, Quotes & Scheduled Jobs
         </h1>
-        <p className="text-sm text-[#475569]">
+        <p className="text-sm text-[#6B6B6B]">
           Switch to <strong>Ramesh Vishwakarma (Master Electrician)</strong> or <strong>Harpreet Gill (Service Directory Sub-Admin)</strong> in the top persona selector to manage enquiries and job outcomes.
         </p>
       </section>
@@ -37,22 +37,22 @@ export default async function ProviderWorkspacePage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3">
+          <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3">
             <div className="flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-[#0F766E]" />
-              <h2 className="text-base font-bold text-[#0F172A]">Incoming Resident Enquiries ({enquiries.length})</h2>
+              <Briefcase className="w-5 h-5 text-[#6366F1]" />
+              <h2 className="text-base font-bold text-[#0A0A0A]">Incoming Resident Enquiries ({enquiries.length})</h2>
             </div>
             {enquiries.map((enq) => (
-              <div key={enq.id} className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-xs space-y-1.5">
+              <div key={enq.id} className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] text-xs space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#0F172A]">{enq.resident_name}</span>
-                  <span className="px-2 py-0.5 rounded bg-teal-100 text-[#0F766E] font-bold uppercase">
+                  <span className="font-bold text-[#0A0A0A]">{enq.resident_name}</span>
+                  <span className="px-2 py-0.5 rounded bg-indigo-100 text-[#6366F1] font-bold uppercase">
                     {enq.status}
                   </span>
                 </div>
-                <p className="text-[#475569]">{enq.problem_description}</p>
+                <p className="text-[#6B6B6B]">{enq.problem_description}</p>
                 {enq.quoted_price_paise && (
-                  <div className="font-semibold text-[#0F766E]">
+                  <div className="font-semibold text-[#6366F1]">
                     Quoted: {formatPaiseToINR(enq.quoted_price_paise)} — {enq.quote_notes}
                   </div>
                 )}
@@ -60,20 +60,20 @@ export default async function ProviderWorkspacePage() {
             ))}
           </section>
 
-          <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3">
+          <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3">
             <div className="flex items-center gap-2">
-              <Wrench className="w-5 h-5 text-[#0F766E]" />
-              <h2 className="text-base font-bold text-[#0F172A]">Bookings & Job Outcomes ({bookings.length})</h2>
+              <Wrench className="w-5 h-5 text-[#6366F1]" />
+              <h2 className="text-base font-bold text-[#0A0A0A]">Bookings & Job Outcomes ({bookings.length})</h2>
             </div>
             {bookings.map((bk) => (
-              <div key={bk.id} className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-xs space-y-1.5">
+              <div key={bk.id} className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] text-xs space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#0F172A]">{bk.resident_name}</span>
+                  <span className="font-bold text-[#0A0A0A]">{bk.resident_name}</span>
                   <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-bold uppercase">
                     {bk.status} • {formatPaiseToINR(bk.agreed_price_paise)}
                   </span>
                 </div>
-                <p className="text-[#475569]">{bk.outcome_notes}</p>
+                <p className="text-[#6B6B6B]">{bk.outcome_notes}</p>
               </div>
             ))}
           </section>

@@ -20,10 +20,10 @@ import {
   PhoneCall,
   CheckCircle2,
   Lock,
-  Sparkles,
   Menu,
   X,
   ChevronRight,
+  Search,
 } from 'lucide-react';
 import type { BuildingInfo, CommunityBootstrapState } from '@/lib/types/domain';
 import { switchPersonaAction, triggerSOSIncidentAction } from '@/app/actions/community-actions';
@@ -139,39 +139,39 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
       : `Resident (${actor?.building_code ?? 'Verified'})`;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1E293B]">
-      {/* Top Governance & Persona Bar */}
-      <header className="sticky top-0 z-40 bg-[#0F172A] text-white border-b border-slate-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+    <div className="min-h-screen flex flex-col bg-[#FAFAFA] text-[#0A0A0A] genesis-dot-grid">
+      {/* Genesis Sticky Top Navigation: 56px height, backdrop-blur, 1px #E8E8EC bottom border */}
+      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-[#E8E8EC]">
+        <div className="max-w-[1280px] mx-auto px-6 min-h-[56px] py-2 flex flex-wrap items-center justify-between gap-4">
+          {/* Logo Left + DESIGN.md Brand Highlight (#20970B) */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-lg bg-[#0D9488] flex items-center justify-center font-bold text-white shadow-inner">
+              <div className="w-8 h-8 rounded-[6px] bg-[#0A0A0A] flex items-center justify-center font-display font-bold text-xs text-white tracking-tight">
                 CC
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold tracking-tight text-base text-white">CommunityCircle</span>
-                  <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-teal-950/90 text-teal-300 border border-teal-700/60">
-                    <Sparkles className="w-3 h-3" />
-                    {bootstrap.community?.name ?? 'Serenity Heights'}
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-300">
-                  {bootstrap.community?.city ?? 'Mumbai'} •{' '}
-                  <span className="tabular-nums font-semibold text-teal-300">
-                    {bootstrap.community?.total_members ?? 1000}
-                  </span>{' '}
-                  Members • Supabase RLS Enforced
-                </p>
+              <div className="flex items-center gap-2">
+                <span className="font-display font-bold tracking-[-0.035em] text-[17px] text-[#0A0A0A]">
+                  CommunityCircle
+                </span>
+                <span
+                  title="Genesis Design System (chef/genesis)"
+                  className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-[4px] bg-[#20970B]/10 text-[#20970B] border border-[#20970B]/25 font-medium"
+                >
+                  DESIGN.md • Genesis
+                </span>
               </div>
             </Link>
           </div>
 
-          {/* Persona Switcher & Persistent SOS Trigger */}
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-700 rounded-lg px-2.5 py-1.5">
-              <label htmlFor="persona-select" className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-                Acting Persona:
+          {/* Center / Right: Rounded-XL Search-Style Persona Switcher (⌘K Aesthetic) & Destructive SOS Action */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 bg-[#FAFAFA] border border-[#E8E8EC] rounded-[12px] px-3 py-1.5 hover:border-[#6366F1]/50 transition">
+              <Search className="w-3.5 h-3.5 text-[#9C9C9C] shrink-0" />
+              <label
+                htmlFor="persona-select"
+                className="text-[11px] uppercase tracking-wider text-[#6B6B6B] font-medium hidden md:inline"
+              >
+                Persona:
               </label>
               <select
                 id="persona-select"
@@ -179,9 +179,9 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                 disabled={isPending}
                 value={actor?.id ?? ''}
                 onChange={(e) => handlePersonaChange(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-teal-200 focus:outline-none cursor-pointer max-w-[230px] sm:max-w-[310px] truncate"
+                className="genesis-nav-select bg-transparent text-[13px] font-medium text-[#0A0A0A] focus:outline-none cursor-pointer max-w-[210px] sm:max-w-[290px] truncate"
               >
-                <optgroup label="Core Residents & Primary Admin" className="bg-slate-900 text-white">
+                <optgroup label="Core Residents & Primary Admin">
                   {bootstrap.personas
                     .filter((p) =>
                       [
@@ -196,7 +196,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                       </option>
                     ))}
                 </optgroup>
-                <optgroup label="10 Permission-Scoped Sub-Admins (Test 2)" className="bg-slate-900 text-white">
+                <optgroup label="10 Permission-Scoped Sub-Admins (Test 2)">
                   {bootstrap.personas
                     .filter((p) => p.roles.some((r) => r.role_type === 'sub_admin'))
                     .map((p) => (
@@ -205,7 +205,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                       </option>
                     ))}
                 </optgroup>
-                <optgroup label="Local Shops, Pharmacy, Providers & Security Staff" className="bg-slate-900 text-white">
+                <optgroup label="Local Shops, Pharmacy, Providers & Security Staff">
                   {bootstrap.personas
                     .filter((p) => p.is_shop_member || p.is_provider || p.is_staff)
                     .map((p) => (
@@ -214,7 +214,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                       </option>
                     ))}
                 </optgroup>
-                <optgroup label="Access Gate Verification (Pending & Suspended — Test 1)" className="bg-slate-900 text-amber-300">
+                <optgroup label="Access Gate Verification (Pending & Suspended — Test 1)">
                   {bootstrap.personas
                     .filter((p) => p.membership_status !== 'approved')
                     .map((p) => (
@@ -224,8 +224,12 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     ))}
                 </optgroup>
               </select>
+              <kbd className="hidden sm:inline-block text-[11px] font-mono px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E8E8EC] text-[#9C9C9C]">
+                ⌘K
+              </kbd>
             </div>
 
+            {/* Genesis Destructive Button: Red text with red border, 6px radius */}
             <button
               type="button"
               onClick={() => {
@@ -233,7 +237,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                 setHoldProgress(0);
                 setSosModalOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#DC2626] hover:bg-red-700 text-white font-bold text-xs shadow-sm transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 h-[32px] px-3 rounded-[6px] bg-white hover:bg-[#EF4444]/5 text-[#EF4444] border border-[#EF4444] font-medium text-[13px] transition cursor-pointer"
               aria-label="Open Emergency SOS Coordinator"
             >
               <AlertTriangle className="w-3.5 h-3.5" />
@@ -242,36 +246,42 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
           </div>
         </div>
 
-        {/* Active Role & Workspace Context Strip */}
-        <div className="bg-slate-900/95 border-t border-slate-800/80 px-4 py-1.5 text-xs">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-slate-300">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
-              <span>Active Session:</span>
-              <strong className="text-white">{actor?.display_name}</strong>
-              <span className="text-slate-400">•</span>
-              <span className="text-teal-300 font-medium">{activeRoleSummary}</span>
+        {/* Subtle Metadata Context Bar */}
+        <div className="bg-[#FAFAFA]/90 border-t border-[#E8E8EC] px-6 py-1.5 text-[12px]">
+          <div className="max-w-[1280px] mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-[#6B6B6B]">
+              <span className="inline-block w-2 h-2 rounded-full bg-[#10B981]" />
+              <span>{bootstrap.community?.name ?? 'Serenity Heights'}</span>
+              <span className="text-[#9C9C9C]">•</span>
+              <strong className="text-[#0A0A0A] font-medium">{actor?.display_name}</strong>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-[#6366F1]/10 text-[#6366F1] font-medium">
+                {activeRoleSummary}
+              </span>
               {actor?.unit_number && (
-                <span className="hidden md:inline text-slate-400">
-                  • Own Unit: {actor.building_code}-{actor.unit_number} (Hidden from directory unless opted in)
+                <span className="hidden md:inline text-[#9C9C9C] font-mono text-[11px]">
+                  Unit {actor.building_code}-{actor.unit_number}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-3 text-[11px] text-slate-400">
-              <span>Demo Adapters: Clearly Labelled</span>
-              {isPending && <span className="text-amber-300 font-semibold animate-pulse">Syncing with Supabase...</span>}
+            <div className="flex items-center gap-3 text-[11px] text-[#9C9C9C] font-mono">
+              <span>{bootstrap.community?.total_members ?? 1000} MEMBERS</span>
+              <span>•</span>
+              <span>SUPABASE RLS</span>
+              {isPending && (
+                <span className="text-[#6366F1] font-medium animate-pulse">SYNCING...</span>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content Layout: Desktop Sidebar + Main Canvas */}
-      <div className="flex-1 max-w-7xl w-full mx-auto flex">
+      {/* Main Container: 1280px max width with 24px horizontal padding per Genesis Spacing Spec */}
+      <div className="flex-1 max-w-[1280px] w-full mx-auto px-6 py-8 flex gap-6">
         {/* Desktop Navigation Sidebar */}
-        <aside className="hidden lg:flex flex-col w-64 shrink-0 border-r border-[#E5DEC9] bg-[#F3EFEA]/70 p-4 gap-6">
-          <div>
-            <div className="text-[11px] font-bold uppercase tracking-wider text-[#475569] px-2.5 mb-2">
-              Resident Community
+        <aside className="hidden lg:flex flex-col w-60 shrink-0 gap-6">
+          <div className="bg-white border border-[#E8E8EC] rounded-[12px] p-4">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C] px-2.5 mb-2">
+              Resident Modules
             </div>
             <nav className="space-y-1" aria-label="Resident Navigation">
               {RESIDENT_NAV.map((item) => {
@@ -281,10 +291,10 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-[6px] text-[14px] font-medium transition ${
                       active
-                        ? 'bg-[#0F766E] text-white shadow-xs'
-                        : 'text-[#1E293B] hover:bg-[#E5DEC9]/60'
+                        ? 'bg-[#6366F1] text-white'
+                        : 'text-[#6B6B6B] hover:text-[#0A0A0A] hover:bg-[#FAFAFA]'
                     }`}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
@@ -295,9 +305,9 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
             </nav>
           </div>
 
-          <div className="border-t border-[#E5DEC9] pt-4">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-[#475569] px-2.5 mb-2">
-              Separated Role Workspaces
+          <div className="bg-white border border-[#E8E8EC] rounded-[12px] p-4">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C] px-2.5 mb-2">
+              Role Workspaces
             </div>
             <nav className="space-y-1.5" aria-label="Role Workspaces">
               {WORKSPACE_NAV.map((ws) => {
@@ -307,14 +317,14 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                   <Link
                     key={ws.href}
                     href={ws.href}
-                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition border ${
+                    className={`flex items-center justify-between px-3 py-2 rounded-[6px] text-[13px] font-medium transition border ${
                       active
-                        ? 'bg-[#0F172A] text-white border-[#0F172A]'
-                        : 'bg-white text-[#0F172A] border-[#E5DEC9] hover:border-[#0F766E]'
+                        ? 'bg-[#6366F1] text-white border-[#6366F1]'
+                        : 'bg-[#FAFAFA] text-[#0A0A0A] border-[#E8E8EC] hover:border-[#6366F1]'
                     }`}
                   >
                     <span className="flex items-center gap-2">
-                      <Icon className="w-3.5 h-3.5 text-[#0F766E]" />
+                      <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-[#6366F1]'}`} />
                       <span>{ws.label}</span>
                     </span>
                     <ChevronRight className="w-3.5 h-3.5 opacity-60" />
@@ -324,43 +334,43 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
             </nav>
           </div>
 
-          <div className="mt-auto rounded-xl bg-white border border-[#E5DEC9] p-3.5 text-xs space-y-1.5">
-            <div className="font-bold text-[#0F172A] flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#0F766E]" />
-              <span>Privacy & Safety Guarantees</span>
+          <div className="bg-white border border-[#E8E8EC] rounded-[12px] p-4 text-[12px] space-y-1.5">
+            <div className="font-medium text-[#0A0A0A] flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+              <span>Server-Enforced Privacy</span>
             </div>
-            <p className="text-[#475569] leading-relaxed">
-              Personal phones, flat numbers, prescriptions, staff GPS coordinates, and CCTV grants are enforced on the server via Supabase RLS.
+            <p className="text-[#6B6B6B] leading-relaxed">
+              Personal phones, flat numbers, prescriptions, staff GPS coordinates, and CCTV grants are protected by Supabase RLS.
             </p>
           </div>
         </aside>
 
         {/* Primary Viewport */}
-        <main className="flex-1 min-w-0 p-4 sm:p-6 pb-24 lg:pb-10">
+        <main className="flex-1 min-w-0 pb-24 lg:pb-12">
           {bootstrap.access_denied ? (
             /* Membership Gate Enforcement Screen (Phase 0 / Test 1) */
-            <div className="max-w-2xl mx-auto my-8 bg-white border-2 border-amber-600/40 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+            <div className="max-w-2xl mx-auto my-8 bg-white border border-[#E8E8EC] rounded-[12px] p-6 sm:p-8 space-y-5">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                  <Lock className="w-6 h-6" />
+                <div className="w-11 h-11 rounded-[8px] bg-[#F59E0B]/10 text-[#F59E0B] flex items-center justify-center shrink-0">
+                  <Lock className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-900">
-                    Server Membership Gate Enforced • Status: {bootstrap.membership_status}
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-medium bg-[#F59E0B]/15 text-[#F59E0B]">
+                    Server Membership Gate • Status: {bootstrap.membership_status}
                   </span>
-                  <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] mt-2">
+                  <h1 className="text-[24px] font-display font-bold text-[#0A0A0A] mt-2">
                     Protected Community Data Is Restricted
                   </h1>
-                  <p className="text-sm text-[#475569] mt-1">
-                    Acting as <strong>{actor?.display_name}</strong> ({actor?.building_name ?? 'Applicant'}).
+                  <p className="text-[15px] text-[#6B6B6B] mt-1">
+                    Acting as <strong className="text-[#0A0A0A]">{actor?.display_name}</strong> ({actor?.building_name ?? 'Applicant'}).
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-sm space-y-2">
-                <div className="font-semibold text-[#0F172A]">Server Gate Reason (Supabase RLS & RPC Check):</div>
-                <p className="text-[#475569]">{bootstrap.membership_reason}</p>
-                <p className="text-xs text-[#475569]">
+              <div className="p-4 rounded-[8px] bg-[#FAFAFA] border border-[#E8E8EC] text-[14px] space-y-2">
+                <div className="font-medium text-[#0A0A0A]">Server Gate Reason (Supabase RLS & RPC Check):</div>
+                <p className="text-[#6B6B6B]">{bootstrap.membership_reason}</p>
+                <p className="text-[12px] text-[#9C9C9C]">
                   Zero directory profiles, posts, shop orders, Social Service listings, complaints, staff locations, or CCTV cameras were returned by the server for this session (PRD Acceptance Test 1).
                 </p>
               </div>
@@ -369,14 +379,14 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                 <button
                   type="button"
                   onClick={() => handlePersonaChange('00000000-0000-4000-8000-000000000002')}
-                  className="px-4 py-2.5 rounded-lg bg-[#0F766E] hover:bg-[#115E59] text-white font-semibold text-sm cursor-pointer"
+                  className="genesis-btn-primary h-[38px] px-4 rounded-[6px] bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium text-[14px] cursor-pointer"
                 >
                   Switch to Approved Resident (Priya Nair)
                 </button>
                 <button
                   type="button"
                   onClick={() => handlePersonaChange('00000000-0000-4000-8000-000000000011')}
-                  className="px-4 py-2.5 rounded-lg bg-[#0F172A] hover:bg-slate-800 text-white font-semibold text-sm cursor-pointer"
+                  className="h-[38px] px-4 rounded-[6px] bg-white border border-[#E8E8EC] hover:border-[#6366F1] text-[#0A0A0A] font-medium text-[14px] cursor-pointer"
                 >
                   Switch to Membership Sub-Admin (Neha Deshmukh)
                 </button>
@@ -388,10 +398,10 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation Bar (Section 4.1: Home, Community, Shops, Social Service, More) */}
+      {/* Mobile Bottom Navigation Bar */}
       <nav
         aria-label="Mobile Primary Navigation"
-        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E5DEC9] px-2 py-1.5 flex items-center justify-around shadow-lg"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E8E8EC] px-2 py-1.5 flex items-center justify-around"
       >
         {[RESIDENT_NAV[0], RESIDENT_NAV[1], RESIDENT_NAV[2], RESIDENT_NAV[3]].map((item) => {
           const Icon = item.icon;
@@ -400,8 +410,8 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold ${
-                active ? 'text-[#0F766E]' : 'text-[#475569]'
+              className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-[6px] text-[11px] font-medium ${
+                active ? 'text-[#6366F1]' : 'text-[#6B6B6B]'
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -412,7 +422,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
         <button
           type="button"
           onClick={() => setMobileMoreOpen(true)}
-          className="flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-[#475569] cursor-pointer"
+          className="flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-[6px] text-[11px] font-medium text-[#6B6B6B] cursor-pointer"
         >
           <Menu className="w-5 h-5" />
           <span>More</span>
@@ -421,14 +431,14 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
 
       {/* Mobile "More" Drawer */}
       {mobileMoreOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 flex justify-end lg:hidden">
-          <div className="w-80 max-w-full bg-[#FAF8F5] h-full p-5 overflow-y-auto space-y-5">
-            <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-3">
-              <span className="font-bold text-[#0F172A]">All Modules & Workspaces</span>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end lg:hidden">
+          <div className="w-80 max-w-full bg-white h-full p-5 overflow-y-auto space-y-5 border-l border-[#E8E8EC]">
+            <div className="flex items-center justify-between border-b border-[#E8E8EC] pb-3">
+              <span className="font-display font-bold text-[#0A0A0A]">All Modules & Workspaces</span>
               <button
                 type="button"
                 onClick={() => setMobileMoreOpen(false)}
-                className="p-1.5 rounded-lg bg-white border border-[#E5DEC9]"
+                className="p-1.5 rounded-[6px] bg-[#FAFAFA] border border-[#E8E8EC]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -441,16 +451,16 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileMoreOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-[#0F172A] hover:bg-white"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-[6px] text-[14px] font-medium text-[#0A0A0A] hover:bg-[#FAFAFA]"
                   >
-                    <Icon className="w-4 h-4 text-[#0F766E]" />
+                    <Icon className="w-4 h-4 text-[#6366F1]" />
                     <span>{item.label}</span>
                   </Link>
                 );
               })}
             </div>
-            <div className="border-t border-[#E5DEC9] pt-3 space-y-1.5">
-              <div className="text-xs font-bold uppercase text-[#475569] px-2">Role Workspaces</div>
+            <div className="border-t border-[#E8E8EC] pt-3 space-y-1.5">
+              <div className="text-[11px] font-mono uppercase text-[#9C9C9C] px-2">Role Workspaces</div>
               {WORKSPACE_NAV.map((ws) => {
                 const Icon = ws.icon;
                 return (
@@ -458,13 +468,13 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     key={ws.href}
                     href={ws.href}
                     onClick={() => setMobileMoreOpen(false)}
-                    className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-white border border-[#E5DEC9] text-xs font-semibold"
+                    className="flex items-center justify-between px-3 py-2.5 rounded-[6px] bg-[#FAFAFA] border border-[#E8E8EC] text-[13px] font-medium"
                   >
                     <span className="flex items-center gap-2">
-                      <Icon className="w-4 h-4 text-[#0F766E]" />
+                      <Icon className="w-4 h-4 text-[#6366F1]" />
                       <span>{ws.label}</span>
                     </span>
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-4 h-4 text-[#9C9C9C]" />
                   </Link>
                 );
               })}
@@ -479,19 +489,19 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
           role="dialog"
           aria-modal="true"
           aria-labelledby="sos-modal-title"
-          className="fixed inset-0 z-50 bg-slate-950/75 flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
         >
-          <div className="bg-white border-2 border-[#DC2626] rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-xl space-y-4">
+          <div className="bg-white border border-[#EF4444] rounded-[12px] max-w-lg w-full p-6 shadow-lg space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-red-100 text-[#DC2626] flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-6 h-6" />
+                <div className="w-10 h-10 rounded-[8px] bg-[#EF4444]/10 text-[#EF4444] flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 id="sos-modal-title" className="text-lg font-bold text-[#0F172A]">
+                  <h2 id="sos-modal-title" className="text-[18px] font-display font-bold text-[#0A0A0A]">
                     Emergency SOS & Responder Alert
                   </h2>
-                  <p className="text-xs text-[#475569]">
+                  <p className="text-[12px] text-[#6B6B6B]">
                     Persists incident before fan-out • Sanitises public alert • Direct call fallback
                   </p>
                 </div>
@@ -499,7 +509,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
               <button
                 type="button"
                 onClick={() => setSosModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer"
+                className="p-1.5 rounded-[6px] text-[#6B6B6B] hover:bg-[#FAFAFA] cursor-pointer"
                 aria-label="Close SOS Modal"
               >
                 <X className="w-5 h-5" />
@@ -507,46 +517,46 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
             </div>
 
             {/* Direct Phone Call Links for Life-Safety (SOS-07) */}
-            <div className="p-3 rounded-xl bg-red-50 border border-red-200 space-y-2">
-              <div className="text-xs font-bold text-red-900 flex items-center gap-1.5">
+            <div className="p-3 rounded-[8px] bg-[#EF4444]/5 border border-[#EF4444]/25 space-y-2">
+              <div className="text-[12px] font-medium text-[#EF4444] flex items-center gap-1.5">
                 <PhoneCall className="w-3.5 h-3.5" />
                 <span>Immediate Life-Safety Call Links (Do not rely solely on app connectivity):</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px] font-medium">
                 <a
                   href="tel:112"
-                  className="px-2.5 py-1.5 rounded-lg bg-white border border-red-300 text-red-800 text-center hover:bg-red-100"
+                  className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
                 >
                   Call 112 (Emergency)
                 </a>
                 <a
                   href="tel:101"
-                  className="px-2.5 py-1.5 rounded-lg bg-white border border-red-300 text-red-800 text-center hover:bg-red-100"
+                  className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
                 >
                   Call 101 (Fire)
                 </a>
                 <a
                   href="tel:108"
-                  className="px-2.5 py-1.5 rounded-lg bg-white border border-red-300 text-red-800 text-center hover:bg-red-100"
+                  className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
                 >
                   Call 108 (Ambulance)
                 </a>
                 <a
                   href="tel:+919820000025"
-                  className="px-2.5 py-1.5 rounded-lg bg-white border border-red-300 text-red-800 text-center hover:bg-red-100"
+                  className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
                 >
                   Main Gate Desk
                 </a>
               </div>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-3 text-[13px]">
               <div>
-                <label className="block font-semibold text-[#0F172A] mb-1">Emergency Category</label>
+                <label className="block font-medium text-[#0A0A0A] mb-1">Emergency Category</label>
                 <select
                   value={sosCategory}
                   onChange={(e) => setSosCategory(e.target.value as typeof sosCategory)}
-                  className="w-full rounded-lg border border-[#E5DEC9] px-3 py-2 text-sm bg-white"
+                  className="w-full rounded-[6px] border border-[#E8E8EC] px-3.5 py-2.5 text-[14px] bg-white"
                 >
                   <option value="lift_entrapment">Lift / Elevator Entrapment</option>
                   <option value="medical">Medical Emergency</option>
@@ -558,11 +568,11 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-[#0F172A] mb-1">Building / Tower</label>
+                  <label className="block font-medium text-[#0A0A0A] mb-1">Building / Tower</label>
                   <select
                     value={sosBuildingId}
                     onChange={(e) => setSosBuildingId(e.target.value)}
-                    className="w-full rounded-lg border border-[#E5DEC9] px-3 py-2 text-sm bg-white"
+                    className="w-full rounded-[6px] border border-[#E8E8EC] px-3.5 py-2.5 text-[14px] bg-white"
                   >
                     {buildings.map((b) => (
                       <option key={b.id} value={b.id}>
@@ -572,7 +582,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-[#0F172A] mb-1">
+                  <label className="block font-medium text-[#0A0A0A] mb-1">
                     Manual Floor Label (SOS-02)
                   </label>
                   <input
@@ -580,14 +590,14 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     value={sosFloor}
                     onChange={(e) => setSosFloor(e.target.value)}
                     placeholder="e.g. Between 4th & 5th Floor"
-                    className="w-full rounded-lg border border-[#E5DEC9] px-3 py-2 text-sm"
+                    className="w-full rounded-[6px] border border-[#E8E8EC] px-3.5 py-2.5 text-[14px]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-[#0F172A] mb-1">
+                  <label className="block font-medium text-[#0A0A0A] mb-1">
                     Lift Car or Area Label
                   </label>
                   <input
@@ -595,11 +605,11 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     value={sosLiftOrArea}
                     onChange={(e) => setSosLiftOrArea(e.target.value)}
                     placeholder="e.g. Passenger Lift #2"
-                    className="w-full rounded-lg border border-[#E5DEC9] px-3 py-2 text-sm"
+                    className="w-full rounded-[6px] border border-[#E8E8EC] px-3.5 py-2.5 text-[14px]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-[#0F172A] mb-1">
+                  <label className="block font-medium text-[#0A0A0A] mb-1">
                     Responder Note (Restricted to Responders)
                   </label>
                   <input
@@ -607,14 +617,14 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     value={sosNotes}
                     onChange={(e) => setSosNotes(e.target.value)}
                     placeholder="Optional medical or access note"
-                    className="w-full rounded-lg border border-[#E5DEC9] px-3 py-2 text-sm"
+                    className="w-full rounded-[6px] border border-[#E8E8EC] px-3.5 py-2.5 text-[14px]"
                   />
                 </div>
               </div>
             </div>
 
             {sosFeedback && (
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-950 font-medium">
+              <div className="p-3 rounded-[8px] bg-[#F59E0B]/10 border border-[#F59E0B]/30 text-[12px] text-[#0A0A0A] font-medium">
                 {sosFeedback}
               </div>
             )}
@@ -628,13 +638,12 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                 onTouchStart={startHoldToSend}
                 onTouchEnd={cancelHoldToSend}
                 onClick={() => {
-                  // Accessible single-click/keyboard fallback if user activates via Enter/Space
                   if (holdProgress === 0) submitSOSAlert();
                 }}
-                className="relative overflow-hidden w-full py-3 rounded-xl bg-[#DC2626] hover:bg-red-700 text-white font-bold text-sm shadow-md cursor-pointer"
+                className="relative overflow-hidden w-full h-[44px] rounded-[6px] bg-[#EF4444] hover:bg-red-600 text-white font-medium text-[14px] cursor-pointer"
               >
                 <span
-                  className="absolute inset-y-0 left-0 bg-red-950/40 transition-all"
+                  className="absolute inset-y-0 left-0 bg-black/25 transition-all"
                   style={{ width: `${holdProgress}%` }}
                 />
                 <span className="relative z-10">
@@ -643,7 +652,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     : 'Hold 1.2s or Press Enter to Dispatch SOS Alert'}
                 </span>
               </button>
-              <p className="text-[11px] text-[#475569] text-center">
+              <p className="text-[12px] text-[#6B6B6B] text-center">
                 Responders receive your unit and phone; general residents receive only a sanitised area safety notice (SOS-04).
               </p>
             </div>

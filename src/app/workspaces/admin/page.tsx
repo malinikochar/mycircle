@@ -98,14 +98,14 @@ export default async function AdminWorkspacePage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
           Separated Role Workspace • Governance & 10 Permission-Scoped Sub-Admins (Section 3.2 & Test 2)
         </span>
-        <h1 className="text-2xl font-bold text-[#0F172A]">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">
           Community Governance, Scoped Sub-Admin Matrix & Audit Enforcement
         </h1>
-        <p className="text-sm text-[#475569]">
+        <p className="text-sm text-[#6B6B6B]">
           Use the top bar <strong>Acting Persona</strong> selector to switch between Primary Admin Aarav Mehta, any of the 10 Permission-Scoped Sub-Admins, or an ordinary resident to verify server-side permission boundaries in real time.
         </p>
       </section>
@@ -135,12 +135,12 @@ export default async function AdminWorkspacePage() {
       )}
 
       {/* Live Permission Scope Evaluation for Current Actor (Test 2) */}
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-4">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <h2 className="text-base font-bold text-[#0F172A]">
+          <h2 className="text-base font-bold text-[#0A0A0A]">
             Live Server Scope Evaluation for Current Actor: {actor.display_name}
           </h2>
-          <span className="text-xs text-[#475569]">
+          <span className="text-xs text-[#6B6B6B]">
             Evaluated via `canPerformAdminAction` & `private.has_admin_scope`
           </span>
         </div>
@@ -154,11 +154,11 @@ export default async function AdminWorkspacePage() {
                 className={`p-3.5 rounded-xl border text-xs flex items-start justify-between gap-3 ${
                   res.allowed
                     ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950'
-                    : 'bg-[#FAF8F5] border-[#E5DEC9] text-[#475569]'
+                    : 'bg-[#FAFAFA] border-[#E8E8EC] text-[#6B6B6B]'
                 }`}
               >
                 <div className="space-y-0.5">
-                  <div className="font-bold text-[#0F172A]">{chk.label}</div>
+                  <div className="font-bold text-[#0A0A0A]">{chk.label}</div>
                   <div className="text-[11px]">{res.reason}</div>
                 </div>
                 {res.allowed ? (
@@ -173,10 +173,10 @@ export default async function AdminWorkspacePage() {
       </section>
 
       {/* Complete Roster of 1 Primary Admin + 10 Permission-Scoped Sub-Admins */}
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-4">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-[#0F766E]" />
-          <h2 className="text-lg font-bold text-[#0F172A]">
+          <Building2 className="w-5 h-5 text-[#6366F1]" />
+          <h2 className="text-lg font-bold text-[#0A0A0A]">
             Active Governance Roster: 1 Primary Admin + 10 Scoped Sub-Admins ({allGrants.length} Total)
           </h2>
         </div>
@@ -185,25 +185,25 @@ export default async function AdminWorkspacePage() {
           {allGrants.map((g) => (
             <article
               key={g.id}
-              className="rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] p-4 space-y-2 text-xs"
+              className="rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] p-4 space-y-2 text-xs"
             >
               <div className="flex items-center justify-between gap-2">
                 <span
                   className={`px-2.5 py-0.5 rounded-full font-bold uppercase ${
                     g.role_type === 'primary_admin'
-                      ? 'bg-[#0F172A] text-teal-300'
-                      : 'bg-teal-100 text-[#0F766E]'
+                      ? 'bg-[#0A0A0A] text-indigo-300'
+                      : 'bg-indigo-100 text-[#6366F1]'
                   }`}
                 >
                   {g.role_type.replace('_', ' ')} • Scope: {g.module_scope}
                 </span>
-                <span className="font-semibold text-[#475569]">
+                <span className="font-semibold text-[#6B6B6B]">
                   {g.building_scope_name ?? 'All 6 Towers'}
                 </span>
               </div>
 
-              <h3 className="font-bold text-sm text-[#0F172A]">{g.title_label}</h3>
-              <div className="text-[#0F172A] font-medium">
+              <h3 className="font-bold text-sm text-[#0A0A0A]">{g.title_label}</h3>
+              <div className="text-[#0A0A0A] font-medium">
                 Holder: <strong>{g.user_name}</strong> ({g.user_profession})
               </div>
 
@@ -211,7 +211,7 @@ export default async function AdminWorkspacePage() {
                 {g.allowed_actions.map((act) => (
                   <span
                     key={act}
-                    className="px-2 py-0.5 rounded bg-white border border-[#E5DEC9] font-mono text-[11px] text-[#0F766E]"
+                    className="px-2 py-0.5 rounded bg-white border border-[#E8E8EC] font-mono text-[11px] text-[#6366F1]"
                   >
                     {act}
                   </span>

@@ -104,14 +104,14 @@ export function SafetyCCTVClient({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
           Phases 4 & 5 • SOS Alerts, Consented Staff Location & Common-Area CCTV (Tests 14–18)
         </span>
-        <h1 className="text-2xl font-bold text-[#0F172A]">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">
           Community Safety, Responder Dispatch, Duty GPS & Scoped CCTV
         </h1>
-        <p className="text-sm text-[#475569] max-w-3xl">
+        <p className="text-sm text-[#6B6B6B] max-w-3xl">
           Enforces sanitised community SOS alerts vs full responder unit/phone disclosure (`SOS-04`), strips raw GPS `latitude`/`longitude` unless the viewer holds a `precise` location grant (`STF-03`), and issues 60-second watermarked CCTV tokens with full access audit logs (`CCTV-04`).
         </p>
 
@@ -129,15 +129,15 @@ export function SafetyCCTVClient({
       </section>
 
       {/* 1. SOS Incidents & Honest Channel Delivery Audit (SOS-01..09 / Tests 14 & 15) */}
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-4">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-[#DC2626]" />
-            <h2 className="text-lg font-bold text-[#0F172A]">
+            <AlertTriangle className="w-5 h-5 text-[#EF4444]" />
+            <h2 className="text-lg font-bold text-[#0A0A0A]">
               SOS Incidents & Honest Delivery Audit ({incidents.length})
             </h2>
           </div>
-          <span className="text-xs text-[#475569]">Viewing as: {actorName}</span>
+          <span className="text-xs text-[#6B6B6B]">Viewing as: {actorName}</span>
         </div>
 
         <div className="space-y-4">
@@ -148,10 +148,10 @@ export function SafetyCCTVClient({
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#DC2626] text-white font-bold uppercase">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#EF4444] text-white font-bold uppercase">
                     {inc.category.replace(/_/g, ' ')}
                   </span>
-                  <span className="font-bold text-sm text-[#0F172A]">
+                  <span className="font-bold text-sm text-[#0A0A0A]">
                     {inc.approx_area_public_label}
                   </span>
                 </div>
@@ -171,7 +171,7 @@ export function SafetyCCTVClient({
                   </div>
                 </div>
               ) : (
-                <div className="p-3 rounded-lg bg-white border border-[#E5DEC9] text-[#475569] flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-white border border-[#E8E8EC] text-[#6B6B6B] flex items-center gap-2">
                   <Lock className="w-4 h-4 text-amber-700 shrink-0" />
                   <span>
                     Sanitised Community View (Test 14): Exact reporter flat number, floor, and phone number are stripped for non-responder residents. Switch to <strong>Mahesh Yadav (Head Security)</strong> or <strong>Col. Pratap Chauhan (Safety Sub-Admin)</strong> to inspect full responder details.
@@ -187,7 +187,7 @@ export function SafetyCCTVClient({
                     className={`p-2.5 rounded-lg border ${
                       del.delivery_status === 'failed'
                         ? 'bg-red-100/90 border-red-400 text-red-950'
-                        : 'bg-white border-[#E5DEC9] text-[#0F172A]'
+                        : 'bg-white border-[#E8E8EC] text-[#0A0A0A]'
                     }`}
                   >
                     <div className="font-bold flex items-center justify-between">
@@ -202,14 +202,14 @@ export function SafetyCCTVClient({
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <span className="text-[#475569]">
+                <span className="text-[#6B6B6B]">
                   Acknowledged by: <strong>{inc.acknowledged_by_name ?? 'Awaiting Responder'}</strong>
                 </span>
                 <button
                   type="button"
                   disabled={isPending}
                   onClick={() => handleAcknowledgeSOS(inc.id)}
-                  className="px-3.5 py-1.5 rounded-lg bg-[#0F172A] hover:bg-slate-800 text-white font-bold cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-lg bg-[#0A0A0A] hover:bg-slate-800 text-white font-bold cursor-pointer"
                 >
                   Acknowledge Incident as Responder (Test 15)
                 </button>
@@ -220,10 +220,10 @@ export function SafetyCCTVClient({
       </section>
 
       {/* 2. Consented Foreground Staff Location & Precision Stripping (STF-01..07 / Tests 16 & 17) */}
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-4">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-[#0F766E]" />
-          <h2 className="text-lg font-bold text-[#0F172A]">
+          <MapPin className="w-5 h-5 text-[#6366F1]" />
+          <h2 className="text-lg font-bold text-[#0A0A0A]">
             On-Duty Staff Consented Foreground Location (STF-02..05 / Tests 16 & 17)
           </h2>
         </div>
@@ -232,22 +232,22 @@ export function SafetyCCTVClient({
           {activeLocations.map((loc) => (
             <article
               key={loc.session_id}
-              className="rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] p-4 space-y-2.5 text-xs"
+              className="rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] p-4 space-y-2.5 text-xs"
             >
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-[#0F172A]">{loc.staff_name}</span>
+                <span className="font-bold text-sm text-[#0A0A0A]">{loc.staff_name}</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold uppercase">
                   On-Duty & Consented • {loc.is_stale ? 'Stale (>120s)' : 'Live (<120s)'}
                 </span>
               </div>
-              <p className="text-[#475569]">{loc.purpose}</p>
-              <div className="p-3 rounded-lg bg-white border border-[#E5DEC9] space-y-1">
+              <p className="text-[#6B6B6B]">{loc.purpose}</p>
+              <div className="p-3 rounded-lg bg-white border border-[#E8E8EC] space-y-1">
                 <div>
                   <strong>Approximate Zone Label:</strong> {loc.approximate_zone_label}
                 </div>
                 <div>
                   <strong>Viewer Grant Precision:</strong>{' '}
-                  <span className="uppercase font-bold text-[#0F766E]">{loc.precision_granted}</span>
+                  <span className="uppercase font-bold text-[#6366F1]">{loc.precision_granted}</span>
                 </div>
                 {loc.latitude !== null && loc.longitude !== null ? (
                   <div className="font-mono font-bold text-emerald-800">
@@ -269,22 +269,22 @@ export function SafetyCCTVClient({
       </section>
 
       {/* 3. Common-Area CCTV Inventory, Scoped 60s Session Minting & Audit Logs (CCTV-01..07 / Test 18) */}
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-4">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <Camera className="w-5 h-5 text-[#0F766E]" />
-            <h2 className="text-lg font-bold text-[#0F172A]">
+            <Camera className="w-5 h-5 text-[#6366F1]" />
+            <h2 className="text-lg font-bold text-[#0A0A0A]">
               Common-Area CCTV Inventory & 60-Second Scoped Session Gateway (CCTV-01..07)
             </h2>
           </div>
-          <span className="text-xs font-semibold text-[#0F766E]">
+          <span className="text-xs font-semibold text-[#6366F1]">
             Zero Private Flat Cameras • Server Credentials Isolated in `camera_secrets`
           </span>
         </div>
 
         {/* Active Watermarked Demo Feed Viewer */}
         {activeCameraSession && (
-          <div className="rounded-2xl bg-[#0F172A] text-white p-5 space-y-3 border-2 border-[#0D9488]">
+          <div className="rounded-2xl bg-[#0A0A0A] text-white p-5 space-y-3 border-2 border-[#6366F1]">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
@@ -298,7 +298,7 @@ export function SafetyCCTVClient({
             </div>
 
             <div className="relative h-48 rounded-xl bg-slate-900 border border-slate-700 flex flex-col items-center justify-center p-4 text-center overflow-hidden">
-              <div className="text-xs font-mono text-teal-300/90 uppercase tracking-widest mb-2">
+              <div className="text-xs font-mono text-indigo-300/90 uppercase tracking-widest mb-2">
                 [WATERMARK] {activeCameraSession.watermark_text}
               </div>
               <p className="text-sm font-semibold text-slate-200 max-w-md">
@@ -316,31 +316,31 @@ export function SafetyCCTVClient({
           {cameras.map((cam) => (
             <article
               key={cam.id}
-              className="rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] p-4 flex flex-col justify-between gap-3 text-xs"
+              className="rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] p-4 flex flex-col justify-between gap-3 text-xs"
             >
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono font-bold text-[#0F766E]">{cam.camera_code}</span>
+                  <span className="font-mono font-bold text-[#6366F1]">{cam.camera_code}</span>
                   <span
                     className={`px-2 py-0.5 rounded font-bold uppercase ${
                       cam.online_state === 'online_demo'
-                        ? 'bg-teal-100 text-[#0F766E]'
+                        ? 'bg-indigo-100 text-[#6366F1]'
                         : 'bg-slate-200 text-slate-700'
                     }`}
                   >
                     {cam.online_state.replace('_', ' ')} ({cam.integration_type.replace(/_/g, ' ')})
                   </span>
                 </div>
-                <h3 className="font-bold text-sm text-[#0F172A]">{cam.display_name}</h3>
-                <p className="text-[#475569]">
+                <h3 className="font-bold text-sm text-[#0A0A0A]">{cam.display_name}</h3>
+                <p className="text-[#6B6B6B]">
                   <strong>Area:</strong> {cam.group_name} ({cam.common_area_label})
                 </p>
-                <p className="text-[11px] text-[#0F766E] font-medium">
+                <p className="text-[11px] text-[#6366F1] font-medium">
                   Privacy Boundary: {cam.privacy_designation}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-[#E5DEC9] flex items-center justify-between gap-2">
+              <div className="pt-3 border-t border-[#E8E8EC] flex items-center justify-between gap-2">
                 <span
                   className={`font-bold ${
                     cam.actor_has_live_grant ? 'text-emerald-800' : 'text-amber-800'
@@ -352,7 +352,7 @@ export function SafetyCCTVClient({
                   type="button"
                   disabled={isPending}
                   onClick={() => handleRequestCameraSession(cam.id)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0F172A] hover:bg-slate-800 text-white font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A0A0A] hover:bg-slate-800 text-white font-bold cursor-pointer"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   <span>Request 60s Session</span>
@@ -364,15 +364,15 @@ export function SafetyCCTVClient({
 
         {/* Camera Access Audit Log (CCTV-04 / Test 18) */}
         {cameraAccessEvents.length > 0 && (
-          <div className="pt-3 border-t border-[#E5DEC9] space-y-2">
-            <div className="text-xs font-bold text-[#0F172A]">
+          <div className="pt-3 border-t border-[#E8E8EC] space-y-2">
+            <div className="text-xs font-bold text-[#0A0A0A]">
               Recent Camera Access Audit Log (`camera_access_events` — CCTV-04):
             </div>
             <div className="space-y-1.5">
               {cameraAccessEvents.slice(0, 6).map((ev) => (
                 <div
                   key={ev.id}
-                  className="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#E5DEC9] text-xs flex flex-wrap items-center justify-between gap-2"
+                  className="p-2.5 rounded-lg bg-[#FAFAFA] border border-[#E8E8EC] text-xs flex flex-wrap items-center justify-between gap-2"
                 >
                   <span>
                     <strong>{ev.camera_code}</strong> • Viewer: {ev.viewer_name} • Result:{' '}
@@ -384,7 +384,7 @@ export function SafetyCCTVClient({
                       {ev.access_result.toUpperCase()}
                     </strong>
                   </span>
-                  <span className="text-[11px] text-[#475569]">
+                  <span className="text-[11px] text-[#6B6B6B]">
                     {ev.denial_reason ?? `Token ${ev.session_token_id.slice(0, 18)}...`}
                   </span>
                 </div>

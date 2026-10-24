@@ -42,14 +42,14 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
           MEM-03 & REP-07 • Account, Per-Field Directory Privacy & Reputation
         </span>
-        <h1 className="text-2xl font-bold text-[#0F172A]">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">
           {actor.display_name} — Profile, Privacy & Notifications
         </h1>
-        <p className="text-sm text-[#475569]">
+        <p className="text-sm text-[#6B6B6B]">
           Control which personal fields are projected in the Community Directory. By default, exact flat number (`show_unit = false`) and personal phone (`show_phone = false`) are hidden on the server (Test 3).
         </p>
       </section>
@@ -58,16 +58,16 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
         {/* Per-Field Directory Visibility Controls (MEM-03 / Test 3) */}
         <form
           onSubmit={handleSaveVisibility}
-          className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-4"
+          className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4"
         >
           <div className="flex items-center gap-2">
-            <Lock className="w-5 h-5 text-[#0F766E]" />
-            <h2 className="text-base font-bold text-[#0F172A]">
+            <Lock className="w-5 h-5 text-[#6366F1]" />
+            <h2 className="text-base font-bold text-[#0A0A0A]">
               Per-Field Directory Visibility Controls (MEM-03)
             </h2>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-xs space-y-1">
+          <div className="p-3.5 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] text-xs space-y-1">
             <div>
               <strong>Private Record on Server (`private_contacts`):</strong>
             </div>
@@ -84,10 +84,10 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
           )}
 
           <div className="space-y-3 text-sm">
-            <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] cursor-pointer">
+            <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] cursor-pointer">
               <div>
-                <div className="font-bold text-[#0F172A] text-xs">Show Exact Flat / Unit Number (`show_unit`)</div>
-                <div className="text-[11px] text-[#475569]">
+                <div className="font-bold text-[#0A0A0A] text-xs">Show Exact Flat / Unit Number (`show_unit`)</div>
+                <div className="text-[11px] text-[#6B6B6B]">
                   Default OFF. When off, only your tower name is shown to fellow residents.
                 </div>
               </div>
@@ -95,14 +95,14 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
                 type="checkbox"
                 checked={showUnit}
                 onChange={(e) => setShowUnit(e.target.checked)}
-                className="w-4 h-4 accent-[#0F766E]"
+                className="w-4 h-4 accent-[#6366F1]"
               />
             </label>
 
-            <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] cursor-pointer">
+            <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] cursor-pointer">
               <div>
-                <div className="font-bold text-[#0F172A] text-xs">Show Personal Phone Number (`show_phone`)</div>
-                <div className="text-[11px] text-[#475569]">
+                <div className="font-bold text-[#0A0A0A] text-xs">Show Personal Phone Number (`show_phone`)</div>
+                <div className="text-[11px] text-[#6B6B6B]">
                   Default OFF. Residents coordinate via in-app messages unless you opt in.
                 </div>
               </div>
@@ -110,14 +110,14 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
                 type="checkbox"
                 checked={showPhone}
                 onChange={(e) => setShowPhone(e.target.checked)}
-                className="w-4 h-4 accent-[#0F766E]"
+                className="w-4 h-4 accent-[#6366F1]"
               />
             </label>
 
-            <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] cursor-pointer">
+            <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] cursor-pointer">
               <div>
-                <div className="font-bold text-[#0F172A] text-xs">Show Profession & Skills (`show_profession`)</div>
-                <div className="text-[11px] text-[#475569]">
+                <div className="font-bold text-[#0A0A0A] text-xs">Show Profession & Skills (`show_profession`)</div>
+                <div className="text-[11px] text-[#6B6B6B]">
                   Allows neighbours to discover your profession in directory search.
                 </div>
               </div>
@@ -125,14 +125,14 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
                 type="checkbox"
                 checked={showProfession}
                 onChange={(e) => setShowProfession(e.target.checked)}
-                className="w-4 h-4 accent-[#0F766E]"
+                className="w-4 h-4 accent-[#6366F1]"
               />
             </label>
 
-            <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] cursor-pointer">
+            <label className="flex items-center justify-between p-3 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] cursor-pointer">
               <div>
-                <div className="font-bold text-[#0F172A] text-xs">Show Business Profile (`show_business`)</div>
-                <div className="text-[11px] text-[#475569]">
+                <div className="font-bold text-[#0A0A0A] text-xs">Show Business Profile (`show_business`)</div>
+                <div className="text-[11px] text-[#6B6B6B]">
                   Displays your member business in the Business Directory tab.
                 </div>
               </div>
@@ -140,7 +140,7 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
                 type="checkbox"
                 checked={showBusiness}
                 onChange={(e) => setShowBusiness(e.target.checked)}
-                className="w-4 h-4 accent-[#0F766E]"
+                className="w-4 h-4 accent-[#6366F1]"
               />
             </label>
           </div>
@@ -148,7 +148,7 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
           <button
             type="submit"
             disabled={isPending}
-            className="w-full py-2.5 rounded-xl bg-[#0F766E] hover:bg-[#115E59] text-white font-bold text-xs cursor-pointer"
+            className="w-full py-2.5 rounded-xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs cursor-pointer"
           >
             {isPending ? 'Updating Supabase Privacy Settings...' : 'Save Directory Visibility Preferences'}
           </button>
@@ -156,50 +156,50 @@ export function AccountPrivacyClient({ actor, notifications }: AccountPrivacyCli
 
         {/* Separate Member vs Provider Reputation & Notifications (REP-07 & EVT-04) */}
         <div className="space-y-6">
-          <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3">
+          <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3">
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-              <h2 className="text-base font-bold text-[#0F172A]">
+              <h2 className="text-base font-bold text-[#0A0A0A]">
                 Separate Member vs Service Provider Reputation (REP-07)
               </h2>
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9]">
-                <div className="text-[#475569] font-medium">Member Exchange Average</div>
-                <div className="text-xl font-bold text-[#0F172A] tabular-nums mt-1">
+              <div className="p-3.5 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC]">
+                <div className="text-[#6B6B6B] font-medium">Member Exchange Average</div>
+                <div className="text-xl font-bold text-[#0A0A0A] tabular-nums mt-1">
                   {actor.member_rating_avg ? `${Number(actor.member_rating_avg).toFixed(2)} ★` : 'No reviews yet'}
                 </div>
-                <div className="text-[11px] text-[#0F766E]">
+                <div className="text-[11px] text-[#6366F1]">
                   {actor.member_review_count ?? 0} verified reviews • {actor.completed_interactions_count ?? 0} exchanges
                 </div>
               </div>
-              <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9]">
-                <div className="text-[#475569] font-medium">Service Provider Average</div>
-                <div className="text-xl font-bold text-[#0F172A] tabular-nums mt-1">
+              <div className="p-3.5 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC]">
+                <div className="text-[#6B6B6B] font-medium">Service Provider Average</div>
+                <div className="text-xl font-bold text-[#0A0A0A] tabular-nums mt-1">
                   {(actor.provider_memberships?.length ?? 0) > 0 ? '4.75 ★' : 'N/A (Resident)'}
                 </div>
-                <div className="text-[11px] text-[#475569]">
+                <div className="text-[11px] text-[#6B6B6B]">
                   Kept strictly separate from peer-to-peer member score
                 </div>
               </div>
             </div>
           </section>
 
-          <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3">
+          <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3">
             <div className="flex items-center gap-2">
-              <Bell className="w-5 h-5 text-[#0F766E]" />
-              <h2 className="text-base font-bold text-[#0F172A]">
+              <Bell className="w-5 h-5 text-[#6366F1]" />
+              <h2 className="text-base font-bold text-[#0A0A0A]">
                 In-App Notification Centre ({notifications.length} Safe Previews — EVT-04)
               </h2>
             </div>
             {notifications.length === 0 ? (
-              <p className="text-xs text-[#475569]">No unread notifications for {actor.display_name}.</p>
+              <p className="text-xs text-[#6B6B6B]">No unread notifications for {actor.display_name}.</p>
             ) : (
               <div className="space-y-2">
                 {notifications.map((n) => (
-                  <div key={n.id} className="p-3 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-xs space-y-1">
-                    <div className="font-bold text-[#0F172A]">{n.title}</div>
-                    <p className="text-[#475569]">{n.safe_preview_body}</p>
+                  <div key={n.id} className="p-3 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] text-xs space-y-1">
+                    <div className="font-bold text-[#0A0A0A]">{n.title}</div>
+                    <p className="text-[#6B6B6B]">{n.safe_preview_body}</p>
                   </div>
                 ))}
               </div>

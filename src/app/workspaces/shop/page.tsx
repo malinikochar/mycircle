@@ -15,14 +15,14 @@ export default async function ShopWorkspacePage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
           Separated Role Workspace • Merchant, Pharmacy & Vendor Ledger (SHOP-04..11 & Test 5)
         </span>
-        <h1 className="text-2xl font-bold text-[#0F172A]">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">
           Shop Fulfilment Desk, Prescription Verification & Account Ledger
         </h1>
-        <p className="text-sm text-[#475569]">
+        <p className="text-sm text-[#6B6B6B]">
           Switch to <strong>Suresh Agarwal (Annapurna Daily Fresh Mart)</strong> or <strong>Dr. Zoya Merchant (CarePlus Community Pharmacy)</strong> in the top persona selector to compare shop-isolated orders, ledger entries, and pharmacist-only prescription access.
         </p>
       </section>
@@ -46,10 +46,10 @@ export default async function ShopWorkspacePage() {
           </div>
 
           {/* Shop Order Queue & Prescription Privacy Check */}
-          <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-4">
+          <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
             <div className="flex items-center gap-2">
-              <Store className="w-5 h-5 text-[#0F766E]" />
-              <h2 className="text-base font-bold text-[#0F172A]">
+              <Store className="w-5 h-5 text-[#6366F1]" />
+              <h2 className="text-base font-bold text-[#0A0A0A]">
                 Shop-Scoped Order Fulfilment & Prescription Gate ({orders.length} Orders)
               </h2>
             </div>
@@ -60,17 +60,17 @@ export default async function ShopWorkspacePage() {
                 return (
                   <div
                     key={ord.id}
-                    className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-xs space-y-2"
+                    className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] text-xs space-y-2"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="font-bold text-sm text-[#0F172A]">
+                      <span className="font-bold text-sm text-[#0A0A0A]">
                         {ord.shop_name} • Order {ord.id.slice(0, 8)}
                       </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-[#0F766E] font-bold uppercase">
+                      <span className="px-2.5 py-0.5 rounded-full bg-indigo-100 text-[#6366F1] font-bold uppercase">
                         {ord.status.replace(/_/g, ' ')} • {formatPaiseToINR(ord.total_paise)}
                       </span>
                     </div>
-                    <div className="text-[#475569]">
+                    <div className="text-[#6B6B6B]">
                       Order-Scoped Delivery Contact Snapshot (MEM-03 / Test 3):{' '}
                       <strong>
                         {ord.buyer_name_snapshot} — {ord.delivery_building_snapshot}, Flat {ord.delivery_unit_snapshot} ({ord.delivery_phone_snapshot})
@@ -99,10 +99,10 @@ export default async function ShopWorkspacePage() {
           </section>
 
           {/* Vendor Account Ledger (SHOP-08, SHOP-10) */}
-          <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-4">
+          <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
             <div className="flex items-center gap-2">
-              <FileSpreadsheet className="w-5 h-5 text-[#0F766E]" />
-              <h2 className="text-base font-bold text-[#0F172A]">
+              <FileSpreadsheet className="w-5 h-5 text-[#6366F1]" />
+              <h2 className="text-base font-bold text-[#0A0A0A]">
                 Vendor Account Ledger: Sales, Adjustments & Payment Verification ({ledger.length} Entries)
               </h2>
             </div>
@@ -111,17 +111,17 @@ export default async function ShopWorkspacePage() {
               {ledger.map((entry) => (
                 <div
                   key={entry.id}
-                  className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-xs flex flex-wrap items-center justify-between gap-2"
+                  className="p-3.5 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] text-xs flex flex-wrap items-center justify-between gap-2"
                 >
                   <div>
-                    <span className="font-bold text-[#0F172A]">{entry.shop_name}</span> •{' '}
-                    <span className="uppercase font-semibold text-[#0F766E]">
+                    <span className="font-bold text-[#0A0A0A]">{entry.shop_name}</span> •{' '}
+                    <span className="uppercase font-semibold text-[#6366F1]">
                       {entry.entry_type.replace('_', ' ')}
                     </span>
-                    <p className="text-[#475569] mt-0.5">{entry.payment_evidence_note}</p>
+                    <p className="text-[#6B6B6B] mt-0.5">{entry.payment_evidence_note}</p>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-sm text-[#0F172A] tabular-nums">
+                    <div className="font-bold text-sm text-[#0A0A0A] tabular-nums">
                       {formatPaiseToINR(entry.amount_paise)}
                     </div>
                     <span

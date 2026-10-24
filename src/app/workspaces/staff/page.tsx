@@ -16,14 +16,14 @@ export default async function StaffWorkspacePage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
           Separated Role Workspace • Security, Staff Shifts, Patrols & Consented GPS (STF-01..07)
         </span>
-        <h1 className="text-2xl font-bold text-[#0F172A]">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">
           Staff Duty Desk, Patrol Checkpoints & Foreground Location Control
         </h1>
-        <p className="text-sm text-[#475569]">
+        <p className="text-sm text-[#6B6B6B]">
           Switch to <strong>Mahesh Yadav (Head Security Officer)</strong> or <strong>Col. Pratap Chauhan (Safety Sub-Admin)</strong> in the top persona selector to inspect on-duty shifts, tasks, and consented location sessions.
         </p>
       </section>
@@ -39,15 +39,15 @@ export default async function StaffWorkspacePage() {
       ) : (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3">
+            <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <Radio className="w-5 h-5 text-[#0F766E]" />
-                <h2 className="text-base font-bold text-[#0F172A]">Shift Check-In / Check-Out Roster ({shifts.length})</h2>
+                <Radio className="w-5 h-5 text-[#6366F1]" />
+                <h2 className="text-base font-bold text-[#0A0A0A]">Shift Check-In / Check-Out Roster ({shifts.length})</h2>
               </div>
               {shifts.map((sh) => (
-                <div key={sh.id} className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-xs space-y-1">
+                <div key={sh.id} className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] text-xs space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#0F172A]">{sh.staff_name}</span>
+                    <span className="font-bold text-[#0A0A0A]">{sh.staff_name}</span>
                     <span
                       className={`px-2 py-0.5 rounded font-bold uppercase ${
                         sh.status === 'on_duty'
@@ -58,28 +58,28 @@ export default async function StaffWorkspacePage() {
                       {sh.status.replace('_', ' ')}
                     </span>
                   </div>
-                  <div className="text-[#475569]">{sh.shift_name} • Post: {sh.assigned_post_label}</div>
+                  <div className="text-[#6B6B6B]">{sh.shift_name} • Post: {sh.assigned_post_label}</div>
                 </div>
               ))}
             </section>
 
-            <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3">
+            <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-[#0F766E]" />
-                <h2 className="text-base font-bold text-[#0F172A]">
+                <MapPin className="w-5 h-5 text-[#6366F1]" />
+                <h2 className="text-base font-bold text-[#0A0A0A]">
                   Consented On-Duty Foreground Location Sessions (STF-02..05)
                 </h2>
               </div>
               {activeLocations.map((loc) => (
-                <div key={loc.session_id} className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] text-xs space-y-1.5">
+                <div key={loc.session_id} className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#0F172A]">{loc.staff_name}</span>
-                    <span className="px-2 py-0.5 rounded bg-teal-100 text-[#0F766E] font-bold uppercase">
+                    <span className="font-bold text-[#0A0A0A]">{loc.staff_name}</span>
+                    <span className="px-2 py-0.5 rounded bg-indigo-100 text-[#6366F1] font-bold uppercase">
                       Consent: {loc.consent_given ? 'Active' : 'Stopped'}
                     </span>
                   </div>
-                  <p className="text-[#475569]">{loc.purpose}</p>
-                  <div className="text-[#0F172A] font-medium">
+                  <p className="text-[#6B6B6B]">{loc.purpose}</p>
+                  <div className="text-[#0A0A0A] font-medium">
                     Zone: {loc.approximate_zone_label} • Coordinates:{' '}
                     {loc.latitude !== null ? `${loc.latitude}, ${loc.longitude}` : 'Stripped for Approximate Viewer'}
                   </div>
@@ -88,23 +88,23 @@ export default async function StaffWorkspacePage() {
             </section>
           </div>
 
-          <section className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3">
-            <h2 className="text-base font-bold text-[#0F172A]">
+          <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3">
+            <h2 className="text-base font-bold text-[#0A0A0A]">
               Assigned Shift Tasks ({tasks.length}) & Patrol Checkpoints ({checkpoints.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               {tasks.map((t) => (
-                <div key={t.id} className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9]">
-                  <div className="font-bold text-[#0F172A]">{t.title}</div>
-                  <div className="text-[#475569] mt-0.5">
+                <div key={t.id} className="p-3.5 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC]">
+                  <div className="font-bold text-[#0A0A0A]">{t.title}</div>
+                  <div className="text-[#6B6B6B] mt-0.5">
                     Area: {t.area_label} • Status: <strong>{t.status.toUpperCase()}</strong>
                   </div>
                 </div>
               ))}
               {checkpoints.map((cp) => (
-                <div key={cp.id} className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9]">
-                  <div className="font-mono font-bold text-[#0F766E]">{cp.checkpoint_code}</div>
-                  <div className="font-bold text-[#0F172A]">{cp.location_name}</div>
+                <div key={cp.id} className="p-3.5 rounded-xl bg-[#FAFAFA] border border-[#E8E8EC]">
+                  <div className="font-mono font-bold text-[#6366F1]">{cp.checkpoint_code}</div>
+                  <div className="font-bold text-[#0A0A0A]">{cp.location_name}</div>
                 </div>
               ))}
             </div>

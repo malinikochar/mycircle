@@ -66,23 +66,23 @@ export function CommunityDirectoryClient({
   return (
     <div className="space-y-6">
       {/* Header & Sub-Navigation Tabs */}
-      <div className="rounded-2xl bg-white border border-[#E5DEC9] p-5 sm:p-6 space-y-4">
+      <div className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
               Phase 1 • MEM-01..07 & COM-01..05
             </span>
-            <h1 className="text-2xl font-bold text-[#0F172A] mt-0.5">
+            <h1 className="text-2xl font-bold text-[#0A0A0A] mt-0.5">
               Community Directory, Professions, Businesses & Feed
             </h1>
-            <p className="text-sm text-[#475569]">
+            <p className="text-sm text-[#6B6B6B]">
               Search across{' '}
-              <strong className="text-[#0F172A] tabular-nums">{totalSocietyMembers}</strong> seeded society members. Exact flat numbers and personal phone numbers are stripped on the server unless opted in (`show_unit`, `show_phone`).
+              <strong className="text-[#0A0A0A] tabular-nums">{totalSocietyMembers}</strong> seeded society members. Exact flat numbers and personal phone numbers are stripped on the server unless opted in (`show_unit`, `show_phone`).
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E5DEC9]">
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E8E8EC]">
           {[
             { id: 'directory', label: `Member & Skill Directory (${directory.length} Sampled)`, icon: Users },
             { id: 'businesses', label: `Professions & Member Businesses (${businessMembers.length})`, icon: Briefcase },
@@ -98,8 +98,8 @@ export function CommunityDirectoryClient({
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
                   active
-                    ? 'bg-[#0F766E] text-white'
-                    : 'bg-[#FAF8F5] text-[#1E293B] border border-[#E5DEC9] hover:bg-[#F3EFEA]'
+                    ? 'bg-[#6366F1] text-white'
+                    : 'bg-[#FAFAFA] text-[#0A0A0A] border border-[#E8E8EC] hover:bg-[#FAFAFA]'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -113,15 +113,15 @@ export function CommunityDirectoryClient({
       {activeTab === 'directory' && (
         <div className="space-y-4">
           {/* Search & Tower Filter Bar */}
-          <div className="rounded-2xl bg-white border border-[#E5DEC9] p-4 flex flex-wrap items-center gap-3">
+          <div className="rounded-2xl bg-white border border-[#E8E8EC] p-4 flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[240px]">
-              <Search className="w-4 h-4 text-[#475569] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#6B6B6B] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, profession (e.g. Architect, Paediatrician, Lawyer), skill, or interest..."
-                className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#E5DEC9] text-sm bg-[#FAF8F5]"
+                className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#E8E8EC] text-sm bg-[#FAFAFA]"
                 aria-label="Search Community Directory"
               />
             </div>
@@ -130,7 +130,7 @@ export function CommunityDirectoryClient({
               value={buildingFilter}
               onChange={(e) => setBuildingFilter(e.target.value)}
               aria-label="Filter by Building"
-              className="rounded-xl border border-[#E5DEC9] px-3.5 py-2 text-sm bg-[#FAF8F5] font-medium"
+              className="rounded-xl border border-[#E8E8EC] px-3.5 py-2 text-sm bg-[#FAFAFA] font-medium"
             >
               <option value="all">All 6 Towers (A–F)</option>
               <option value="TWR-A">Tower A — Gulmohar</option>
@@ -148,29 +148,29 @@ export function CommunityDirectoryClient({
               return (
                 <article
                   key={member.id}
-                  className="rounded-2xl bg-white border border-[#E5DEC9] p-5 flex flex-col justify-between gap-4 shadow-2xs"
+                  className="rounded-2xl bg-white border border-[#E8E8EC] p-5 flex flex-col justify-between gap-4 shadow-2xs"
                 >
                   <div className="space-y-2.5">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h2 className="font-bold text-base text-[#0F172A]">{member.display_name}</h2>
+                          <h2 className="font-bold text-base text-[#0A0A0A]">{member.display_name}</h2>
                           {isSelf && (
-                            <span className="px-2 py-0.5 rounded-full bg-teal-100 text-[#0F766E] text-[10px] font-bold">
+                            <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-[#6366F1] text-[10px] font-bold">
                               YOU
                             </span>
                           )}
                         </div>
-                        <p className="text-xs font-semibold text-[#0F766E]">
+                        <p className="text-xs font-semibold text-[#6366F1]">
                           {member.profession ?? 'Community Member'}
                         </p>
                       </div>
 
                       {member.member_rating_avg && (
-                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF8F5] border border-[#E5DEC9] text-xs font-bold tabular-nums">
+                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAFAFA] border border-[#E8E8EC] text-xs font-bold tabular-nums">
                           <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                           <span>{Number(member.member_rating_avg).toFixed(2)}</span>
-                          <span className="text-[#475569] font-normal">({member.member_review_count})</span>
+                          <span className="text-[#6B6B6B] font-normal">({member.member_review_count})</span>
                         </div>
                       )}
                     </div>
@@ -180,7 +180,7 @@ export function CommunityDirectoryClient({
                         {member.role_badges.map((badge) => (
                           <span
                             key={badge}
-                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-900 text-teal-300 text-[11px] font-semibold"
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-900 text-indigo-300 text-[11px] font-semibold"
                           >
                             <ShieldCheck className="w-3 h-3" />
                             {badge}
@@ -189,14 +189,14 @@ export function CommunityDirectoryClient({
                       </div>
                     )}
 
-                    {member.bio && <p className="text-xs text-[#475569] leading-relaxed">{member.bio}</p>}
+                    {member.bio && <p className="text-xs text-[#6B6B6B] leading-relaxed">{member.bio}</p>}
 
                     {member.skills && member.skills.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {member.skills.map((skill) => (
                           <span
                             key={skill}
-                            className="px-2 py-0.5 rounded-md bg-[#F3EFEA] text-[#1E293B] text-[11px] font-medium"
+                            className="px-2 py-0.5 rounded-md bg-[#FAFAFA] text-[#0A0A0A] text-[11px] font-medium"
                           >
                             {skill}
                           </span>
@@ -206,9 +206,9 @@ export function CommunityDirectoryClient({
                   </div>
 
                   {/* Server-Enforced Contact & Unit Privacy Strip (MEM-03 / Test 3) */}
-                  <div className="pt-3 border-t border-[#E5DEC9] flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <div className="flex items-center gap-2 text-[#475569]">
-                      <Building2 className="w-3.5 h-3.5 text-[#0F766E]" />
+                  <div className="pt-3 border-t border-[#E8E8EC] flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div className="flex items-center gap-2 text-[#6B6B6B]">
+                      <Building2 className="w-3.5 h-3.5 text-[#6366F1]" />
                       <span>{member.building_name ?? 'Tower Hidden'}</span>
                       {member.unit_number ? (
                         <span className="inline-flex items-center gap-1 font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">
@@ -225,7 +225,7 @@ export function CommunityDirectoryClient({
 
                     <div>
                       {member.personal_phone ? (
-                        <span className="font-semibold text-[#0F766E] tabular-nums">{member.personal_phone}</span>
+                        <span className="font-semibold text-[#6366F1] tabular-nums">{member.personal_phone}</span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-[11px] text-slate-500">
                           <Lock className="w-3 h-3" />
@@ -246,28 +246,28 @@ export function CommunityDirectoryClient({
           {businessMembers.map((bm) => (
             <article
               key={bm.id}
-              className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3"
+              className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3"
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <span className="px-2 py-0.5 rounded-md bg-teal-100 text-[#0F766E] text-[11px] font-bold uppercase">
+                  <span className="px-2 py-0.5 rounded-md bg-indigo-100 text-[#6366F1] text-[11px] font-bold uppercase">
                     {bm.business_category ?? 'Professional Consultation'}
                   </span>
-                  <h2 className="text-base font-bold text-[#0F172A] mt-1">
+                  <h2 className="text-base font-bold text-[#0A0A0A] mt-1">
                     {bm.business_name ?? bm.professional_headline}
                   </h2>
-                  <p className="text-xs text-[#475569]">
+                  <p className="text-xs text-[#6B6B6B]">
                     Led by <strong>{bm.display_name}</strong> ({bm.profession}) • {bm.building_name}
                   </p>
                 </div>
-                <Store className="w-5 h-5 text-[#0F766E] shrink-0" />
+                <Store className="w-5 h-5 text-[#6366F1] shrink-0" />
               </div>
               {bm.business_description && (
-                <p className="text-xs text-[#475569] leading-relaxed">{bm.business_description}</p>
+                <p className="text-xs text-[#6B6B6B] leading-relaxed">{bm.business_description}</p>
               )}
               <div className="flex flex-wrap gap-1.5">
                 {(bm.skills ?? []).map((s) => (
-                  <span key={s} className="px-2 py-0.5 rounded bg-[#FAF8F5] border border-[#E5DEC9] text-[11px]">
+                  <span key={s} className="px-2 py-0.5 rounded bg-[#FAFAFA] border border-[#E8E8EC] text-[11px]">
                     {s}
                   </span>
                 ))}
@@ -282,31 +282,31 @@ export function CommunityDirectoryClient({
           {posts.map((post) => (
             <article
               key={post.id}
-              className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-3"
+              className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-3"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0F766E] border border-teal-200 text-xs font-bold uppercase">
+                <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-[#6366F1] border border-indigo-200 text-xs font-bold uppercase">
                   {post.category.replace(/_/g, ' ')}
                 </span>
-                <span className="text-xs text-[#475569]">
+                <span className="text-xs text-[#6B6B6B]">
                   {post.building_name ?? 'All Towers'} • {new Date(post.created_at).toLocaleDateString('en-IN')}
                 </span>
               </div>
-              <h2 className="text-base font-bold text-[#0F172A]">{post.title}</h2>
-              <p className="text-sm text-[#475569] leading-relaxed">{post.body}</p>
-              <div className="text-xs text-[#0F172A] font-medium">
+              <h2 className="text-base font-bold text-[#0A0A0A]">{post.title}</h2>
+              <p className="text-sm text-[#6B6B6B] leading-relaxed">{post.body}</p>
+              <div className="text-xs text-[#0A0A0A] font-medium">
                 Posted by {post.author_name} ({post.author_profession})
               </div>
 
               {post.comments && post.comments.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-[#E5DEC9] space-y-2">
-                  <div className="text-xs font-bold text-[#475569]">
+                <div className="mt-3 pt-3 border-t border-[#E8E8EC] space-y-2">
+                  <div className="text-xs font-bold text-[#6B6B6B]">
                     Neighbour Replies ({post.comments.length})
                   </div>
                   {post.comments.map((c) => (
-                    <div key={c.id} className="p-3 rounded-xl bg-[#FAF8F5] text-xs space-y-1">
-                      <div className="font-bold text-[#0F172A]">{c.author_name}</div>
-                      <p className="text-[#475569]">{c.body}</p>
+                    <div key={c.id} className="p-3 rounded-xl bg-[#FAFAFA] text-xs space-y-1">
+                      <div className="font-bold text-[#0A0A0A]">{c.author_name}</div>
+                      <p className="text-[#6B6B6B]">{c.body}</p>
                     </div>
                   ))}
                 </div>
@@ -321,13 +321,13 @@ export function CommunityDirectoryClient({
           {groups.map((grp) => (
             <article
               key={grp.id}
-              className="rounded-2xl bg-white border border-[#E5DEC9] p-5 space-y-2"
+              className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-2"
             >
-              <span className="px-2 py-0.5 rounded bg-[#F3EFEA] text-xs font-bold uppercase text-[#0F766E]">
+              <span className="px-2 py-0.5 rounded bg-[#FAFAFA] text-xs font-bold uppercase text-[#6366F1]">
                 {grp.group_type} Circle
               </span>
-              <h2 className="text-base font-bold text-[#0F172A]">{grp.name}</h2>
-              <p className="text-xs text-[#475569]">{grp.moderation_policy}</p>
+              <h2 className="text-base font-bold text-[#0A0A0A]">{grp.name}</h2>
+              <p className="text-xs text-[#6B6B6B]">{grp.moderation_policy}</p>
             </article>
           ))}
         </div>
