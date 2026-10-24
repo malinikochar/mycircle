@@ -6,9 +6,9 @@ import { AppShell } from '@/components/layout/AppShell';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'CommunityCircle — Genesis Editorial Design System',
+  title: 'MyCircle — Trusted Residential Community OS',
   description:
-    'Trusted residential community platform styled with the Genesis (chef/genesis) editorial precision design system.',
+    'MyCircle is a privacy-first, server-enforced residential community platform with 10 scoped Sub-Admins, Local Shops & Pharmacy, Social Service Exchange, Civic Escalation, SOS Coordination, and Common-Area CCTV.',
 };
 
 export default async function RootLayout({

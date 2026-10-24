@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PERSONA_IDS, loadCommunityBootstrapState } from '@/lib/data/community-loader';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import {
   canAccessOrderPrescription,
   canAccessWorkspace,
@@ -523,5 +524,44 @@ describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verif
       { id: PERSONA_IDS.RESIDENT_ROHAN, status: 'approved', role_grants: [], staff_profile: null }
     );
     expect(sosProjected.restricted_responder_details).toBeNull();
+  });
+
+  it('Test 21: MyCircle Authentication & Account Profile RPCs — verifies Admin & Resident login credentials on live Supabase', async () => {
+    const supabase = createSupabaseServerClient();
+
+    // 1. Verify Primary Admin login (username: admin, password: MyCircle@Admin2026)
+    const { data: adminAuth, error: adminErr } = await supabase.rpc('cc_authenticate_user', {
+      p_identifier: 'admin',
+      p_password: 'MyCircle@Admin2026',
+    });
+    expect(adminErr).toBeNull();
+    expect(adminAuth?.authenticated).toBe(true);
+    expect(adminAuth?.user_id).toBe(PERSONA_IDS.PRIMARY_ADMIN_AARAV);
+
+    // 2. Verify Approved Resident login by email (priya@mycircle.in, password: MyCircle@User2026)
+    const { data: residentAuth, error: resErr } = await supabase.rpc('cc_authenticate_user', {
+      p_identifier: 'priya@mycircle.in',
+      p_password: 'MyCircle@User2026',
+    });
+    expect(resErr).toBeNull();
+    expect(residentAuth?.authenticated).toBe(true);
+    expect(residentAuth?.user_id).toBe(PERSONA_IDS.RESIDENT_PRIYA);
+
+    // 3. Verify wrong password is rejected
+    const { error: badPassErr } = await supabase.rpc('cc_authenticate_user', {
+      p_identifier: 'admin',
+      p_password: 'WrongPassword123',
+    });
+    expect(badPassErr).not.toBeNull();
+
+    // 4. Verify Account Details RPC returns username, email, and business details
+    const { data: priyaDetails, error: detailsErr } = await supabase.rpc(
+      'cc_get_actor_account_details',
+      { p_actor_id: PERSONA_IDS.RESIDENT_PRIYA }
+    );
+    expect(detailsErr).toBeNull();
+    expect(priyaDetails?.username).toBe('priya');
+    expect(priyaDetails?.email).toBe('priya@mycircle.in');
+    expect(priyaDetails?.business_name).toBe('Studio Terracotta Architecture');
   });
 });

@@ -28,6 +28,19 @@ export const PERSONA_IDS = {
 
 export const PERSONA_COOKIE_NAME = 'cc_persona_id';
 
+export interface ActorAccountDetails {
+  user_id: string;
+  username: string;
+  email: string;
+  role_label: string;
+  professional_headline?: string | null;
+  years_experience?: number | null;
+  qualifications?: string | null;
+  business_name?: string | null;
+  business_category?: string | null;
+  business_description?: string | null;
+}
+
 export async function getActivePersonaId(): Promise<string> {
   try {
     const cookieStore = await cookies();
@@ -53,9 +66,59 @@ export async function loadCommunityBootstrapState(
 
   if (error || !data) {
     throw new Error(
-      `Failed to load CommunityCircle state from Supabase (runquwuetzfivhwefenk): ${error?.message ?? 'Empty RPC response'}`
+      `Failed to load MyCircle state from Supabase (runquwuetzfivhwefenk): ${error?.message ?? 'Empty RPC response'}`
     );
   }
 
-  return data as CommunityBootstrapState;
+  const state = data as CommunityBootstrapState;
+
+  // Ensure any newly registered member is included in personas list for the top navigation selector
+  if (
+    state.actor?.id &&
+    Array.isArray(state.personas) &&
+    !state.personas.some((p) => p.id === state.actor.id)
+  ) {
+    state.personas = [
+      {
+        id: state.actor.id,
+        display_name: state.actor.display_name,
+        profession: state.actor.profession ?? 'Community Resident',
+        membership_status: state.actor.status ?? 'approved',
+        building_code: state.actor.building_code ?? 'TWR-A',
+        roles: (state.actor.role_grants ?? []).map((r) => ({
+          role_type: r.role_type,
+          module_scope: r.module_scope,
+          title_label: r.title_label,
+        })),
+        is_shop_member: (state.actor.shop_memberships?.length ?? 0) > 0,
+        is_provider: (state.actor.provider_memberships?.length ?? 0) > 0,
+        is_staff: Boolean(state.actor.staff_profile),
+      },
+      ...state.personas,
+    ];
+  }
+
+  return state;
+}
+
+export async function loadActorAccountDetails(
+  explicitActorId?: string
+): Promise<ActorAccountDetails> {
+  const actorId = explicitActorId ?? (await getActivePersonaId());
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase.rpc('cc_get_actor_account_details', {
+    p_actor_id: actorId,
+  });
+
+  if (error || !data) {
+    return {
+      user_id: actorId,
+      username: `member_${actorId.slice(-4)}`,
+      email: `resident.${actorId.slice(-4)}@mycircle.in`,
+      role_label: 'Verified Resident Member',
+    };
+  }
+
+  return data as ActorAccountDetails;
 }

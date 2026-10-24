@@ -2,7 +2,7 @@
 
 /* ============================================================================
  * Genesis Design System (https://designmd.ai/chef/genesis)
- * Author: chef • Identifier: chef/genesis
+ * Enhanced with UI/UX Pro Max Guidelines (Accessibility, Touch, Icon Rhythm)
  * ============================================================================ */
 :root {
   /* Genesis Color Tokens */
@@ -27,7 +27,7 @@
   /* Elevation & Ring Tokens */
   --genesis-card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   --genesis-btn-primary-glow: 0 4px 12px rgba(99, 102, 241, 0.35);
-  --genesis-focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  --genesis-focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.16);
 }
 
 html {
@@ -75,13 +75,43 @@ pre,
   font-variant-numeric: tabular-nums;
 }
 
-/* Genesis Gallery-Frame Card Behavior:
- * White surface (#FFFFFF), 1px subtle border (#E8E8EC), 12px radius,
- * flat at rest, -2px vertical lift + 0 8px 30px rgba(0,0,0,0.08) shadow on hover (200ms). */
+/* Consistent Icon Container Sizing (UI/UX Pro Max Icon Discipline) */
+.icon-box-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-box-md {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-box-lg {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Genesis Gallery-Frame Card Behavior */
 .genesis-card,
 section.bg-white,
 div.bg-white.rounded-2xl,
-div.bg-white.rounded-xl {
+div.bg-white.rounded-xl,
+article.bg-white {
   background-color: var(--genesis-surface);
   border: 1px solid var(--genesis-border);
   border-radius: 12px;
@@ -93,19 +123,20 @@ div.bg-white.rounded-xl {
 
 .genesis-card:hover,
 section.bg-white:hover,
-div.bg-white.rounded-2xl:hover {
+div.bg-white.rounded-2xl:hover,
+article.bg-white:hover {
   transform: translateY(-2px);
   box-shadow: var(--genesis-card-hover-shadow);
+  border-color: #D4D4DF;
 }
 
-/* Genesis Buttons:
- * 6px border radius, medium weight, -1px shift on hover,
- * Primary (#6366F1 -> #4F46E5) gains tinted glow shadow on hover. */
+/* Genesis Buttons */
 button,
 a.genesis-btn {
   border-radius: 6px;
   font-family: var(--font-body);
   font-weight: 500;
+  cursor: pointer;
   transition: transform 180ms ease,
               box-shadow 180ms ease,
               background-color 180ms ease,
@@ -131,10 +162,7 @@ button.bg-\[\#6366F1\]:hover:not(:disabled) {
   box-shadow: var(--genesis-btn-primary-glow);
 }
 
-/* Genesis Inputs & Selects:
- * 1px subtle border (#E8E8EC), surface background (#FFFFFF), 6px radius,
- * 10px vertical & 14px horizontal padding, 14px font size,
- * Focus: border turns indigo (#6366F1) with 3px rgba(99,102,241,0.12) ring. */
+/* Genesis Inputs & Selects */
 input[type="text"],
 input[type="number"],
 input[type="search"],
@@ -162,4 +190,17 @@ select:focus,
   outline: none;
   border-color: var(--genesis-primary);
   box-shadow: var(--genesis-focus-ring);
+}
+
+/* Respect prefers-reduced-motion per UI/UX Pro Max Pre-Delivery Checklist */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
 }

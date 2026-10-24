@@ -2,7 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { getActivePersonaId, PERSONA_COOKIE_NAME } from '@/lib/data/community-loader';
+import {
+  getActivePersonaId,
+  PERSONA_COOKIE_NAME,
+  PERSONA_IDS,
+} from '@/lib/data/community-loader';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function switchPersonaAction(personaId: string) {
@@ -15,6 +19,158 @@ export async function switchPersonaAction(personaId: string) {
   });
   revalidatePath('/', 'layout');
   return { ok: true, personaId };
+}
+
+export async function loginWithCredentialsAction(input: {
+  identifier: string;
+  password: string;
+}) {
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase.rpc('cc_authenticate_user', {
+    p_identifier: input.identifier,
+    p_password: input.password,
+  });
+
+  if (error || !data) {
+    return {
+      ok: false,
+      error: error?.message ?? 'Invalid username/email or password.',
+    };
+  }
+
+  const authResult = data as {
+    authenticated: boolean;
+    user_id: string;
+    display_name: string;
+    username: string;
+    email: string;
+    role_label: string;
+    membership_status: string;
+  };
+
+  const cookieStore = await cookies();
+  cookieStore.set(PERSONA_COOKIE_NAME, authResult.user_id, {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  revalidatePath('/', 'layout');
+  return { ok: true, data: authResult };
+}
+
+export async function registerMemberAction(input: {
+  displayName: string;
+  username: string;
+  email: string;
+  password: string;
+  profession: string;
+  buildingId: string;
+  unitNumber: string;
+  phone: string;
+  residencyType: string;
+  bio: string;
+  autoApprove: boolean;
+}) {
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase.rpc('cc_register_member', {
+    p_display_name: input.displayName,
+    p_username: input.username,
+    p_email: input.email,
+    p_password: input.password,
+    p_profession: input.profession,
+    p_building_id: input.buildingId,
+    p_unit_number: input.unitNumber,
+    p_phone: input.phone,
+    p_residency_type: input.residencyType,
+    p_bio: input.bio,
+    p_auto_approve: input.autoApprove,
+  });
+
+  if (error || !data) {
+    return {
+      ok: false,
+      error: error?.message ?? 'Registration failed. Please verify your details.',
+    };
+  }
+
+  const regResult = data as {
+    registered: boolean;
+    user_id: string;
+    display_name: string;
+    username: string;
+    email: string;
+    membership_status: string;
+  };
+
+  const cookieStore = await cookies();
+  cookieStore.set(PERSONA_COOKIE_NAME, regResult.user_id, {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  revalidatePath('/', 'layout');
+  return { ok: true, data: regResult };
+}
+
+export async function updateMemberProfileAction(input: {
+  displayName: string;
+  profession: string;
+  bio: string;
+  skills: string[];
+  interests: string[];
+  unitNumber: string;
+  personalPhone: string;
+  residencyType: string;
+  headline?: string;
+  businessName?: string;
+  businessCategory?: string;
+  businessDescription?: string;
+}) {
+  const actorId = await getActivePersonaId();
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase.rpc('cc_update_member_profile', {
+    p_actor_id: actorId,
+    p_display_name: input.displayName,
+    p_profession: input.profession,
+    p_bio: input.bio,
+    p_skills: input.skills,
+    p_interests: input.interests,
+    p_unit_number: input.unitNumber,
+    p_personal_phone: input.personalPhone,
+    p_residency_type: input.residencyType,
+    p_headline: input.headline ?? null,
+    p_business_name: input.businessName ?? null,
+    p_business_category: input.businessCategory ?? null,
+    p_business_description: input.businessDescription ?? null,
+  });
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/account');
+  revalidatePath('/community');
+  return { ok: true, data };
+}
+
+export async function logoutAction() {
+  const cookieStore = await cookies();
+  cookieStore.set(PERSONA_COOKIE_NAME, PERSONA_IDS.RESIDENT_PRIYA, {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  revalidatePath('/', 'layout');
+  return { ok: true };
 }
 
 export async function updateVisibilityAction(input: {

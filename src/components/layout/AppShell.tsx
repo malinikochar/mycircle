@@ -24,9 +24,16 @@ import {
   X,
   ChevronRight,
   Search,
+  Bell,
+  ShieldCheck,
+  Database,
+  RefreshCw,
+  KeyRound,
+  UserPlus,
 } from 'lucide-react';
 import type { BuildingInfo, CommunityBootstrapState } from '@/lib/types/domain';
 import { switchPersonaAction, triggerSOSIncidentAction } from '@/app/actions/community-actions';
+import { MyCircleLogo } from '@/components/layout/MyCircleLogo';
 
 interface AppShellProps {
   bootstrap: CommunityBootstrapState;
@@ -34,21 +41,21 @@ interface AppShellProps {
 }
 
 const RESIDENT_NAV = [
-  { href: '/', label: 'Home', shortLabel: 'Home', icon: Home },
+  { href: '/', label: 'Home Overview', shortLabel: 'Home', icon: Home },
   { href: '/community', label: 'Community & Directory', shortLabel: 'Community', icon: Users },
   { href: '/shops', label: 'Local Shops & Rx', shortLabel: 'Shops', icon: ShoppingBag },
-  { href: '/social-service', label: 'Social Service', shortLabel: 'Social Service', icon: HeartHandshake },
+  { href: '/social-service', label: 'Social Service', shortLabel: 'Exchange', icon: HeartHandshake },
   { href: '/services', label: 'Service Providers', shortLabel: 'Services', icon: Wrench },
   { href: '/help-complaints', label: 'Help & Complaints', shortLabel: 'Cases', icon: FileWarning },
   { href: '/safety', label: 'Safety, Staff & CCTV', shortLabel: 'Safety', icon: ShieldAlert },
-  { href: '/account', label: 'Account & Privacy', shortLabel: 'Account', icon: UserCheck },
+  { href: '/account', label: 'My Profile & Privacy', shortLabel: 'Profile', icon: UserCheck },
 ];
 
 const WORKSPACE_NAV = [
-  { href: '/workspaces/admin', label: 'Admin & 10 Sub-Admins', badge: 'Scoped Governance', icon: Building2 },
-  { href: '/workspaces/shop', label: 'Shop & Pharmacy Desk', badge: 'Orders & Invoices', icon: Store },
+  { href: '/workspaces/admin', label: 'Admin & 10 Sub-Admins', badge: 'Governance', icon: Building2 },
+  { href: '/workspaces/shop', label: 'Shop & Pharmacy Desk', badge: 'Orders & Rx', icon: Store },
   { href: '/workspaces/provider', label: 'Service Provider Desk', badge: 'Quotes & Jobs', icon: Briefcase },
-  { href: '/workspaces/staff', label: 'Staff & Responder Duty', badge: 'Shifts, SOS & GPS', icon: Radio },
+  { href: '/workspaces/staff', label: 'Staff & Responder Duty', badge: 'SOS & GPS', icon: Radio },
 ];
 
 export function AppShell({ bootstrap, children }: AppShellProps) {
@@ -74,6 +81,8 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
 
   const actor = bootstrap.actor;
   const buildings: BuildingInfo[] = bootstrap.buildings ?? [];
+  const notificationCount = bootstrap.notifications?.length ?? 0;
+  const isAuthRoute = pathname === '/login' || pathname === '/register';
 
   function handlePersonaChange(newPersonaId: string) {
     startTransition(async () => {
@@ -141,32 +150,19 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFA] text-[#0A0A0A] genesis-dot-grid">
       {/* Genesis Sticky Top Navigation: 56px height, backdrop-blur, 1px #E8E8EC bottom border */}
-      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-[#E8E8EC]">
-        <div className="max-w-[1280px] mx-auto px-6 min-h-[56px] py-2 flex flex-wrap items-center justify-between gap-4">
-          {/* Logo Left + DESIGN.md Brand Highlight (#20970B) */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#E8E8EC]">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 min-h-[56px] py-2 flex flex-wrap items-center justify-between gap-3">
+          {/* Logo Left: Custom Professional MyCircle Vector Logo */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-[6px] bg-[#0A0A0A] flex items-center justify-center font-display font-bold text-xs text-white tracking-tight">
-                CC
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-display font-bold tracking-[-0.035em] text-[17px] text-[#0A0A0A]">
-                  CommunityCircle
-                </span>
-                <span
-                  title="Genesis Design System (chef/genesis)"
-                  className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-[4px] bg-[#20970B]/10 text-[#20970B] border border-[#20970B]/25 font-medium"
-                >
-                  DESIGN.md • Genesis
-                </span>
-              </div>
+            <Link href="/" aria-label="MyCircle Home">
+              <MyCircleLogo size="md" showBadge={true} />
             </Link>
           </div>
 
-          {/* Center / Right: Rounded-XL Search-Style Persona Switcher (⌘K Aesthetic) & Destructive SOS Action */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2 bg-[#FAFAFA] border border-[#E8E8EC] rounded-[12px] px-3 py-1.5 hover:border-[#6366F1]/50 transition">
-              <Search className="w-3.5 h-3.5 text-[#9C9C9C] shrink-0" />
+          {/* Center / Right: Rounded-XL Search-Style Persona Switcher, Auth Links, Notifications & SOS */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 bg-[#FAFAFA] border border-[#E8E8EC] rounded-[12px] px-3 py-1.5 hover:border-[#6366F1]/60 transition">
+              <Search className="w-3.5 h-3.5 text-[#6366F1] shrink-0" />
               <label
                 htmlFor="persona-select"
                 className="text-[11px] uppercase tracking-wider text-[#6B6B6B] font-medium hidden md:inline"
@@ -179,16 +175,19 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                 disabled={isPending}
                 value={actor?.id ?? ''}
                 onChange={(e) => handlePersonaChange(e.target.value)}
-                className="genesis-nav-select bg-transparent text-[13px] font-medium text-[#0A0A0A] focus:outline-none cursor-pointer max-w-[210px] sm:max-w-[290px] truncate"
+                className="genesis-nav-select bg-transparent text-[13px] font-medium text-[#0A0A0A] focus:outline-none cursor-pointer max-w-[175px] sm:max-w-[240px] truncate"
               >
-                <optgroup label="Core Residents & Primary Admin">
+                <optgroup label="Active & Core Residents / Admin">
                   {bootstrap.personas
-                    .filter((p) =>
-                      [
-                        '00000000-0000-4000-8000-000000000001',
-                        '00000000-0000-4000-8000-000000000002',
-                        '00000000-0000-4000-8000-000000000003',
-                      ].includes(p.id)
+                    .filter(
+                      (p) =>
+                        [
+                          '00000000-0000-4000-8000-000000000001',
+                          '00000000-0000-4000-8000-000000000002',
+                          '00000000-0000-4000-8000-000000000003',
+                        ].includes(p.id) ||
+                        (!p.id.startsWith('00000000-0000-4000-8000-0000000000') &&
+                          p.membership_status === 'approved')
                     )
                     .map((p) => (
                       <option key={p.id} value={p.id}>
@@ -224,10 +223,50 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     ))}
                 </optgroup>
               </select>
-              <kbd className="hidden sm:inline-block text-[11px] font-mono px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E8E8EC] text-[#9C9C9C]">
+              <kbd className="hidden xl:inline-block text-[11px] font-mono px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E8E8EC] text-[#9C9C9C]">
                 ⌘K
               </kbd>
             </div>
+
+            {/* Sign In & Register Buttons */}
+            <Link
+              href="/login"
+              className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-[6px] text-[13px] font-medium border transition ${
+                pathname === '/login'
+                  ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]'
+                  : 'bg-white text-[#0A0A0A] border-[#E8E8EC] hover:border-[#6366F1]'
+              }`}
+            >
+              <KeyRound className="w-3.5 h-3.5 text-[#6366F1]" />
+              <span>Login</span>
+            </Link>
+
+            <Link
+              href="/register"
+              className={`hidden sm:inline-flex items-center gap-1.5 h-9 px-3 rounded-[6px] text-[13px] font-medium border transition ${
+                pathname === '/register'
+                  ? 'bg-[#6366F1] text-white border-[#6366F1]'
+                  : 'bg-white text-[#0A0A0A] border-[#E8E8EC] hover:border-[#6366F1]'
+              }`}
+            >
+              <UserPlus className="w-3.5 h-3.5 text-[#10B981]" />
+              <span>Register</span>
+            </Link>
+
+            {/* Notification Bell & Profile Link */}
+            <Link
+              href="/account"
+              title="My Profile, Privacy & Notifications"
+              aria-label={`Profile & Notifications (${notificationCount})`}
+              className="relative inline-flex items-center justify-center w-9 h-9 rounded-[6px] bg-white border border-[#E8E8EC] hover:border-[#6366F1] text-[#0A0A0A] transition"
+            >
+              <Bell className="w-4 h-4 text-[#6B6B6B]" />
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#6366F1] text-white text-[10px] font-mono font-bold flex items-center justify-center">
+                  {notificationCount}
+                </span>
+              )}
+            </Link>
 
             {/* Genesis Destructive Button: Red text with red border, 6px radius */}
             <button
@@ -237,7 +276,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                 setHoldProgress(0);
                 setSosModalOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 h-[32px] px-3 rounded-[6px] bg-white hover:bg-[#EF4444]/5 text-[#EF4444] border border-[#EF4444] font-medium text-[13px] transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-[6px] bg-[#EF4444]/10 hover:bg-[#EF4444] text-[#EF4444] hover:text-white border border-[#EF4444] font-medium text-[13px] transition cursor-pointer"
               aria-label="Open Emergency SOS Coordinator"
             >
               <AlertTriangle className="w-3.5 h-3.5" />
@@ -247,41 +286,60 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
         </div>
 
         {/* Subtle Metadata Context Bar */}
-        <div className="bg-[#FAFAFA]/90 border-t border-[#E8E8EC] px-6 py-1.5 text-[12px]">
+        <div className="bg-[#FAFAFA]/95 border-t border-[#E8E8EC] px-4 sm:px-6 py-1.5 text-[12px]">
           <div className="max-w-[1280px] mx-auto flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-[#6B6B6B]">
+            <div className="flex items-center gap-2 text-[#6B6B6B] flex-wrap">
               <span className="inline-block w-2 h-2 rounded-full bg-[#10B981]" />
-              <span>{bootstrap.community?.name ?? 'Serenity Heights'}</span>
+              <span className="font-medium text-[#0A0A0A]">
+                {bootstrap.community?.name ?? 'Serenity Heights'}
+              </span>
               <span className="text-[#9C9C9C]">•</span>
-              <strong className="text-[#0A0A0A] font-medium">{actor?.display_name}</strong>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-[#6366F1]/10 text-[#6366F1] font-medium">
+              <Link
+                href="/account"
+                className="text-[#0A0A0A] font-medium hover:text-[#6366F1] transition"
+              >
+                {actor?.display_name}
+              </Link>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-[#6366F1]/10 text-[#6366F1] font-medium">
+                <ShieldCheck className="w-3 h-3" />
                 {activeRoleSummary}
               </span>
               {actor?.unit_number && (
-                <span className="hidden md:inline text-[#9C9C9C] font-mono text-[11px]">
+                <span className="hidden md:inline-flex items-center gap-1 text-[#6B6B6B] font-mono text-[11px] bg-white px-2 py-0.5 rounded border border-[#E8E8EC]">
+                  <Building2 className="w-3 h-3 text-[#6366F1]" />
                   Unit {actor.building_code}-{actor.unit_number}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-3 text-[11px] text-[#9C9C9C] font-mono">
-              <span>{bootstrap.community?.total_members ?? 1000} MEMBERS</span>
-              <span>•</span>
-              <span>SUPABASE RLS</span>
+            <div className="flex items-center gap-3 text-[11px] text-[#6B6B6B] font-mono">
+              <span className="inline-flex items-center gap-1">
+                <Users className="w-3 h-3 text-[#6366F1]" />
+                {bootstrap.community?.total_members ?? 1000} MEMBERS
+              </span>
+              <span className="text-[#9C9C9C]">•</span>
+              <span className="inline-flex items-center gap-1">
+                <Database className="w-3 h-3 text-[#10B981]" />
+                SUPABASE RLS
+              </span>
               {isPending && (
-                <span className="text-[#6366F1] font-medium animate-pulse">SYNCING...</span>
+                <span className="inline-flex items-center gap-1 text-[#6366F1] font-medium">
+                  <RefreshCw className="w-3 h-3 animate-spin" />
+                  SYNCING...
+                </span>
               )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Container: 1280px max width with 24px horizontal padding per Genesis Spacing Spec */}
-      <div className="flex-1 max-w-[1280px] w-full mx-auto px-6 py-8 flex gap-6">
+      {/* Main Container: 1280px max width with 24px horizontal padding */}
+      <div className="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex gap-6">
         {/* Desktop Navigation Sidebar */}
-        <aside className="hidden lg:flex flex-col w-60 shrink-0 gap-6">
+        <aside className="hidden lg:flex flex-col w-64 shrink-0 gap-5">
           <div className="bg-white border border-[#E8E8EC] rounded-[12px] p-4">
-            <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C] px-2.5 mb-2">
-              Resident Modules
+            <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C] px-2.5 mb-2.5 flex items-center justify-between">
+              <span>Resident Modules</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FAFAFA] border border-[#E8E8EC]">8</span>
             </div>
             <nav className="space-y-1" aria-label="Resident Navigation">
               {RESIDENT_NAV.map((item) => {
@@ -291,14 +349,17 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-[6px] text-[14px] font-medium transition ${
+                    className={`flex items-center justify-between px-3 py-2 rounded-[6px] text-[14px] font-medium transition ${
                       active
-                        ? 'bg-[#6366F1] text-white'
+                        ? 'bg-[#6366F1] text-white shadow-2xs'
                         : 'text-[#6B6B6B] hover:text-[#0A0A0A] hover:bg-[#FAFAFA]'
                     }`}
                   >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span>{item.label}</span>
+                    <span className="flex items-center gap-2.5">
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-[#6366F1]'}`} />
+                      <span>{item.label}</span>
+                    </span>
+                    {active && <ChevronRight className="w-3.5 h-3.5 text-white/80" />}
                   </Link>
                 );
               })}
@@ -306,8 +367,9 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
           </div>
 
           <div className="bg-white border border-[#E8E8EC] rounded-[12px] p-4">
-            <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C] px-2.5 mb-2">
-              Role Workspaces
+            <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C] px-2.5 mb-2.5 flex items-center justify-between">
+              <span>Role Workspaces</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FAFAFA] border border-[#E8E8EC]">4</span>
             </div>
             <nav className="space-y-1.5" aria-label="Role Workspaces">
               {WORKSPACE_NAV.map((ws) => {
@@ -317,14 +379,14 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                   <Link
                     key={ws.href}
                     href={ws.href}
-                    className={`flex items-center justify-between px-3 py-2 rounded-[6px] text-[13px] font-medium transition border ${
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-[6px] text-[13px] font-medium transition border ${
                       active
                         ? 'bg-[#6366F1] text-white border-[#6366F1]'
                         : 'bg-[#FAFAFA] text-[#0A0A0A] border-[#E8E8EC] hover:border-[#6366F1]'
                     }`}
                   >
-                    <span className="flex items-center gap-2">
-                      <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-[#6366F1]'}`} />
+                    <span className="flex items-center gap-2.5">
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-[#6366F1]'}`} />
                       <span>{ws.label}</span>
                     </span>
                     <ChevronRight className="w-3.5 h-3.5 opacity-60" />
@@ -334,9 +396,34 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
             </nav>
           </div>
 
-          <div className="bg-white border border-[#E8E8EC] rounded-[12px] p-4 text-[12px] space-y-1.5">
-            <div className="font-medium text-[#0A0A0A] flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+          {/* Account & Auth Quick Card in Sidebar */}
+          <div className="bg-white border border-[#E8E8EC] rounded-[12px] p-4 space-y-2.5">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C] px-1">
+              Authentication & Access
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/login"
+                className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-[6px] bg-[#0A0A0A] hover:bg-[#6366F1] text-white text-[12px] font-medium transition"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </Link>
+              <Link
+                href="/register"
+                className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-[6px] bg-[#FAFAFA] border border-[#E8E8EC] hover:border-[#6366F1] text-[#0A0A0A] text-[12px] font-medium transition"
+              >
+                <UserPlus className="w-3.5 h-3.5 text-[#10B981]" />
+                <span>Register</span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="bg-white border border-[#E8E8EC] rounded-[12px] p-4 text-[12px] space-y-2">
+            <div className="font-medium text-[#0A0A0A] flex items-center gap-2">
+              <div className="icon-box-sm bg-[#10B981]/10 text-[#10B981]">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
               <span>Server-Enforced Privacy</span>
             </div>
             <p className="text-[#6B6B6B] leading-relaxed">
@@ -347,15 +434,16 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
 
         {/* Primary Viewport */}
         <main className="flex-1 min-w-0 pb-24 lg:pb-12">
-          {bootstrap.access_denied ? (
+          {bootstrap.access_denied && !isAuthRoute ? (
             /* Membership Gate Enforcement Screen (Phase 0 / Test 1) */
             <div className="max-w-2xl mx-auto my-8 bg-white border border-[#E8E8EC] rounded-[12px] p-6 sm:p-8 space-y-5">
               <div className="flex items-start gap-4">
-                <div className="w-11 h-11 rounded-[8px] bg-[#F59E0B]/10 text-[#F59E0B] flex items-center justify-center shrink-0">
-                  <Lock className="w-5 h-5" />
+                <div className="icon-box-lg bg-[#F59E0B]/10 text-[#F59E0B]">
+                  <Lock className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-medium bg-[#F59E0B]/15 text-[#F59E0B]">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-medium bg-[#F59E0B]/15 text-[#F59E0B]">
+                    <ShieldAlert className="w-3.5 h-3.5" />
                     Server Membership Gate • Status: {bootstrap.membership_status}
                   </span>
                   <h1 className="text-[24px] font-display font-bold text-[#0A0A0A] mt-2">
@@ -390,6 +478,13 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                 >
                   Switch to Membership Sub-Admin (Neha Deshmukh)
                 </button>
+                <Link
+                  href="/login"
+                  className="h-[38px] px-4 rounded-[6px] bg-[#0A0A0A] text-white font-medium text-[14px] inline-flex items-center gap-1.5"
+                >
+                  <KeyRound className="w-4 h-4" />
+                  <span>Open Login Portal</span>
+                </Link>
               </div>
             </div>
           ) : (
@@ -398,20 +493,20 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation Bar */}
+      {/* Mobile Bottom Navigation Bar — Minimum 44x44px touch targets per UI/UX Pro Max */}
       <nav
         aria-label="Mobile Primary Navigation"
-        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E8E8EC] px-2 py-1.5 flex items-center justify-around"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E8E8EC] px-2 py-1 flex items-center justify-around"
       >
-        {[RESIDENT_NAV[0], RESIDENT_NAV[1], RESIDENT_NAV[2], RESIDENT_NAV[3]].map((item) => {
+        {[RESIDENT_NAV[0], RESIDENT_NAV[1], RESIDENT_NAV[2], RESIDENT_NAV[7]].map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-[6px] text-[11px] font-medium ${
-                active ? 'text-[#6366F1]' : 'text-[#6B6B6B]'
+              className={`min-h-[44px] min-w-[60px] flex flex-col items-center justify-center gap-0.5 px-2.5 py-1 rounded-[6px] text-[11px] font-medium ${
+                active ? 'text-[#6366F1] bg-[#6366F1]/8' : 'text-[#6B6B6B]'
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -422,7 +517,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
         <button
           type="button"
           onClick={() => setMobileMoreOpen(true)}
-          className="flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-[6px] text-[11px] font-medium text-[#6B6B6B] cursor-pointer"
+          className="min-h-[44px] min-w-[60px] flex flex-col items-center justify-center gap-0.5 px-2.5 py-1 rounded-[6px] text-[11px] font-medium text-[#6B6B6B] cursor-pointer"
         >
           <Menu className="w-5 h-5" />
           <span>More</span>
@@ -434,14 +529,33 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end lg:hidden">
           <div className="w-80 max-w-full bg-white h-full p-5 overflow-y-auto space-y-5 border-l border-[#E8E8EC]">
             <div className="flex items-center justify-between border-b border-[#E8E8EC] pb-3">
-              <span className="font-display font-bold text-[#0A0A0A]">All Modules & Workspaces</span>
+              <MyCircleLogo size="sm" showBadge={false} />
               <button
                 type="button"
                 onClick={() => setMobileMoreOpen(false)}
-                className="p-1.5 rounded-[6px] bg-[#FAFAFA] border border-[#E8E8EC]"
+                className="p-2 rounded-[6px] bg-[#FAFAFA] border border-[#E8E8EC]"
+                aria-label="Close navigation menu"
               >
                 <X className="w-4 h-4" />
               </button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/login"
+                onClick={() => setMobileMoreOpen(false)}
+                className="flex items-center justify-center gap-1.5 py-2 rounded-[6px] bg-[#0A0A0A] text-white text-[13px] font-medium"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMobileMoreOpen(false)}
+                className="flex items-center justify-center gap-1.5 py-2 rounded-[6px] bg-[#6366F1] text-white text-[13px] font-medium"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Register</span>
+              </Link>
             </div>
             <div className="space-y-1">
               {RESIDENT_NAV.map((item) => {
@@ -494,7 +608,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
           <div className="bg-white border border-[#EF4444] rounded-[12px] max-w-lg w-full p-6 shadow-lg space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-[8px] bg-[#EF4444]/10 text-[#EF4444] flex items-center justify-center shrink-0">
+                <div className="icon-box-md bg-[#EF4444]/10 text-[#EF4444]">
                   <AlertTriangle className="w-5 h-5" />
                 </div>
                 <div>
@@ -509,7 +623,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
               <button
                 type="button"
                 onClick={() => setSosModalOpen(false)}
-                className="p-1.5 rounded-[6px] text-[#6B6B6B] hover:bg-[#FAFAFA] cursor-pointer"
+                className="p-2 rounded-[6px] text-[#6B6B6B] hover:bg-[#FAFAFA] cursor-pointer"
                 aria-label="Close SOS Modal"
               >
                 <X className="w-5 h-5" />
@@ -525,25 +639,25 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px] font-medium">
                 <a
                   href="tel:112"
-                  className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
+                  className="px-2.5 py-2 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
                 >
                   Call 112 (Emergency)
                 </a>
                 <a
                   href="tel:101"
-                  className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
+                  className="px-2.5 py-2 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
                 >
                   Call 101 (Fire)
                 </a>
                 <a
                   href="tel:108"
-                  className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
+                  className="px-2.5 py-2 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
                 >
                   Call 108 (Ambulance)
                 </a>
                 <a
                   href="tel:+919820000025"
-                  className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
+                  className="px-2.5 py-2 rounded-[6px] bg-white border border-[#EF4444]/40 text-[#EF4444] text-center hover:bg-[#EF4444]/10"
                 >
                   Main Gate Desk
                 </a>
