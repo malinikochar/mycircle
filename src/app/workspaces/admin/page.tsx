@@ -5,7 +5,6 @@ import {
   Lock,
   CheckCircle2,
   XCircle,
-  AlertCircle,
 } from 'lucide-react';
 import { loadCommunityBootstrapState } from '@/lib/data/community-loader';
 import {
@@ -13,6 +12,7 @@ import {
   canPerformAdminAction,
   validatePrimaryAdminRevocation,
 } from '@/lib/permissions/engine';
+import { AdminMemberInspector } from '@/components/workspaces/AdminMemberInspector';
 
 export default async function AdminWorkspacePage() {
   const bootstrap = await loadCommunityBootstrapState();
@@ -21,6 +21,9 @@ export default async function AdminWorkspacePage() {
   const actor = bootstrap.actor;
   const workspaceAccess = canAccessWorkspace(actor, 'admin');
   const allGrants = bootstrap.role_grants ?? [];
+  const isPrimaryAdmin = Boolean(
+    actor.role_grants?.some((r) => r.role_type === 'primary_admin' || r.module_scope === 'all')
+  );
 
   const scopeChecks = [
     {
@@ -30,28 +33,22 @@ export default async function AdminWorkspacePage() {
       buildingId: null,
     },
     {
-      label: 'Moderate Community Posts & Redact Reviews',
+      label: 'Moderate Community Posts & Reviews',
       scope: 'moderation' as const,
       action: 'moderate_post',
       buildingId: null,
     },
     {
-      label: 'Publish Notices & Manage Cultural Events',
+      label: 'Publish Notices & Manage Events',
       scope: 'events' as const,
       action: 'publish_notice',
       buildingId: null,
     },
     {
-      label: 'Triage Water Cases in Tower B (Amaltas)',
+      label: 'Triage Water Cases in Tower B',
       scope: 'water' as const,
       action: 'triage_case',
       buildingId: '22222222-2222-4222-8222-222222222202',
-    },
-    {
-      label: 'Triage Water Cases in Tower C (Out-of-Tower Check)',
-      scope: 'water' as const,
-      action: 'triage_case',
-      buildingId: '22222222-2222-4222-8222-222222222203',
     },
     {
       label: 'Triage Electrical, Lift & Solar Cases',
@@ -60,19 +57,19 @@ export default async function AdminWorkspacePage() {
       buildingId: null,
     },
     {
-      label: 'Triage Sanitation, Waste & Drainage Cases',
+      label: 'Triage Sanitation & Waste Cases',
       scope: 'cleanliness' as const,
       action: 'triage_case',
       buildingId: null,
     },
     {
-      label: 'Prepare Redacted Civic Escalation Packages',
+      label: 'Prepare Civic Escalation Packages',
       scope: 'civic_escalation' as const,
       action: 'prepare_escalation',
       buildingId: null,
     },
     {
-      label: 'Approve Local Shops & Mediate Order Disputes',
+      label: 'Approve Local Shops & Mediate Orders',
       scope: 'commerce_support' as const,
       action: 'approve_shop',
       buildingId: null,
@@ -84,7 +81,7 @@ export default async function AdminWorkspacePage() {
       buildingId: null,
     },
     {
-      label: 'Manage Staff Shifts, Location Grants & CCTV Grants',
+      label: 'Manage Staff Shifts & CCTV Grants',
       scope: 'safety' as const,
       action: 'grant_camera_view',
       buildingId: null,
@@ -96,54 +93,52 @@ export default async function AdminWorkspacePage() {
     '33333333-3333-4333-8333-333333333300'
   );
 
+  if (!workspaceAccess.allowed) {
+    return (
+      <div className="max-w-lg mx-auto my-10 rounded-[16px] bg-white border border-[#E8E8EC] p-8 text-center space-y-3">
+        <div className="w-12 h-12 rounded-full bg-[#F59E0B]/15 text-[#D97706] flex items-center justify-center mx-auto">
+          <Lock className="w-6 h-6" />
+        </div>
+        <h1 className="text-[20px] font-display font-bold text-[#0A0A0A]">
+          Admin Console Restricted
+        </h1>
+        <p className="text-[14px] text-[#6B6B6B]">
+          Only Society Admins and Scoped Sub-Admins have access to this workspace.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
-          Separated Role Workspace • Governance & 10 Permission-Scoped Sub-Admins (Section 3.2 & Test 2)
-        </span>
-        <h1 className="text-2xl font-bold text-[#0A0A0A]">
-          Community Governance, Scoped Sub-Admin Matrix & Audit Enforcement
+      {/* Clean Header */}
+      <section className="rounded-[16px] bg-white border border-[#E8E8EC] p-6 space-y-2">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#6366F1]/10 text-[#6366F1]">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>{isPrimaryAdmin ? 'Primary Society Admin Console' : 'Scoped Sub-Admin Console'}</span>
+        </div>
+        <h1 className="text-[24px] font-display font-bold text-[#0A0A0A]">
+          Community Governance & Permissions
         </h1>
-        <p className="text-sm text-[#6B6B6B]">
-          Use the top bar <strong>Acting Persona</strong> selector to switch between Primary Admin Aarav Mehta, any of the 10 Permission-Scoped Sub-Admins, or an ordinary resident to verify server-side permission boundaries in real time.
+        <p className="text-[14px] text-[#6B6B6B]">
+          Signed in as <strong className="text-[#0A0A0A]">{actor.display_name}</strong> •{' '}
+          {lastOwnerCheck.allowed ? 'Standard Role' : 'Protected Primary Admin'}
         </p>
       </section>
 
-      {!workspaceAccess.allowed ? (
-        <div className="rounded-2xl bg-amber-50 border-2 border-amber-400 p-6 space-y-3">
-          <div className="flex items-center gap-2 text-amber-900 font-bold">
-            <Lock className="w-5 h-5" />
-            <span>Admin Workspace Restricted for {actor.display_name}</span>
-          </div>
-          <p className="text-xs text-amber-950">{workspaceAccess.reason}</p>
-          <p className="text-xs text-amber-900">
-            Select <strong>Aarav Mehta (Primary Admin)</strong> or any of <strong>Sub-Admins #1–#10</strong> in the top persona selector to enter this operational workspace.
-          </p>
-        </div>
-      ) : (
-        <div className="rounded-2xl bg-emerald-50 border border-emerald-300 p-4 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-950">
-          <span className="font-bold flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-            {workspaceAccess.reason}
-          </span>
-          <span>
-            Last-Owner Protection Check:{' '}
-            <strong>{lastOwnerCheck.allowed ? 'Revocable' : lastOwnerCheck.reason}</strong>
-          </span>
-        </div>
+      {/* Primary Admin Exclusive: Member & Role Directory */}
+      {isPrimaryAdmin && bootstrap.personas.length > 0 && (
+        <AdminMemberInspector
+          personas={bootstrap.personas}
+          currentActorId={actor.id}
+        />
       )}
 
-      {/* Live Permission Scope Evaluation for Current Actor (Test 2) */}
-      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <h2 className="text-base font-bold text-[#0A0A0A]">
-            Live Server Scope Evaluation for Current Actor: {actor.display_name}
-          </h2>
-          <span className="text-xs text-[#6B6B6B]">
-            Evaluated via `canPerformAdminAction` & `private.has_admin_scope`
-          </span>
-        </div>
+      {/* Authorised Policy Matrix for Logged-In Admin */}
+      <section className="rounded-[16px] bg-white border border-[#E8E8EC] p-6 space-y-4">
+        <h2 className="text-[18px] font-display font-bold text-[#0A0A0A]">
+          Your Authorised Admin Permissions
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {scopeChecks.map((chk) => {
@@ -151,20 +146,20 @@ export default async function AdminWorkspacePage() {
             return (
               <div
                 key={chk.label}
-                className={`p-3.5 rounded-xl border text-xs flex items-start justify-between gap-3 ${
+                className={`p-3.5 rounded-[12px] border text-xs flex items-start justify-between gap-3 ${
                   res.allowed
-                    ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950'
+                    ? 'bg-[#10B981]/5 border-[#10B981]/30 text-[#0A0A0A]'
                     : 'bg-[#FAFAFA] border-[#E8E8EC] text-[#6B6B6B]'
                 }`}
               >
                 <div className="space-y-0.5">
-                  <div className="font-bold text-[#0A0A0A]">{chk.label}</div>
-                  <div className="text-[11px]">{res.reason}</div>
+                  <div className="font-bold text-[13px] text-[#0A0A0A]">{chk.label}</div>
+                  <div className="text-[12px] text-[#6B6B6B]">{res.reason}</div>
                 </div>
                 {res.allowed ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
                 ) : (
-                  <XCircle className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                  <XCircle className="w-4 h-4 text-[#9C9C9C] shrink-0 mt-0.5" />
                 )}
               </div>
             );
@@ -172,50 +167,41 @@ export default async function AdminWorkspacePage() {
         </div>
       </section>
 
-      {/* Complete Roster of 1 Primary Admin + 10 Permission-Scoped Sub-Admins */}
-      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
-        <div className="flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-[#6366F1]" />
-          <h2 className="text-lg font-bold text-[#0A0A0A]">
-            Active Governance Roster: 1 Primary Admin + 10 Scoped Sub-Admins ({allGrants.length} Total)
+      {/* Society Governance Roster */}
+      <section className="rounded-[16px] bg-white border border-[#E8E8EC] p-6 space-y-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-[10px] bg-[#6366F1]/10 text-[#6366F1] flex items-center justify-center">
+            <Building2 className="w-5 h-5" />
+          </div>
+          <h2 className="text-[18px] font-display font-bold text-[#0A0A0A]">
+            Governance Committee Roster ({allGrants.length} Roles)
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           {allGrants.map((g) => (
             <article
               key={g.id}
-              className="rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] p-4 space-y-2 text-xs"
+              className="rounded-[12px] bg-[#FAFAFA] border border-[#E8E8EC] p-4 space-y-2 text-xs"
             >
               <div className="flex items-center justify-between gap-2">
                 <span
-                  className={`px-2.5 py-0.5 rounded-full font-bold uppercase ${
+                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium capitalize ${
                     g.role_type === 'primary_admin'
-                      ? 'bg-[#0A0A0A] text-indigo-300'
-                      : 'bg-indigo-100 text-[#6366F1]'
+                      ? 'bg-[#6366F1] text-white'
+                      : 'bg-[#6366F1]/10 text-[#6366F1]'
                   }`}
                 >
-                  {g.role_type.replace('_', ' ')} • Scope: {g.module_scope}
+                  {g.module_scope.replace('_', ' ')}
                 </span>
-                <span className="font-semibold text-[#6B6B6B]">
-                  {g.building_scope_name ?? 'All 6 Towers'}
+                <span className="font-medium text-[#6B6B6B]">
+                  {g.building_scope_name ?? 'All Towers'}
                 </span>
               </div>
 
-              <h3 className="font-bold text-sm text-[#0A0A0A]">{g.title_label}</h3>
-              <div className="text-[#0A0A0A] font-medium">
-                Holder: <strong>{g.user_name}</strong> ({g.user_profession})
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {g.allowed_actions.map((act) => (
-                  <span
-                    key={act}
-                    className="px-2 py-0.5 rounded bg-white border border-[#E8E8EC] font-mono text-[11px] text-[#6366F1]"
-                  >
-                    {act}
-                  </span>
-                ))}
+              <h3 className="font-display font-bold text-[15px] text-[#0A0A0A]">{g.title_label}</h3>
+              <div className="text-[#6B6B6B]">
+                <strong className="text-[#0A0A0A]">{g.user_name}</strong> • {g.user_profession}
               </div>
             </article>
           ))}

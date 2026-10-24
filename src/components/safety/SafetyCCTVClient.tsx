@@ -105,14 +105,14 @@ export function SafetyCCTVClient({
   return (
     <div className="space-y-6">
       <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
-          Phases 4 & 5 • SOS Alerts, Consented Staff Location & Common-Area CCTV (Tests 14–18)
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EF4444]/10 text-[#EF4444]">
+          Security & Emergency Response
         </span>
-        <h1 className="text-2xl font-bold text-[#0A0A0A]">
-          Community Safety, Responder Dispatch, Duty GPS & Scoped CCTV
+        <h1 className="text-2xl font-display font-bold text-[#0A0A0A]">
+          Community Safety, Security Staff & Common-Area CCTV
         </h1>
-        <p className="text-sm text-[#6B6B6B] max-w-3xl">
-          Enforces sanitised community SOS alerts vs full responder unit/phone disclosure (`SOS-04`), strips raw GPS `latitude`/`longitude` unless the viewer holds a `precise` location grant (`STF-03`), and issues 60-second watermarked CCTV tokens with full access audit logs (`CCTV-04`).
+        <p className="text-sm text-[#6B6B6B] max-w-2xl">
+          View active safety alerts, on-duty security patrol zones, and authorised common-area camera feeds.
         </p>
 
         {feedback && (

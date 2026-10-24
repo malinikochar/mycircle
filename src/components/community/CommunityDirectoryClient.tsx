@@ -69,15 +69,14 @@ export function CommunityDirectoryClient({
       <div className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
-              Phase 1 • MEM-01..07 & COM-01..05
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#0EA5E9]/10 text-[#0EA5E9]">
+              Community Network
             </span>
-            <h1 className="text-2xl font-bold text-[#0A0A0A] mt-0.5">
-              Community Directory, Professions, Businesses & Feed
+            <h1 className="text-2xl font-display font-bold text-[#0A0A0A] mt-1">
+              Directory, Professions & Discussions
             </h1>
-            <p className="text-sm text-[#6B6B6B]">
-              Search across{' '}
-              <strong className="text-[#0A0A0A] tabular-nums">{totalSocietyMembers}</strong> seeded society members. Exact flat numbers and personal phone numbers are stripped on the server unless opted in (`show_unit`, `show_phone`).
+            <p className="text-sm text-[#6B6B6B] mt-0.5">
+              Connect with verified neighbours, discover resident businesses, and join building discussions.
             </p>
           </div>
         </div>

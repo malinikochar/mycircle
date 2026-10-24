@@ -81,15 +81,15 @@ export function ShopsCommerceClient({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-3">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
-          Phase 2 • SHOP-01..11 (Tests 4, 5 & 6)
+      <div className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#059669]">
+          Neighbourhood Commerce
         </span>
-        <h1 className="text-2xl font-bold text-[#0A0A0A]">
-          Local Arcade Shops, Server-Validated Orders, Invoices & Gated Pharmacy
+        <h1 className="text-2xl font-display font-bold text-[#0A0A0A]">
+          Local Shops, Groceries & Pharmacy
         </h1>
         <p className="text-sm text-[#6B6B6B]">
-          Prices, GST, and delivery fees are computed in integer paise on the Supabase server (`cc_place_shop_order`). Price/weight changes require explicit buyer approval (`SHOP-05`), and prescription attachments are restricted to the patient and licensed pharmacist (`SHOP-11`).
+          Order directly from society arcade stores with doorstep tower delivery and digital GST invoices.
         </p>
 
         {feedback && (

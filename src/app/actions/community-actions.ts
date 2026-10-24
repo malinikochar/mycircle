@@ -4,12 +4,26 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import {
   getActivePersonaId,
+  loadCommunityBootstrapState,
   PERSONA_COOKIE_NAME,
-  PERSONA_IDS,
 } from '@/lib/data/community-loader';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function switchPersonaAction(personaId: string) {
+  // Strictly restricted to Primary Admin
+  const currentBootstrap = await loadCommunityBootstrapState();
+  const isPrimaryAdmin = Boolean(
+    currentBootstrap.actor?.role_grants?.some(
+      (r) => r.role_type === 'primary_admin' || r.module_scope === 'all'
+    )
+  );
+  if (!isPrimaryAdmin) {
+    return {
+      ok: false,
+      error: 'Only Primary Society Admins are permitted to switch member sessions.',
+    };
+  }
+
   const cookieStore = await cookies();
   cookieStore.set(PERSONA_COOKIE_NAME, personaId, {
     path: '/',
@@ -118,6 +132,58 @@ export async function registerMemberAction(input: {
   return { ok: true, data: regResult };
 }
 
+export async function changeUserPasswordAction(input: {
+  currentPassword: string;
+  newPassword: string;
+}) {
+  const actorId = await getActivePersonaId();
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase.rpc('cc_change_user_password', {
+    p_actor_id: actorId,
+    p_current_password: input.currentPassword,
+    p_new_password: input.newPassword,
+  });
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+
+  return { ok: true, data };
+}
+
+export async function resetForgottenPasswordAction(input: {
+  identifier: string;
+  verificationText: string;
+  newPassword: string;
+}) {
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase.rpc('cc_reset_forgotten_password', {
+    p_identifier: input.identifier,
+    p_verification_text: input.verificationText,
+    p_new_password: input.newPassword,
+  });
+
+  if (error || !data) {
+    return {
+      ok: false,
+      error: error?.message ?? 'Could not reset password for that account.',
+    };
+  }
+
+  return {
+    ok: true,
+    data: data as {
+      reset: boolean;
+      user_id: string;
+      username: string;
+      email: string;
+      display_name: string;
+    },
+  };
+}
+
 export async function updateMemberProfileAction(input: {
   displayName: string;
   profession: string;
@@ -163,12 +229,7 @@ export async function updateMemberProfileAction(input: {
 
 export async function logoutAction() {
   const cookieStore = await cookies();
-  cookieStore.set(PERSONA_COOKIE_NAME, PERSONA_IDS.RESIDENT_PRIYA, {
-    path: '/',
-    httpOnly: false,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 30,
-  });
+  cookieStore.delete(PERSONA_COOKIE_NAME);
   revalidatePath('/', 'layout');
   return { ok: true };
 }

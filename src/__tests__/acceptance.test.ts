@@ -563,5 +563,29 @@ describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verif
     expect(priyaDetails?.username).toBe('priya');
     expect(priyaDetails?.email).toBe('priya@mycircle.in');
     expect(priyaDetails?.business_name).toBe('Studio Terracotta Architecture');
+
+    // 5. Verify Unauthenticated Public Gate returns zero community data
+    const unauthState = await loadCommunityBootstrapState();
+    expect(unauthState.access_denied).toBe(true);
+    expect(unauthState.membership_status).toBe('unauthenticated');
+    expect(unauthState.personas).toEqual([]);
+    expect(unauthState.directory).toBeUndefined();
+
+    // 6. Verify Password Change & Forgot Password Reset RPCs (restoring original password)
+    const { data: resetRes, error: resetErr } = await supabase.rpc('cc_reset_forgotten_password', {
+      p_identifier: 'rohan@mycircle.in',
+      p_verification_text: '302',
+      p_new_password: 'MyCircle@TempPass2026',
+    });
+    expect(resetErr).toBeNull();
+    expect(resetRes?.reset).toBe(true);
+
+    const { data: restoreRes, error: restoreErr } = await supabase.rpc('cc_change_user_password', {
+      p_actor_id: PERSONA_IDS.RESIDENT_ROHAN,
+      p_current_password: 'MyCircle@TempPass2026',
+      p_new_password: 'MyCircle@User2026',
+    });
+    expect(restoreErr).toBeNull();
+    expect(restoreRes?.ok).toBe(true);
   });
 });

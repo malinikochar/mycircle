@@ -91,14 +91,14 @@ export function SocialServiceClient({
       <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
-              Phase 2 • Dedicated Social Service Tab (SOC-01..10 & REP-01..08)
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8B5CF6]/10 text-[#7C3AED]">
+              Peer-to-Peer Community Sharing
             </span>
-            <h1 className="text-2xl font-bold text-[#0A0A0A]">
-              Neighbour Exchanges, Borrowing, Giveaways, Swaps & Volunteer Time
+            <h1 className="text-2xl font-display font-bold text-[#0A0A0A]">
+              Social Exchange, Borrowing & Giveaways
             </h1>
-            <p className="text-sm text-[#6B6B6B] max-w-3xl">
-              Every exchange uses versioned agreements (`exchange_agreements`), atomic quantity allocation (preventing double-allocation on simultaneous acceptance — Test 8), handover/return condition reports, and a 14-day blind review window (Test 9 & Test 10).
+            <p className="text-sm text-[#6B6B6B] max-w-2xl">
+              Borrow tools, share household items, request help, or volunteer within your neighbourhood.
             </p>
           </div>
         </div>

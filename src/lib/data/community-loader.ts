@@ -41,7 +41,11 @@ export interface ActorAccountDetails {
   business_description?: string | null;
 }
 
-export async function getActivePersonaId(): Promise<string> {
+/**
+ * Returns the authenticated user's UUID from the session cookie, or null if not logged in.
+ * Unauthenticated visitors receive null so zero community data is exposed publicly.
+ */
+export async function getAuthenticatedUserId(): Promise<string | null> {
   try {
     const cookieStore = await cookies();
     const cookieVal = cookieStore.get(PERSONA_COOKIE_NAME)?.value;
@@ -49,15 +53,59 @@ export async function getActivePersonaId(): Promise<string> {
       return cookieVal;
     }
   } catch {
-    // Called outside request context (e.g. static generation or Vitest)
+    // Called outside request context
   }
-  return PERSONA_IDS.RESIDENT_PRIYA;
+  return null;
 }
+
+export async function getActivePersonaId(): Promise<string> {
+  const authenticatedId = await getAuthenticatedUserId();
+  if (!authenticatedId) {
+    throw new Error('Authentication required: please sign in to perform this action.');
+  }
+  return authenticatedId;
+}
+
+const UNAUTHENTICATED_BOOTSTRAP_STATE: CommunityBootstrapState = {
+  access_denied: true,
+  membership_status: 'unauthenticated',
+  membership_reason: 'Please sign in with your MyCircle account to access private community services.',
+  community: {
+    id: '11111111-1111-4111-8111-111111111111',
+    name: 'MyCircle Private Community',
+    city: 'Mumbai',
+    total_members: 0,
+  },
+  buildings: [
+    { id: '22222222-2222-4222-8222-222222222201', code: 'TWR-A', name: 'Tower A — Gulmohar', floors_count: 18, units_count: 180 },
+    { id: '22222222-2222-4222-8222-222222222202', code: 'TWR-B', name: 'Tower B — Amaltas', floors_count: 18, units_count: 180 },
+    { id: '22222222-2222-4222-8222-222222222203', code: 'TWR-C', name: 'Tower C — Banyan', floors_count: 18, units_count: 180 },
+    { id: '22222222-2222-4222-8222-222222222204', code: 'TWR-D', name: 'Tower D — Ashoka', floors_count: 16, units_count: 160 },
+    { id: '22222222-2222-4222-8222-222222222205', code: 'TWR-E', name: 'Tower E — Peepal', floors_count: 16, units_count: 160 },
+    { id: '22222222-2222-4222-8222-222222222206', code: 'TWR-F', name: 'Tower F — Deodar', floors_count: 14, units_count: 140 },
+  ],
+  actor: {
+    id: '',
+    display_name: 'Guest Visitor',
+    profession: null,
+    status: 'pending',
+    role_grants: [],
+    shop_memberships: [],
+    provider_memberships: [],
+  },
+  personas: [],
+};
 
 export async function loadCommunityBootstrapState(
   explicitActorId?: string
 ): Promise<CommunityBootstrapState> {
-  const actorId = explicitActorId ?? (await getActivePersonaId());
+  const actorId = explicitActorId ?? (await getAuthenticatedUserId());
+
+  // Production Auth Gate: If no user is logged in, return zero community data
+  if (!actorId) {
+    return UNAUTHENTICATED_BOOTSTRAP_STATE;
+  }
+
   const supabase = createSupabaseServerClient();
 
   const { data, error } = await supabase.rpc('cc_get_bootstrap_state', {
@@ -72,30 +120,15 @@ export async function loadCommunityBootstrapState(
 
   const state = data as CommunityBootstrapState;
 
-  // Ensure any newly registered member is included in personas list for the top navigation selector
-  if (
-    state.actor?.id &&
-    Array.isArray(state.personas) &&
-    !state.personas.some((p) => p.id === state.actor.id)
-  ) {
-    state.personas = [
-      {
-        id: state.actor.id,
-        display_name: state.actor.display_name,
-        profession: state.actor.profession ?? 'Community Resident',
-        membership_status: state.actor.status ?? 'approved',
-        building_code: state.actor.building_code ?? 'TWR-A',
-        roles: (state.actor.role_grants ?? []).map((r) => ({
-          role_type: r.role_type,
-          module_scope: r.module_scope,
-          title_label: r.title_label,
-        })),
-        is_shop_member: (state.actor.shop_memberships?.length ?? 0) > 0,
-        is_provider: (state.actor.provider_memberships?.length ?? 0) > 0,
-        is_staff: Boolean(state.actor.staff_profile),
-      },
-      ...state.personas,
-    ];
+  const isPrimaryAdmin = Boolean(
+    state.actor?.role_grants?.some(
+      (r) => r.role_type === 'primary_admin' || r.module_scope === 'all'
+    )
+  );
+
+  // Restrict full member persona list strictly to Primary Admin (never exposed to general users)
+  if (!isPrimaryAdmin && !explicitActorId) {
+    state.personas = [];
   }
 
   return state;
@@ -104,7 +137,16 @@ export async function loadCommunityBootstrapState(
 export async function loadActorAccountDetails(
   explicitActorId?: string
 ): Promise<ActorAccountDetails> {
-  const actorId = explicitActorId ?? (await getActivePersonaId());
+  const actorId = explicitActorId ?? (await getAuthenticatedUserId());
+  if (!actorId) {
+    return {
+      user_id: '',
+      username: '',
+      email: '',
+      role_label: 'Unauthenticated',
+    };
+  }
+
   const supabase = createSupabaseServerClient();
 
   const { data, error } = await supabase.rpc('cc_get_actor_account_details', {
