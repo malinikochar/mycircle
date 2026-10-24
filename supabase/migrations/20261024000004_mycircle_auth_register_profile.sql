@@ -33,70 +33,70 @@ INSERT INTO public.user_credentials (user_id, email, username, password_hash, ro
 VALUES
   (
     '00000000-0000-4000-8000-000000000001',
-    'admin@mycircle.in',
+    'admin@ensure.in',
     'admin',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@Admin2026'),
     'Primary Society Admin (All 12 Modules)'
   ),
   (
     '00000000-0000-4000-8000-000000000002',
-    'priya@mycircle.in',
+    'priya@ensure.in',
     'priya',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@User2026'),
     'Approved Resident (Tower B-402 • Architect)'
   ),
   (
     '00000000-0000-4000-8000-000000000003',
-    'rohan@mycircle.in',
+    'rohan@ensure.in',
     'rohan',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@User2026'),
     'Approved Resident (Tower C • Paediatrician)'
   ),
   (
     '00000000-0000-4000-8000-000000000011',
-    'neha.admin@mycircle.in',
+    'neha.admin@ensure.in',
     'neha_admin',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@SubAdmin2026'),
     'Sub-Admin #1 — Membership & Directory Verification'
   ),
   (
     '00000000-0000-4000-8000-000000000020',
-    'safety.admin@mycircle.in',
+    'safety.admin@ensure.in',
     'safety_admin',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@SubAdmin2026'),
     'Sub-Admin #10 — Safety, SOS & CCTV Governance'
   ),
   (
     '00000000-0000-4000-8000-000000000021',
-    'shop@mycircle.in',
+    'shop@ensure.in',
     'freshmart',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@Shop2026'),
     'Shop Owner — Annapurna Daily Fresh Mart'
   ),
   (
     '00000000-0000-4000-8000-000000000022',
-    'pharmacy@mycircle.in',
+    'pharmacy@ensure.in',
     'pharmacist',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@Shop2026'),
     'Licensed Pharmacist — CarePlus Pharmacy'
   ),
   (
     '00000000-0000-4000-8000-000000000023',
-    'provider@mycircle.in',
+    'provider@ensure.in',
     'ramesh_elec',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@Service2026'),
     'Service Provider — Master Electrician'
   ),
   (
     '00000000-0000-4000-8000-000000000025',
-    'security@mycircle.in',
+    'security@ensure.in',
     'mahesh_guard',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@Staff2026'),
     'Head Security Guard & Active SOS Responder'
   ),
   (
     '00000000-0000-4000-8000-000000000004',
-    'pending@mycircle.in',
+    'pending@ensure.in',
     'pending_user',
     pg_catalog.md5('mycircle_v1_salt:MyCircle@User2026'),
     'Pending Resident Applicant (Access Gate Test)'
@@ -457,7 +457,7 @@ BEGIN
   SELECT jsonb_build_object(
     'user_id', p.id,
     'username', COALESCE(uc.username, 'member_' || right(p.id::text, 4)),
-    'email', COALESCE(uc.email, 'resident.' || right(p.id::text, 4) || '@mycircle.in'),
+    'email', COALESCE(uc.email, 'resident.' || right(p.id::text, 4) || '@ensure.in'),
     'role_label', COALESCE(uc.role_label, 'Verified Resident Member'),
     'professional_headline', pp.headline,
     'years_experience', pp.years_experience,

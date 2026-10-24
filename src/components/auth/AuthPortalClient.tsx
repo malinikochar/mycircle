@@ -63,7 +63,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Primary Admin',
     displayName: 'Aarav Mehta',
     username: 'admin',
-    email: 'admin@mycircle.in',
+    email: 'admin@ensure.in',
     password: 'MyCircle@Admin2026',
     description: 'Full Society Admin access, member management & 10 sub-admin scopes.',
     targetRoute: '/workspaces/admin',
@@ -75,7 +75,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Resident Member',
     displayName: 'Priya Nair (Tower B)',
     username: 'priya',
-    email: 'priya@mycircle.in',
+    email: 'priya@ensure.in',
     password: 'MyCircle@User2026',
     description: 'Standard resident account with shops, social exchange & privacy settings.',
     targetRoute: '/',
@@ -87,7 +87,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Resident #2',
     displayName: 'Dr. Rohan Kulkarni',
     username: 'rohan',
-    email: 'rohan@mycircle.in',
+    email: 'rohan@ensure.in',
     password: 'MyCircle@User2026',
     description: 'Second resident account for peer-to-peer borrowing & reviews.',
     targetRoute: '/social-service',
@@ -99,7 +99,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Membership Sub-Admin',
     displayName: 'Neha Deshmukh',
     username: 'neha_admin',
-    email: 'neha.admin@mycircle.in',
+    email: 'neha.admin@ensure.in',
     password: 'MyCircle@SubAdmin2026',
     description: 'Scoped to Membership & Directory verification only.',
     targetRoute: '/workspaces/admin',
@@ -111,7 +111,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Safety & CCTV Admin',
     displayName: 'Col. Pratap Chauhan',
     username: 'safety_admin',
-    email: 'safety.admin@mycircle.in',
+    email: 'safety.admin@ensure.in',
     password: 'MyCircle@SubAdmin2026',
     description: 'Scoped to SOS alerts, staff duty zones & common-area CCTV.',
     targetRoute: '/safety',
@@ -123,7 +123,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Local Shop Owner',
     displayName: 'Suresh Agarwal',
     username: 'freshmart',
-    email: 'shop@mycircle.in',
+    email: 'shop@ensure.in',
     password: 'MyCircle@Shop2026',
     description: 'Grocery store orders, price revisions & invoices.',
     targetRoute: '/workspaces/shop',
@@ -135,7 +135,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Pharmacist',
     displayName: 'Dr. Zoya Merchant',
     username: 'pharmacist',
-    email: 'pharmacy@mycircle.in',
+    email: 'pharmacy@ensure.in',
     password: 'MyCircle@Shop2026',
     description: 'CarePlus Pharmacy prescription verification & orders.',
     targetRoute: '/workspaces/shop',
@@ -147,7 +147,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Service Provider',
     displayName: 'Ramesh Vishwakarma',
     username: 'ramesh_elec',
-    email: 'provider@mycircle.in',
+    email: 'provider@ensure.in',
     password: 'MyCircle@Service2026',
     description: 'Electrician service quotes & scheduled resident bookings.',
     targetRoute: '/workspaces/provider',
@@ -159,7 +159,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Security Staff',
     displayName: 'Mahesh Yadav',
     username: 'mahesh_guard',
-    email: 'security@mycircle.in',
+    email: 'security@ensure.in',
     password: 'MyCircle@Staff2026',
     description: 'Head Guard SOS response & shift check-in.',
     targetRoute: '/workspaces/staff',
@@ -171,7 +171,7 @@ export const DEMO_CREDENTIAL_PRESETS: DemoCredentialPreset[] = [
     roleBadge: 'Pending Applicant',
     displayName: 'Vikram Sethi',
     username: 'pending_user',
-    email: 'pending@mycircle.in',
+    email: 'pending@ensure.in',
     password: 'MyCircle@User2026',
     description: 'Unapproved applicant (tests server access restriction).',
     targetRoute: '/',
@@ -506,7 +506,7 @@ export function AuthPortalClient({
                   required
                   value={regEmail}
                   onChange={(e) => setRegEmail(e.target.value)}
-                  placeholder="aditi@mycircle.in"
+                  placeholder="aditi@ensure.in"
                   className="w-full px-3.5 py-2.5 rounded-[8px] border border-[#E8E8EC] text-[14px]"
                 />
               </div>
@@ -635,7 +635,7 @@ export function AuthPortalClient({
                   required
                   value={forgotIdentifier}
                   onChange={(e) => setForgotIdentifier(e.target.value)}
-                  placeholder="e.g. priya or priya@mycircle.in"
+                  placeholder="e.g. priya or priya@ensure.in"
                   className="w-full pl-10 pr-3.5 py-2.5 rounded-[8px] border border-[#E8E8EC] text-[14px]"
                 />
               </div>

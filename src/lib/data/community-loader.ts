@@ -153,7 +153,7 @@ const fetchAccountDetailsForActor = cache(
       return {
         user_id: actorId,
         username: `member_${actorId.slice(-4)}`,
-        email: `resident.${actorId.slice(-4)}@mycircle.in`,
+        email: `resident.${actorId.slice(-4)}@ensure.in`,
         role_label: 'Verified Resident Member',
       };
     }

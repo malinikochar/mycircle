@@ -4,10 +4,21 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import {
   getActivePersonaId,
+  loadActorAccountDetails,
   loadCommunityBootstrapState,
   PERSONA_COOKIE_NAME,
 } from '@/lib/data/community-loader';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import {
+  buildExchangeListingPostedEmail,
+  buildForgotPasswordResetEmail,
+  buildOrderPriceRevisionEmail,
+  buildPasswordChangedEmail,
+  buildRegistrationWelcomeEmail,
+  buildShopOrderPlacedEmail,
+  buildSOSEmergencyAlertEmail,
+  sendResendEmail,
+} from '@/lib/email/resend';
 
 export async function switchPersonaAction(personaId: string) {
   // Strictly restricted to Primary Admin
@@ -120,6 +131,19 @@ export async function registerMemberAction(input: {
     membership_status: string;
   };
 
+  // Dispatch Registration Welcome Email via Resend
+  const emailPayload = buildRegistrationWelcomeEmail({
+    displayName: regResult.display_name,
+    username: regResult.username,
+    email: regResult.email,
+    unitNumber: input.unitNumber,
+    membershipStatus: regResult.membership_status,
+  });
+  const emailResult = await sendResendEmail({
+    ...emailPayload,
+    idempotencyKey: `register-welcome-${regResult.user_id}`,
+  });
+
   const cookieStore = await cookies();
   cookieStore.set(PERSONA_COOKIE_NAME, regResult.user_id, {
     path: '/',
@@ -129,7 +153,7 @@ export async function registerMemberAction(input: {
   });
 
   revalidatePath('/', 'layout');
-  return { ok: true, data: regResult };
+  return { ok: true, data: regResult, emailResult };
 }
 
 export async function changeUserPasswordAction(input: {
@@ -149,7 +173,19 @@ export async function changeUserPasswordAction(input: {
     return { ok: false, error: error.message };
   }
 
-  return { ok: true, data };
+  // Dispatch Password Changed Security Notification via Resend
+  const [bootstrap, accountDetails] = await Promise.all([
+    loadCommunityBootstrapState(actorId),
+    loadActorAccountDetails(actorId),
+  ]);
+  const emailPayload = buildPasswordChangedEmail({
+    displayName: bootstrap.actor.display_name,
+    username: accountDetails.username,
+    email: accountDetails.email,
+  });
+  const emailResult = await sendResendEmail(emailPayload);
+
+  return { ok: true, data, emailResult };
 }
 
 export async function resetForgottenPasswordAction(input: {
@@ -172,15 +208,26 @@ export async function resetForgottenPasswordAction(input: {
     };
   }
 
+  const resetData = data as {
+    reset: boolean;
+    user_id: string;
+    username: string;
+    email: string;
+    display_name: string;
+  };
+
+  // Dispatch Forgot Password Reset Confirmation Email via Resend
+  const emailPayload = buildForgotPasswordResetEmail({
+    displayName: resetData.display_name,
+    username: resetData.username,
+    email: resetData.email,
+  });
+  const emailResult = await sendResendEmail(emailPayload);
+
   return {
     ok: true,
-    data: data as {
-      reset: boolean;
-      user_id: string;
-      username: string;
-      email: string;
-      display_name: string;
-    },
+    data: resetData,
+    emailResult,
   };
 }
 
@@ -284,10 +331,28 @@ export async function placeShopOrderAction(input: {
     return { ok: false, error: error.message };
   }
 
+  // Send Order Confirmation Email via Resend
+  const [bootstrap, accountDetails] = await Promise.all([
+    loadCommunityBootstrapState(actorId),
+    loadActorAccountDetails(actorId),
+  ]);
+  const orderRes = data as { order_id?: string };
+  const emailPayload = buildShopOrderPlacedEmail({
+    buyerEmail: accountDetails.email,
+    buyerName: bootstrap.actor.display_name,
+    orderId: orderRes?.order_id ?? input.idempotencyKey,
+    paymentMethod: input.paymentMethod,
+    instructions: input.instructions,
+  });
+  const emailResult = await sendResendEmail({
+    ...emailPayload,
+    idempotencyKey: `shop-order-${input.idempotencyKey}`,
+  });
+
   revalidatePath('/shops');
   revalidatePath('/workspaces/shop');
   revalidatePath('/account');
-  return { ok: true, data };
+  return { ok: true, data, emailResult };
 }
 
 export async function respondOrderPriceChangeAction(input: {
@@ -307,10 +372,22 @@ export async function respondOrderPriceChangeAction(input: {
     return { ok: false, error: error.message };
   }
 
+  const [bootstrap, accountDetails] = await Promise.all([
+    loadCommunityBootstrapState(actorId),
+    loadActorAccountDetails(actorId),
+  ]);
+  const emailPayload = buildOrderPriceRevisionEmail({
+    recipientEmail: accountDetails.email,
+    buyerName: bootstrap.actor.display_name,
+    orderId: input.orderId,
+    approved: input.approve,
+  });
+  const emailResult = await sendResendEmail(emailPayload);
+
   revalidatePath('/shops');
   revalidatePath('/workspaces/shop');
   revalidatePath('/');
-  return { ok: true, data };
+  return { ok: true, data, emailResult };
 }
 
 export async function createExchangeListingAction(input: {
@@ -344,9 +421,22 @@ export async function createExchangeListingAction(input: {
     return { ok: false, error: error.message };
   }
 
+  const [bootstrap, accountDetails] = await Promise.all([
+    loadCommunityBootstrapState(actorId),
+    loadActorAccountDetails(actorId),
+  ]);
+  const emailPayload = buildExchangeListingPostedEmail({
+    ownerEmail: accountDetails.email,
+    ownerName: bootstrap.actor.display_name,
+    title: input.title,
+    exchangeMode: input.exchangeMode,
+    handoverOptions: input.handoverOptions,
+  });
+  const emailResult = await sendResendEmail(emailPayload);
+
   revalidatePath('/social-service');
   revalidatePath('/');
-  return { ok: true, data };
+  return { ok: true, data, emailResult };
 }
 
 export async function requestCameraSessionAction(cameraId: string) {
@@ -390,11 +480,29 @@ export async function triggerSOSIncidentAction(input: {
     return { ok: false, error: error.message };
   }
 
+  // Dispatch Emergency SOS Email Notification via Resend to Security, Safety Admin & Reporter
+  const [bootstrap, accountDetails] = await Promise.all([
+    loadCommunityBootstrapState(actorId),
+    loadActorAccountDetails(actorId),
+  ]);
+  const recipients = Array.from(
+    new Set(['security@ensure.in', 'safety.admin@ensure.in', accountDetails.email].filter(Boolean))
+  );
+  const emailPayload = buildSOSEmergencyAlertEmail({
+    recipientEmails: recipients,
+    reporterName: bootstrap.actor.display_name,
+    category: input.category,
+    floorLabel: input.manualFloor,
+    liftOrAreaLabel: input.manualLiftOrArea,
+    notes: input.notes,
+  });
+  const emailResult = await sendResendEmail(emailPayload);
+
   revalidatePath('/safety');
   revalidatePath('/workspaces/staff');
   revalidatePath('/workspaces/admin');
   revalidatePath('/');
-  return { ok: true, data };
+  return { ok: true, data, emailResult };
 }
 
 export async function acknowledgeSOSIncidentAction(incidentId: string) {

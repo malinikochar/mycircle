@@ -25,6 +25,15 @@ import {
   validateCivicEscalationStatus,
   validateSocialServiceListingPolicy,
 } from '@/lib/workflows/transactions';
+import {
+  buildExchangeListingPostedEmail,
+  buildForgotPasswordResetEmail,
+  buildOrderPriceRevisionEmail,
+  buildPasswordChangedEmail,
+  buildRegistrationWelcomeEmail,
+  buildSOSEmergencyAlertEmail,
+  buildShopOrderPlacedEmail,
+} from '@/lib/email/resend';
 
 describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verification', () => {
   it('Test 1: Membership Gate — blocks pending and suspended users on live Supabase RPC & permission engine', async () => {
@@ -538,9 +547,9 @@ describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verif
     expect(adminAuth?.authenticated).toBe(true);
     expect(adminAuth?.user_id).toBe(PERSONA_IDS.PRIMARY_ADMIN_AARAV);
 
-    // 2. Verify Approved Resident login by email (priya@mycircle.in, password: MyCircle@User2026)
+    // 2. Verify Approved Resident login by email (priya@ensure.in, password: MyCircle@User2026)
     const { data: residentAuth, error: resErr } = await supabase.rpc('cc_authenticate_user', {
-      p_identifier: 'priya@mycircle.in',
+      p_identifier: 'priya@ensure.in',
       p_password: 'MyCircle@User2026',
     });
     expect(resErr).toBeNull();
@@ -554,14 +563,14 @@ describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verif
     });
     expect(badPassErr).not.toBeNull();
 
-    // 4. Verify Account Details RPC returns username, email, and business details
+    // 4. Verify Account Details RPC returns username, @ensure.in email, and business details
     const { data: priyaDetails, error: detailsErr } = await supabase.rpc(
       'cc_get_actor_account_details',
       { p_actor_id: PERSONA_IDS.RESIDENT_PRIYA }
     );
     expect(detailsErr).toBeNull();
     expect(priyaDetails?.username).toBe('priya');
-    expect(priyaDetails?.email).toBe('priya@mycircle.in');
+    expect(priyaDetails?.email).toBe('priya@ensure.in');
     expect(priyaDetails?.business_name).toBe('Studio Terracotta Architecture');
 
     // 5. Verify Unauthenticated Public Gate returns zero community data
@@ -573,12 +582,13 @@ describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verif
 
     // 6. Verify Password Change & Forgot Password Reset RPCs (restoring original password)
     const { data: resetRes, error: resetErr } = await supabase.rpc('cc_reset_forgotten_password', {
-      p_identifier: 'rohan@mycircle.in',
+      p_identifier: 'rohan@ensure.in',
       p_verification_text: '302',
       p_new_password: 'MyCircle@TempPass2026',
     });
     expect(resetErr).toBeNull();
     expect(resetRes?.reset).toBe(true);
+    expect(resetRes?.email).toBe('rohan@ensure.in');
 
     const { data: restoreRes, error: restoreErr } = await supabase.rpc('cc_change_user_password', {
       p_actor_id: PERSONA_IDS.RESIDENT_ROHAN,
@@ -587,5 +597,90 @@ describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verif
     });
     expect(restoreErr).toBeNull();
     expect(restoreRes?.ok).toBe(true);
+  });
+
+  it('Test 22: @ensure.in Email Domain & Resend Transactional Templates — verifies all 7 email templates and domain migration', async () => {
+    const supabase = createSupabaseServerClient();
+
+    // 1. Verify all 10 persona emails in Supabase use @ensure.in
+    for (const actorId of Object.values(PERSONA_IDS)) {
+      const { data: details, error } = await supabase.rpc('cc_get_actor_account_details', {
+        p_actor_id: actorId,
+      });
+      expect(error).toBeNull();
+      expect(details?.email).toMatch(/@ensure\.in$/);
+      expect(details?.email).not.toContain('mycircle.in');
+    }
+
+    // 2. Verify all 7 Resend HTML email templates render properly with @ensure.in branding
+    const welcomeMail = buildRegistrationWelcomeEmail({
+      displayName: 'Ananya Verma',
+      username: 'ananya',
+      email: 'ananya@ensure.in',
+      unitNumber: '405',
+      membershipStatus: 'approved',
+    });
+    expect(welcomeMail.to).toBe('ananya@ensure.in');
+    expect(welcomeMail.subject).toContain('Welcome to MyCircle');
+    expect(welcomeMail.html).toContain('ananya@ensure.in');
+    expect(welcomeMail.html).toContain('ensure.in');
+
+    const resetMail = buildForgotPasswordResetEmail({
+      displayName: 'Rohan Kulkarni',
+      username: 'rohan',
+      email: 'rohan@ensure.in',
+    });
+    expect(resetMail.to).toBe('rohan@ensure.in');
+    expect(resetMail.subject).toContain('Password Reset');
+    expect(resetMail.html).toContain('rohan');
+
+    const changedMail = buildPasswordChangedEmail({
+      displayName: 'Priya Nair',
+      username: 'priya',
+      email: 'priya@ensure.in',
+    });
+    expect(changedMail.to).toBe('priya@ensure.in');
+    expect(changedMail.subject).toContain('Password Updated');
+
+    const orderMail = buildShopOrderPlacedEmail({
+      buyerName: 'Priya Nair',
+      buyerEmail: 'priya@ensure.in',
+      orderId: '88888888-8888-4888-8888-888888888801',
+      paymentMethod: 'upi',
+      instructions: 'Leave at doorstep',
+    });
+    expect(orderMail.to).toBe('priya@ensure.in');
+    expect(orderMail.html).toContain('88888888');
+
+    const priceRevMail = buildOrderPriceRevisionEmail({
+      recipientEmail: 'shop@ensure.in',
+      buyerName: 'Priya Nair',
+      orderId: '88888888-8888-4888-8888-888888888801',
+      approved: true,
+    });
+    expect(priceRevMail.to).toBe('shop@ensure.in');
+    expect(priceRevMail.subject).toContain('Approved');
+
+    const exchangeMail = buildExchangeListingPostedEmail({
+      ownerName: 'Priya Nair',
+      ownerEmail: 'priya@ensure.in',
+      title: 'Organic Compost Bags',
+      exchangeMode: 'barter',
+      handoverOptions: 'Lobby drop-off',
+    });
+    expect(exchangeMail.to).toBe('priya@ensure.in');
+    expect(exchangeMail.html).toContain('Organic Compost Bags');
+
+    const sosMail = buildSOSEmergencyAlertEmail({
+      recipientEmails: ['admin@ensure.in', 'safety.admin@ensure.in', 'security@ensure.in'],
+      reporterName: 'Rohan Kulkarni',
+      category: 'medical',
+      floorLabel: '3rd Floor',
+      liftOrAreaLabel: 'Tower B Lobby',
+      notes: 'Urgent medical assistance needed at B-302',
+    });
+    expect(sosMail.to).toEqual(['admin@ensure.in', 'safety.admin@ensure.in', 'security@ensure.in']);
+    expect(sosMail.subject).toContain('URGENT SOS');
+    expect(sosMail.html).toContain('Tower B Lobby');
   });
 });
