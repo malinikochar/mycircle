@@ -83,8 +83,8 @@ function renderMyCircleEmailLayout(options: {
 
     <!-- Footer -->
     <div style="padding: 16px 28px; background-color: #FAFAFA; border-top: 1px solid #E8E8EC; font-size: 12px; color: #6B6B6B; line-height: 1.5;">
-      <div>${options.footerNote ?? 'Sent by MyCircle Private Residential Community Network (ensure.in).'}</div>
-      <div style="margin-top: 4px; color: #9C9C9C;">Private-by-default residential communications • Serenity Heights</div>
+      <div>${options.footerNote ?? 'Sent by MyCircle Community Operating System (ensure.in).'}</div>
+      <div style="margin-top: 4px; color: #9C9C9C;">Private-by-default residential communications • Bugis Residences &amp; Community Circle</div>
     </div>
   </div>
 </body>
