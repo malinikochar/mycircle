@@ -611,6 +611,27 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
               </nav>
             </div>
           )}
+
+          {/* Version & Developer Footer Badge */}
+          <div className="bg-white/80 backdrop-blur-md border border-black/[0.06] rounded-[20px] p-4 text-xs text-[#6E6E73] space-y-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-[#1D1D1F]">MyCircle OS</span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-black/[0.05] text-[#1D1D1F]">
+                v1.0.1
+              </span>
+            </div>
+            <p className="text-[11px] text-[#6E6E73]">
+              Developed by <strong className="text-[#1D1D1F]">Malini Kochar</strong>
+            </p>
+            <a
+              href="https://www.youtube.com/watch?v=jgpNHm1oluc"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#0071E3] hover:underline pt-0.5"
+            >
+              <span>▶ Watch App Demo</span>
+            </a>
+          </div>
         </aside>
 
         {/* Primary Viewport */}
@@ -784,7 +805,21 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
               </div>
             )}
 
-            <div className="pt-3 border-t border-black/[0.06]">
+            <div className="pt-3 border-t border-black/[0.06] text-center space-y-1">
+              <div className="text-[12px] font-semibold text-[#1D1D1F]">
+                MyCircle OS v1.0.1 • Developed by Malini Kochar
+              </div>
+              <a
+                href="https://www.youtube.com/watch?v=jgpNHm1oluc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[12px] font-semibold text-[#0071E3] hover:underline block"
+              >
+                ▶ Watch App Demo Video
+              </a>
+            </div>
+
+            <div className="pt-2 border-t border-black/[0.06]">
               <button
                 type="button"
                 onClick={handleLogout}

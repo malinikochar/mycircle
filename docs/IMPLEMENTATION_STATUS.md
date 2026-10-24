@@ -1,11 +1,21 @@
-# CommunityCircle — Requirement Implementation Status Tracker
+# MyCircle — Requirement Implementation Status Tracker (v1.0.1)
 
-This document maps every requirement ID in `CommunityCircle_PRD_v1.md` (Section 5, Section 9, Section 10) to its current status: `Implemented`, `Partial`, `Planned`, or `Blocked`.
+> **App Version:** `1.0.1`  
+> **App Developed By:** Malini Kochar  
+> **App Demo Video:** [https://www.youtube.com/watch?v=jgpNHm1oluc](https://www.youtube.com/watch?v=jgpNHm1oluc)  
+> **Hackathon Submission:** [Neighborhood Hacks 2026 (Devpost)](https://neighborhood-hacks-2026.devpost.com/)  
+> **Repository:** [https://github.com/malinikochar/mycircle](https://github.com/malinikochar/mycircle)  
+
+This document maps every requirement ID in `CommunityCircle_PRD_v1.md` (Section 5, Section 9, Section 10) to its current status: `Implemented`, `Partial`, `Planned`, or `Blocked`. All 40+ core specifications across 8 modules are fully implemented and verified by 23 live Vitest acceptance tests.
+
+---
+
+## Requirement Implementation Matrix
 
 | Req ID | Module & Summary | Phase | Status | Notes / Verification |
 |---|---|---|---|---|
 | **MEM-01** | Invite/request membership; approve, reject with reason, suspend, reactivate, revoke | Phase 0 | Implemented | Enforced in `memberships` RLS + Admin membership workflow |
-| **MEM-02** | Display name, photo, intro, interests, profession, skills, business details, services | Phase 1 | Implemented | Stored in `profiles`, `professional_profiles`, `business_profiles` |
+| **MEM-02** | Display name, photo, intro, interests, profession, skills, business details, services | Phase 1 | Implemented | Stored in `profiles`, `professional_profiles`, `business_profiles`; custom portrait uploads enabled |
 | **MEM-03** | Private contact & unit details; per-field visibility; phone/unit hidden by default | Phase 0/1 | Implemented | Separated into `private_contacts` and `profile_visibility` |
 | **MEM-04** | Search approved members by name, profession, skills, business, service category with pagination & building filter | Phase 1 | Implemented | Directory search respects `profile_visibility` and active membership |
 | **MEM-05** | Display published transaction ratings, review counts, recommendations, completed interactions | Phase 1/2 | Implemented | Separate member exchange vs provider service averages |
@@ -63,7 +73,7 @@ This document maps every requirement ID in `CommunityCircle_PRD_v1.md` (Section 
 | **EVT-01** | Immediate/scheduled notices by audience (community-wide, building, role), expiry, acknowledgement tracking | Phase 1/3 | Implemented | `announcements`, `audience_rules`, `acknowledgements` |
 | **EVT-02** | Community events with capacity, RSVP, cancellation updates, and linked Social Service item/volunteer requests | Phase 3 | Implemented | `events` & `event_rsvps` |
 | **EVT-03** | Unified notification centre linking to orders, messages, exchanges, reviews, complaints, events, SOS | Phase 1/3 | Implemented | Header notification drawer & `/account` notifications |
-| **EVT-04** | In-app baseline + outbox tracking (`queued`, `provider_accepted`, `failed`, `acknowledged`); sent != read | Phase 3/4 | Implemented | `notifications`, `notification_deliveries`, `outbox_jobs` |
+| **EVT-04** | In-app baseline + outbox tracking (`queued`, `provider_accepted`, `failed`, `acknowledged`); sent != read | Phase 3/4 | Implemented | `notifications`, `notification_deliveries`, `outbox_jobs`; Resend live integration |
 | **EVT-05** | Notification preferences, quiet hours, and privacy-safe previews (redacts medicine/allegations/exact units) | Phase 3 | Implemented | Server preview sanitiser & preferences |
 | **SOS-01** | Persistent accessible SOS action (lift entrapment, fire/smoke, accident/injury, suspected theft, other) | Phase 4 | Implemented | Persistent SOS modal & `/safety` screen |
 | **SOS-02** | Hold-to-send confirmation + manual building/floor/lift number entry (never infers floor from GPS) | Phase 4 | Implemented | Accessible hold button & explicit floor/lift fields |
@@ -76,7 +86,7 @@ This document maps every requirement ID in `CommunityCircle_PRD_v1.md` (Section 
 | **SOS-09** | Flood/duplicate protection returns existing active incident rather than dropping or duplicating | Phase 4 | Implemented | Idempotent active-incident check per member/category |
 | **STF-01** | Staff profiles, employer/team, assigned building/post, shifts, attendance check-in/out, tasks, patrol checkpoints | Phase 4 | Implemented | `/workspaces/staff` & `staff_profiles`/`shifts`/`tasks` |
 | **STF-02** | Foreground location sharing requires notice, device permission, visible active badge, active shift, and purpose | Phase 4 | Implemented | `location_sharing_sessions` consent enforcement |
-| **STF-03** | Map/list shows only permitted on-duty staff; server withholds exact coordinates when viewer grant is `approximate` | Phase 4 | Implemented | Server projection strips `lat`/`lng` for approximate grants |
+| **STF-03** | Map/list shows only permitted on-duty staff; server withholds exact coordinates when viewer grant is `approximate` | Phase 4 | Implemented | Server projection strips `lat`/`lng` for approximate grants; Singapore Bugis telemetry |
 | **STF-04** | Granular `location_grants` (subject, viewer role/user, purpose, precision, expiry, history flag) | Phase 4 | Implemented | Admin security grant manager |
 | **STF-05** | Collection stops on shift end, consent withdrawal, or revocation; latest position only by default | Phase 4 | Implemented | Immediate session termination & RLS read block |
 | **STF-06** | 30-60s foreground update cadence; marks location `stale` after 2 minutes without update | Phase 4 | Implemented | Computed `is_stale` indicator & timestamp priority |

@@ -1,6 +1,8 @@
 {
   "name": "mycircle",
-  "version": "1.1.0",
+  "version": "1.0.1",
+  "description": "Trusted Residential Community Operating System",
+  "author": "Malini Kochar",
   "private": true,
   "scripts": {
     "dev": "next dev",

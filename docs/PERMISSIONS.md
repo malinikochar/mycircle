@@ -1,6 +1,12 @@
-# CommunityCircle — Permission, Privacy & Isolation Matrix
+# MyCircle — Permission, Privacy & Isolation Matrix (v1.0.1)
 
-Access in CommunityCircle is **deny-by-default** and enforced at two independent layers:
+> **App Version:** `1.0.1`  
+> **App Developed By:** Malini Kochar  
+> **App Demo Video:** [https://www.youtube.com/watch?v=jgpNHm1oluc](https://www.youtube.com/watch?v=jgpNHm1oluc)  
+> **Hackathon Submission:** [Neighborhood Hacks 2026 (Devpost)](https://neighborhood-hacks-2026.devpost.com/)  
+> **Repository:** [https://github.com/malinikochar/mycircle](https://github.com/malinikochar/mycircle)  
+
+Access in MyCircle is **deny-by-default** and enforced at two independent layers:
 1. **PostgreSQL Row-Level Security (RLS)** on every table in `public` and `storage.objects`, backed by `SECURITY DEFINER` helper functions in the unexposed `private` schema with `(select auth.uid())` caching.
 2. **Typed Next.js Server Actions / Route Handlers** that validate active membership, workspace context, module/building/action sub-admin scope, last-owner protection, and audit logging before performing mutations.
 
@@ -23,7 +29,7 @@ Access in CommunityCircle is **deny-by-default** and enforced at two independent
 
 ## 2. The 10+ Configured Sub-Admin Scopes (`role_grants`)
 
-CommunityCircle supports 10+ simultaneous sub-admin delegates without requiring all seats to be filled by distinct humans during testing, and seeds 10 distinct sub-admin delegate accounts:
+MyCircle supports 10+ simultaneous sub-admin delegates without requiring all seats to be filled by distinct humans during testing, and seeds 10 distinct sub-admin delegate accounts:
 
 1. `membership` — Building-scoped or community-wide resident verification & onboarding (`approve_member`, `reject_member`, `suspend_member`).
 2. `moderation` — Community posts, comments, group moderation, and review abuse reports (`moderate_post`, `redact_review`, `resolve_report`).
@@ -44,7 +50,7 @@ CommunityCircle supports 10+ simultaneous sub-admin delegates without requiring 
 - **Transaction Conversations (`conversations`):** Linked to `order_id`, `exchange_listing_id`, `service_enquiry_id`, or `help_request_id`. Readable only by `conversation_members` or a scoped dispute moderator when the underlying transaction status is `disputed`.
 - **Staff Location (`current_locations`):**
   - Writing requires an active `shifts` record (`status = 'on_duty'`), an active `location_sharing_sessions` row (`consent_given = true AND ended_at IS NULL`), and `staff_user_id = (select auth.uid())`.
-  - Reading checks `location_grants` (`valid_until > now()`). If the viewer's grant has `precision_level = 'approximate'`, server operations return only the coarse building/zone label and never transmit raw `latitude`/`longitude` coordinates to the client (`STF-03`).
+  - Reading checks `location_grants` (`valid_until > now()`). If the viewer's grant has `precision_level = 'approximate'`, server operations return only the coarse building/zone label and never transmit raw `latitude`/`longitude` coordinates to the client (`STF-03`). Centered around Singapore Bugis district.
   - Positions older than 120 seconds are marked `is_stale = true` (`STF-06`).
 - **CCTV Sessions (`camera_sessions` & `camera_secrets`):**
   - `camera_secrets` (NVR credentials/internal stream endpoints) has zero `SELECT` policies for `anon` or `authenticated`.
