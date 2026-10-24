@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { CommunityBootstrapState } from '@/lib/types/domain';
@@ -96,6 +97,37 @@ const UNAUTHENTICATED_BOOTSTRAP_STATE: CommunityBootstrapState = {
   personas: [],
 };
 
+const fetchBootstrapForActor = cache(
+  async (actorId: string, preservePersonas: boolean): Promise<CommunityBootstrapState> => {
+    const supabase = createSupabaseServerClient();
+
+    const { data, error } = await supabase.rpc('cc_get_bootstrap_state', {
+      p_actor_id: actorId,
+    });
+
+    if (error || !data) {
+      throw new Error(
+        `Failed to load MyCircle state from Supabase (runquwuetzfivhwefenk): ${error?.message ?? 'Empty RPC response'}`
+      );
+    }
+
+    const state = data as CommunityBootstrapState;
+
+    const isPrimaryAdmin = Boolean(
+      state.actor?.role_grants?.some(
+        (r) => r.role_type === 'primary_admin' || r.module_scope === 'all'
+      )
+    );
+
+    // Restrict full member persona list strictly to Primary Admin (never exposed to general users)
+    if (!isPrimaryAdmin && !preservePersonas) {
+      state.personas = [];
+    }
+
+    return state;
+  }
+);
+
 export async function loadCommunityBootstrapState(
   explicitActorId?: string
 ): Promise<CommunityBootstrapState> {
@@ -106,33 +138,29 @@ export async function loadCommunityBootstrapState(
     return UNAUTHENTICATED_BOOTSTRAP_STATE;
   }
 
-  const supabase = createSupabaseServerClient();
-
-  const { data, error } = await supabase.rpc('cc_get_bootstrap_state', {
-    p_actor_id: actorId,
-  });
-
-  if (error || !data) {
-    throw new Error(
-      `Failed to load MyCircle state from Supabase (runquwuetzfivhwefenk): ${error?.message ?? 'Empty RPC response'}`
-    );
-  }
-
-  const state = data as CommunityBootstrapState;
-
-  const isPrimaryAdmin = Boolean(
-    state.actor?.role_grants?.some(
-      (r) => r.role_type === 'primary_admin' || r.module_scope === 'all'
-    )
-  );
-
-  // Restrict full member persona list strictly to Primary Admin (never exposed to general users)
-  if (!isPrimaryAdmin && !explicitActorId) {
-    state.personas = [];
-  }
-
-  return state;
+  return fetchBootstrapForActor(actorId, Boolean(explicitActorId));
 }
+
+const fetchAccountDetailsForActor = cache(
+  async (actorId: string): Promise<ActorAccountDetails> => {
+    const supabase = createSupabaseServerClient();
+
+    const { data, error } = await supabase.rpc('cc_get_actor_account_details', {
+      p_actor_id: actorId,
+    });
+
+    if (error || !data) {
+      return {
+        user_id: actorId,
+        username: `member_${actorId.slice(-4)}`,
+        email: `resident.${actorId.slice(-4)}@mycircle.in`,
+        role_label: 'Verified Resident Member',
+      };
+    }
+
+    return data as ActorAccountDetails;
+  }
+);
 
 export async function loadActorAccountDetails(
   explicitActorId?: string
@@ -147,20 +175,5 @@ export async function loadActorAccountDetails(
     };
   }
 
-  const supabase = createSupabaseServerClient();
-
-  const { data, error } = await supabase.rpc('cc_get_actor_account_details', {
-    p_actor_id: actorId,
-  });
-
-  if (error || !data) {
-    return {
-      user_id: actorId,
-      username: `member_${actorId.slice(-4)}`,
-      email: `resident.${actorId.slice(-4)}@mycircle.in`,
-      role_label: 'Verified Resident Member',
-    };
-  }
-
-  return data as ActorAccountDetails;
+  return fetchAccountDetailsForActor(actorId);
 }

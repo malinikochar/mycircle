@@ -16,14 +16,14 @@ export default async function ShopWorkspacePage() {
   return (
     <div className="space-y-6">
       <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
-          Separated Role Workspace • Merchant, Pharmacy & Vendor Ledger (SHOP-04..11 & Test 5)
+        <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
+          Merchant & Pharmacy Workspace
         </span>
         <h1 className="text-2xl font-bold text-[#0A0A0A]">
           Shop Fulfilment Desk, Prescription Verification & Account Ledger
         </h1>
         <p className="text-sm text-[#6B6B6B]">
-          Switch to <strong>Suresh Agarwal (Annapurna Daily Fresh Mart)</strong> or <strong>Dr. Zoya Merchant (CarePlus Community Pharmacy)</strong> in the top persona selector to compare shop-isolated orders, ledger entries, and pharmacist-only prescription access.
+          Manage store-scoped orders, ledger entries, and pharmacist-only prescription verification.
         </p>
       </section>
 

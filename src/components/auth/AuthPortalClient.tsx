@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   KeyRound,
@@ -17,6 +18,7 @@ import {
   CheckCircle2,
   AlertCircle,
   ArrowRight,
+  ArrowLeft,
   Sparkles,
   Store,
   Wrench,
@@ -191,14 +193,12 @@ export function AuthPortalClient({
 }: AuthPortalClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [mode, setMode] = useState<'login' | 'register' | 'forgot'>(initialMode);
   const [showDemoVault, setShowDemoVault] = useState(false);
 
   // Login State
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [targetRedirect, setTargetRedirect] = useState<string>('/');
 
   // Registration State
   const [regDisplayName, setRegDisplayName] = useState('');
@@ -212,8 +212,6 @@ export function AuthPortalClient({
   const [regUnitNumber, setRegUnitNumber] = useState('');
   const [regPhone, setRegPhone] = useState('');
   const [regResidencyType, setRegResidencyType] = useState('owner_resident');
-  const [regBio, setRegBio] = useState('');
-  const [regAutoApprove, setRegAutoApprove] = useState(true);
 
   // Forgot Password State
   const [forgotIdentifier, setForgotIdentifier] = useState('');
@@ -260,16 +258,14 @@ export function AuthPortalClient({
       }
 
       setSuccessMsg(`Welcome back, ${res.data.display_name}! Redirecting...`);
-      router.push(targetRedirect || '/');
+      router.push('/');
       router.refresh();
     });
   }
 
   function handleQuickLogin(preset: DemoCredentialPreset) {
-    setMode('login');
     setIdentifier(preset.username);
     setPassword(preset.password);
-    setTargetRedirect(preset.targetRoute);
     setErrorMsg(null);
     setSuccessMsg(null);
 
@@ -305,8 +301,8 @@ export function AuthPortalClient({
         unitNumber: regUnitNumber || '101',
         phone: regPhone || '+91-9820000000',
         residencyType: regResidencyType,
-        bio: regBio || 'Verified resident member of MyCircle.',
-        autoApprove: regAutoApprove,
+        bio: 'Verified resident member of MyCircle.',
+        autoApprove: true,
       });
 
       if (!res.ok || !res.data) {
@@ -345,87 +341,35 @@ export function AuthPortalClient({
       }
 
       setSuccessMsg(
-        `Password updated for ${res.data.display_name} (@${res.data.username}). You can now sign in with your new password.`
+        `Password updated for ${res.data.display_name} (@${res.data.username}). Redirecting to Sign In...`
       );
-      setIdentifier(res.data.username);
-      setPassword(forgotNewPassword);
-      setMode('login');
+      setTimeout(() => {
+        router.push('/login');
+      }, 1200);
     });
   }
 
   return (
-    <div className="max-w-xl mx-auto py-6 sm:py-10 px-4 space-y-6">
-      {/* Main Clean Auth Card */}
+    <div className="max-w-lg mx-auto py-6 sm:py-10 px-4 space-y-5">
+      {/* Dedicated Standalone Auth Card */}
       <div className="bg-white border border-[#E8E8EC] rounded-[16px] shadow-xs p-6 sm:p-8 space-y-6">
         {/* Brand Header */}
-        <div className="flex flex-col items-center text-center space-y-2.5">
+        <div className="flex flex-col items-center text-center space-y-2">
           <MyCircleLogo size="lg" showBadge={false} />
-          <h1 className="text-[24px] sm:text-[28px] font-display font-bold tracking-[-0.03em] text-[#0A0A0A]">
-            {mode === 'login'
+          <h1 className="text-[22px] sm:text-[26px] font-display font-bold tracking-[-0.03em] text-[#0A0A0A]">
+            {initialMode === 'login'
               ? 'Sign in to MyCircle'
-              : mode === 'register'
-              ? 'Create your Resident Account'
-              : 'Reset your Password'}
+              : initialMode === 'register'
+              ? 'Create Resident Account'
+              : 'Reset Your Password'}
           </h1>
-          <p className="text-[14px] text-[#6B6B6B] max-w-md">
-            {mode === 'login'
+          <p className="text-[13px] text-[#6B6B6B] max-w-sm">
+            {initialMode === 'login'
               ? 'Private residential community network. Sign in to access your neighbourhood directory, local shops, and services.'
-              : mode === 'register'
-              ? 'Join your verified apartment community with private-by-default contact protection.'
-              : 'Enter your username or email and set a new password for your account.'}
+              : initialMode === 'register'
+              ? 'Register your apartment unit for private-by-default access to your society.'
+              : 'Verify your unit or phone number to set a new password.'}
           </p>
-        </div>
-
-        {/* Clean 3-Tab Switcher */}
-        <div className="grid grid-cols-3 gap-1.5 p-1 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC]">
-          <button
-            type="button"
-            onClick={() => {
-              setMode('login');
-              setErrorMsg(null);
-              setSuccessMsg(null);
-            }}
-            className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
-              mode === 'login'
-                ? 'bg-[#6366F1] text-white shadow-2xs'
-                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
-            }`}
-          >
-            <KeyRound className="w-3.5 h-3.5" />
-            <span>Sign In</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode('register');
-              setErrorMsg(null);
-              setSuccessMsg(null);
-            }}
-            className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
-              mode === 'register'
-                ? 'bg-[#10B981] text-white shadow-2xs'
-                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
-            }`}
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            <span>Register</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode('forgot');
-              setErrorMsg(null);
-              setSuccessMsg(null);
-            }}
-            className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
-              mode === 'forgot'
-                ? 'bg-[#F59E0B] text-white shadow-2xs'
-                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
-            }`}
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Forgot Password</span>
-          </button>
         </div>
 
         {errorMsg && (
@@ -442,8 +386,8 @@ export function AuthPortalClient({
           </div>
         )}
 
-        {/* TAB 1: SIGN IN */}
-        {mode === 'login' && (
+        {/* PAGE 1: DEDICATED SIGN IN (/login) */}
+        {initialMode === 'login' && (
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label
@@ -474,16 +418,12 @@ export function AuthPortalClient({
                 >
                   Password
                 </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setForgotIdentifier(identifier);
-                    setMode('forgot');
-                  }}
-                  className="text-[12px] font-medium text-[#6366F1] hover:underline cursor-pointer"
+                <Link
+                  href="/forgot-password"
+                  className="text-[12px] font-medium text-[#6366F1] hover:underline"
                 >
                   Forgot password?
-                </button>
+                </Link>
               </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-[#9C9C9C] absolute left-3.5 top-3" />
@@ -515,11 +455,22 @@ export function AuthPortalClient({
               <KeyRound className="w-4 h-4" />
               <span>{isPending ? 'Signing in...' : 'Sign In to MyCircle'}</span>
             </button>
+
+            <div className="pt-3 border-t border-[#E8E8EC] flex items-center justify-between text-[13px]">
+              <span className="text-[#6B6B6B]">New resident in the society?</span>
+              <Link
+                href="/register"
+                className="font-semibold text-[#10B981] hover:underline inline-flex items-center gap-1"
+              >
+                <span>Create Account</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </form>
         )}
 
-        {/* TAB 2: REGISTER NEW MEMBER */}
-        {mode === 'register' && (
+        {/* PAGE 2: DEDICATED REGISTER (/register) */}
+        {initialMode === 'register' && (
           <form onSubmit={handleRegisterSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="block text-[13px] font-medium text-[#0A0A0A]">Full Name</label>
@@ -656,11 +607,22 @@ export function AuthPortalClient({
               <UserPlus className="w-4 h-4" />
               <span>{isPending ? 'Creating Account...' : 'Create MyCircle Account'}</span>
             </button>
+
+            <div className="pt-3 border-t border-[#E8E8EC] flex items-center justify-between text-[13px]">
+              <span className="text-[#6B6B6B]">Already have an account?</span>
+              <Link
+                href="/login"
+                className="font-semibold text-[#6366F1] hover:underline inline-flex items-center gap-1"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Sign In</span>
+              </Link>
+            </div>
           </form>
         )}
 
-        {/* TAB 3: FORGOT / RESET PASSWORD */}
-        {mode === 'forgot' && (
+        {/* PAGE 3: DEDICATED FORGOT PASSWORD (/forgot-password) */}
+        {initialMode === 'forgot' && (
           <form onSubmit={handleForgotSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="block text-[13px] font-medium text-[#0A0A0A]">
@@ -731,66 +693,79 @@ export function AuthPortalClient({
               <RotateCcw className="w-4 h-4" />
               <span>{isPending ? 'Updating Password...' : 'Reset Password'}</span>
             </button>
+
+            <div className="pt-3 border-t border-[#E8E8EC] flex items-center justify-between text-[13px]">
+              <span className="text-[#6B6B6B]">Remembered your password?</span>
+              <Link
+                href="/login"
+                className="font-semibold text-[#6366F1] hover:underline inline-flex items-center gap-1"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Sign In</span>
+              </Link>
+            </div>
           </form>
         )}
       </div>
 
-      {/* Collapsible Demo Test Accounts Helper (Clean & Unobtrusive) */}
-      <div className="bg-white border border-[#E8E8EC] rounded-[14px] overflow-hidden">
-        <button
-          type="button"
-          onClick={() => setShowDemoVault((prev) => !prev)}
-          className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-[#FAFAFA] transition cursor-pointer"
-        >
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#6366F1]" />
-            <span className="text-[13px] font-medium text-[#0A0A0A]">
-              Demo Test Accounts (Admin, Resident, Shop, Provider & Staff)
-            </span>
-          </div>
-          {showDemoVault ? (
-            <ChevronUp className="w-4 h-4 text-[#6B6B6B]" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-[#6B6B6B]" />
-          )}
-        </button>
+      {/* Collapsible Demo Test Accounts Helper (Shown on Sign In page) */}
+      {initialMode === 'login' && (
+        <div className="bg-white border border-[#E8E8EC] rounded-[14px] overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setShowDemoVault((prev) => !prev)}
+            className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-[#FAFAFA] transition cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#6366F1]" />
+              <span className="text-[13px] font-medium text-[#0A0A0A]">
+                One-Click Demo Logins (Admin, Resident, Shop, Provider & Staff)
+              </span>
+            </div>
+            {showDemoVault ? (
+              <ChevronUp className="w-4 h-4 text-[#6B6B6B]" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-[#6B6B6B]" />
+            )}
+          </button>
 
-        {showDemoVault && (
-          <div className="p-4 pt-2 border-t border-[#E8E8EC] bg-[#FAFAFA] grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {DEMO_CREDENTIAL_PRESETS.map((preset) => (
-              <div
-                key={preset.username}
-                className="p-3 rounded-[10px] bg-white border border-[#E8E8EC] flex flex-col justify-between gap-2.5"
-              >
-                <div>
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${preset.badgeStyle}`}
-                  >
-                    {renderPresetIcon(preset.iconName)}
-                    <span>{preset.roleBadge}</span>
-                  </span>
-                  <div className="font-display font-bold text-[14px] text-[#0A0A0A] mt-1">
-                    {preset.displayName}
-                  </div>
-                  <div className="text-[11px] font-mono text-[#6B6B6B] mt-0.5">
-                    User: <strong className="text-[#0A0A0A]">{preset.username}</strong> • Pass:{' '}
-                    <strong className="text-[#6366F1]">{preset.password}</strong>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => handleQuickLogin(preset)}
-                  className={`w-full h-[32px] px-3 rounded-[6px] text-[12px] font-medium flex items-center justify-center gap-1.5 transition cursor-pointer ${preset.buttonStyle}`}
+          {showDemoVault && (
+            <div className="p-4 pt-2 border-t border-[#E8E8EC] bg-[#FAFAFA] grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {DEMO_CREDENTIAL_PRESETS.map((preset) => (
+                <div
+                  key={preset.username}
+                  className="p-3 rounded-[10px] bg-white border border-[#E8E8EC] flex flex-col justify-between gap-2.5"
                 >
-                  <span>Sign In as {preset.roleBadge}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+                  <div>
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${preset.badgeStyle}`}
+                    >
+                      {renderPresetIcon(preset.iconName)}
+                      <span>{preset.roleBadge}</span>
+                    </span>
+                    <div className="font-display font-bold text-[14px] text-[#0A0A0A] mt-1">
+                      {preset.displayName}
+                    </div>
+                    <div className="text-[11px] font-mono text-[#6B6B6B] mt-0.5">
+                      User: <strong className="text-[#0A0A0A]">{preset.username}</strong> • Pass:{' '}
+                      <strong className="text-[#6366F1]">{preset.password}</strong>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => handleQuickLogin(preset)}
+                    className={`w-full h-[32px] px-3 rounded-[6px] text-[12px] font-medium flex items-center justify-center gap-1.5 transition cursor-pointer ${preset.buttonStyle}`}
+                  >
+                    <span>Sign In as {preset.roleBadge}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

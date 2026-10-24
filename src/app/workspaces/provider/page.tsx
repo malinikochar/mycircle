@@ -16,14 +16,14 @@ export default async function ProviderWorkspacePage() {
   return (
     <div className="space-y-6">
       <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
-          Separated Role Workspace • Local Service Provider Desk (SRV-01..06)
+        <span className="text-xs font-bold uppercase tracking-wider text-[#F59E0B]">
+          Service Provider Workspace
         </span>
         <h1 className="text-2xl font-bold text-[#0A0A0A]">
           Service Provider Enquiries, Quotes & Scheduled Jobs
         </h1>
         <p className="text-sm text-[#6B6B6B]">
-          Switch to <strong>Ramesh Vishwakarma (Master Electrician)</strong> or <strong>Harpreet Gill (Service Directory Sub-Admin)</strong> in the top persona selector to manage enquiries and job outcomes.
+          Manage resident quote requests, confirm appointment slots, and mark service jobs completed.
         </p>
       </section>
 

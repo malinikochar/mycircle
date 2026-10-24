@@ -17,14 +17,14 @@ export default async function StaffWorkspacePage() {
   return (
     <div className="space-y-6">
       <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#6366F1]">
-          Separated Role Workspace • Security, Staff Shifts, Patrols & Consented GPS (STF-01..07)
+        <span className="text-xs font-bold uppercase tracking-wider text-[#EF4444]">
+          Security & Staff Duty Workspace
         </span>
         <h1 className="text-2xl font-bold text-[#0A0A0A]">
           Staff Duty Desk, Patrol Checkpoints & Foreground Location Control
         </h1>
         <p className="text-sm text-[#6B6B6B]">
-          Switch to <strong>Mahesh Yadav (Head Security Officer)</strong> or <strong>Col. Pratap Chauhan (Safety Sub-Admin)</strong> in the top persona selector to inspect on-duty shifts, tasks, and consented location sessions.
+          Manage on-duty shifts, assigned tasks, patrol checkpoints, and consented shift location sessions.
         </p>
       </section>
 

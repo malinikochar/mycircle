@@ -4,17 +4,21 @@ import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ShoppingBag,
-  FileText,
-  ShieldAlert,
+  Pill,
   CheckCircle2,
+  XCircle,
+  Receipt,
+  Eye,
   Clock,
-  Lock,
-  Plus,
-  RefreshCw,
 } from 'lucide-react';
-import type { OrderRecord, ShopItem } from '@/lib/types/domain';
+import type { OrderRecord, ProductItem, ShopItem } from '@/lib/types/domain';
+import {
+  placeShopOrderAction,
+  respondOrderPriceChangeAction,
+} from '@/app/actions/community-actions';
 import { formatPaiseToINR } from '@/lib/workflows/transactions';
-import { placeShopOrderAction, respondOrderPriceChangeAction } from '@/app/actions/community-actions';
+import { PaginationBar } from '@/components/ui/PaginationBar';
+import { DetailModal } from '@/components/ui/DetailModal';
 
 interface ShopsCommerceClientProps {
   actorId: string;
@@ -23,54 +27,76 @@ interface ShopsCommerceClientProps {
   orders: OrderRecord[];
 }
 
+const PRODUCTS_PER_PAGE = 4;
+const ORDERS_PER_PAGE = 3;
+
 export function ShopsCommerceClient({
   actorId,
-  actorName,
   shops,
   orders,
 }: ShopsCommerceClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [activeTab, setActiveTab] = useState<'catalog' | 'orders'>('catalog');
   const [selectedShopId, setSelectedShopId] = useState<string>(shops[0]?.id ?? '');
-  const [idempotencyKey, setIdempotencyKey] = useState<string>(`order-key-${Date.now()}`);
-  const [paymentMethod, setPaymentMethod] = useState<'pay_on_delivery' | 'direct_upi' | 'counter_pickup'>('pay_on_delivery');
-  const [instructions, setInstructions] = useState('Deliver to tower lobby security desk');
+  const [productPage, setProductPage] = useState(1);
+  const [orderPage, setOrderPage] = useState(1);
+
+  const [paymentMethod, setPaymentMethod] = useState<
+    'pay_on_delivery' | 'direct_upi' | 'counter_pickup'
+  >('pay_on_delivery');
+  const [instructions, setInstructions] = useState('Leave at security desk if unavailable');
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const selectedShop = shops.find((s) => s.id === selectedShopId) ?? shops[0];
+  // Detail Modal States
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderRecord | null>(null);
 
-  function handlePlaceOrder(shopId: string, productId: string, productName: string) {
+  const activeShop = shops.find((s) => s.id === selectedShopId) ?? shops[0];
+  const products = activeShop?.products ?? [];
+  const pagedProducts = products.slice(
+    (productPage - 1) * PRODUCTS_PER_PAGE,
+    productPage * PRODUCTS_PER_PAGE
+  );
+
+  const pagedOrders = orders.slice(
+    (orderPage - 1) * ORDERS_PER_PAGE,
+    orderPage * ORDERS_PER_PAGE
+  );
+
+  function handleQuickOrder(product: ProductItem) {
+    if (!activeShop) return;
+    const idempotencyKey = `ord-${actorId.slice(-4)}-${product.id.slice(-4)}-${Date.now()}`;
     startTransition(async () => {
       const res = await placeShopOrderAction({
-        shopId,
-        productId,
+        shopId: activeShop.id,
+        productId: product.id,
         quantity: 1,
         idempotencyKey,
         paymentMethod,
         instructions,
       });
       if (res.ok) {
-        setFeedback(
-          res.data?.idempotent_replay
-            ? `Idempotent Replay Verified (SHOP-04): Order ${res.data.order_id} with key "${idempotencyKey}" already exists — duplicate order prevented! Click "New Key" to place a fresh order.`
-            : `Order placed for "${productName}"! Server calculated total: ${formatPaiseToINR(res.data?.total_paise)} (Invoice generated & Ledger debit recorded). Re-clicking with the same key will demonstrate idempotency.`
-        );
+        setFeedback(`Ordered 1 × ${product.name} from ${activeShop.name}.`);
+        setSelectedProduct(null);
+        setActiveTab('orders');
         router.refresh();
       } else {
-        setFeedback(`Server Validation Blocked Order: ${res.error}`);
+        setFeedback(`Order error: ${res.error}`);
       }
     });
   }
 
-  function handlePriceChangeDecision(orderId: string, approve: boolean) {
+  function handlePriceRevisionResponse(orderId: string, approve: boolean) {
     startTransition(async () => {
       const res = await respondOrderPriceChangeAction({ orderId, approve });
       if (res.ok) {
         setFeedback(
           approve
-            ? `Approved proposed price/weight adjustment on order ${orderId.slice(0, 8)} — status moved to "accepted" (SHOP-05).`
-            : `Declined proposed adjustment — order ${orderId.slice(0, 8)} cancelled without penalty.`
+            ? 'Revised order total approved.'
+            : 'Revised price declined and order cancelled.'
         );
+        setSelectedOrder(null);
         router.refresh();
       } else {
         setFeedback(`Error: ${res.error}`);
@@ -79,300 +105,408 @@ export function ShopsCommerceClient({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="rounded-2xl bg-white border border-[#E8E8EC] p-5 sm:p-6 space-y-2">
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#059669]">
-          Neighbourhood Commerce
-        </span>
-        <h1 className="text-2xl font-display font-bold text-[#0A0A0A]">
-          Local Shops, Groceries & Pharmacy
-        </h1>
-        <p className="text-sm text-[#6B6B6B]">
-          Order directly from society arcade stores with doorstep tower delivery and digital GST invoices.
-        </p>
-
-        {feedback && (
-          <div className="p-3.5 rounded-xl bg-indigo-50 border border-indigo-300 text-xs font-semibold text-[#0A0A0A]">
-            {feedback}
-          </div>
-        )}
-      </div>
-
-      {/* Shop Selector & Catalogue */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-[#0A0A0A]">Verified Community Shops</h2>
-          {shops.map((shop) => {
-            const active = shop.id === selectedShop?.id;
-            return (
-              <button
-                key={shop.id}
-                type="button"
-                onClick={() => setSelectedShopId(shop.id)}
-                className={`w-full text-left p-4 rounded-2xl border transition cursor-pointer space-y-2 ${
-                  active
-                    ? 'bg-[#0A0A0A] text-white border-[#0A0A0A] shadow-sm'
-                    : 'bg-white text-[#0A0A0A] border-[#E8E8EC] hover:border-[#6366F1]'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-600 text-white">
-                    {shop.category}
-                  </span>
-                  <span className="text-xs opacity-80">{shop.unit_location}</span>
-                </div>
-                <div className="font-bold text-base">{shop.name}</div>
-                <p className={`text-xs leading-relaxed ${active ? 'text-slate-300' : 'text-[#6B6B6B]'}`}>
-                  {shop.description}
-                </p>
-                <div className="text-[11px] pt-1 flex items-center justify-between opacity-90">
-                  <span>Min Order: {formatPaiseToINR(shop.min_order_paise)}</span>
-                  <span>Delivery: {formatPaiseToINR(shop.delivery_fee_paise)}</span>
-                </div>
-              </button>
-            );
-          })}
-
-          {/* Checkout Idempotency & Payment Controls */}
-          <div className="rounded-2xl bg-white border border-[#E8E8EC] p-4 space-y-3 text-xs">
-            <div className="font-bold text-[#0A0A0A] flex items-center justify-between">
-              <span>Server Checkout Controls (Test 4)</span>
-              <button
-                type="button"
-                onClick={() => setIdempotencyKey(`order-key-${Date.now()}`)}
-                className="inline-flex items-center gap-1 text-[#6366F1] font-bold hover:underline cursor-pointer"
-              >
-                <RefreshCw className="w-3 h-3" />
-                <span>New Idempotency Key</span>
-              </button>
-            </div>
-            <div>
-              <label className="block text-[#6B6B6B] mb-1">Idempotency Key (Prevents Double Submit)</label>
-              <input
-                type="text"
-                readOnly
-                value={idempotencyKey}
-                className="w-full rounded-lg border border-[#E8E8EC] px-2.5 py-1.5 bg-[#FAFAFA] font-mono text-[11px]"
-              />
-            </div>
-            <div>
-              <label className="block text-[#6B6B6B] mb-1">Payment Mode (Honest Adapter — SHOP-10)</label>
-              <select
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value as typeof paymentMethod)}
-                className="w-full rounded-lg border border-[#E8E8EC] px-2.5 py-1.5 bg-white"
-              >
-                <option value="pay_on_delivery">Pay on Delivery (Cash / Doorstep UPI)</option>
-                <option value="direct_upi">Direct Merchant UPI (Reported → Merchant Confirmed)</option>
-                <option value="counter_pickup">Counter Pickup</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-[#6B6B6B] mb-1">Delivery Note</label>
-              <input
-                type="text"
-                value={instructions}
-                onChange={(e) => setInstructions(e.target.value)}
-                className="w-full rounded-lg border border-[#E8E8EC] px-2.5 py-1.5 bg-white"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Selected Shop Product Catalogue */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-[#0A0A0A]">
-              {selectedShop?.name} — Catalogue & Live Stock
-            </h2>
-            <span className="text-xs text-[#6B6B6B]">GSTIN: {selectedShop?.gstin_number ?? 'Exempt'}</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(selectedShop?.products ?? []).map((prod) => (
-              <div
-                key={prod.id}
-                className="rounded-2xl bg-white border border-[#E8E8EC] p-4 flex flex-col justify-between gap-3"
-              >
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-semibold text-[#6366F1]">{prod.category}</span>
-                    <span className="text-xs font-medium text-[#6B6B6B] tabular-nums">
-                      Stock: {prod.stock_quantity} {prod.unit_label}s
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-sm text-[#0A0A0A]">{prod.name}</h3>
-                  <div className="text-xs text-[#6B6B6B]">
-                    Pack: <strong>{prod.pack_size}</strong> • GST: {(prod.tax_rate_bps / 100).toFixed(1)}%
-                  </div>
-                  {prod.requires_prescription && (
-                    <div className="p-2 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-900 font-medium flex items-center gap-1.5">
-                      <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
-                      <span>Gated Rx Item: Requires private prescription & licensed pharmacist review (SHOP-11)</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-3 border-t border-[#E8E8EC] flex items-center justify-between gap-2">
-                  <div className="text-base font-bold text-[#0A0A0A] tabular-nums">
-                    {formatPaiseToINR(prod.price_paise)}
-                  </div>
-                  <button
-                    type="button"
-                    disabled={isPending}
-                    onClick={() => handlePlaceOrder(selectedShop.id, prod.id, prod.name)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#6366F1] hover:bg-[#4F46E5] text-white text-xs font-bold cursor-pointer disabled:opacity-50"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Order 1 {prod.unit_label}</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Actor-Scoped Orders, Buyer Approval Queue & Traceable Invoices */}
-      <section className="rounded-2xl bg-white border border-[#E8E8EC] p-5 space-y-4">
-        <div>
-          <h2 className="text-lg font-bold text-[#0A0A0A]">
-            Orders, Buyer Price-Change Approvals & Itemised Invoices ({orders.length} Visible to {actorName})
-          </h2>
-          <p className="text-xs text-[#6B6B6B]">
-            RLS & RPC Scoped: You only see orders where you are the buyer, an active shop member, or Commerce Sub-Admin (Test 4 & Test 5).
+    <div className="space-y-5">
+      {/* Header & Module Tabs */}
+      <div className="rounded-[16px] bg-white border border-[#E8E8EC] p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-[22px] sm:text-[26px] font-display font-bold tracking-[-0.03em] text-[#0A0A0A]">
+            Local Shops & Pharmacy
+          </h1>
+          <p className="text-[13px] text-[#6B6B6B]">
+            Order groceries and medicines from verified neighbourhood stores. Click any item for details.
           </p>
         </div>
 
-        <div className="space-y-4">
-          {orders.map((ord) => (
-            <article
-              key={ord.id}
-              className="rounded-xl bg-[#FAFAFA] border border-[#E8E8EC] p-4 space-y-3"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-4 h-4 text-[#6366F1]" />
-                  <span className="font-bold text-sm text-[#0A0A0A]">{ord.shop_name}</span>
-                  <span className="text-xs text-[#6B6B6B]">• Buyer: {ord.buyer_name_snapshot}</span>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="px-2.5 py-0.5 rounded-full font-bold bg-indigo-100 text-[#6366F1]">
-                    Fulfilment: {ord.status.replace(/_/g, ' ')}
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded-full font-bold bg-slate-200 text-slate-800">
-                    Payment: {ord.payment_status.replace(/_/g, ' ')} ({ord.payment_method})
-                  </span>
-                </div>
-              </div>
-
-              {/* Line Items */}
-              <div className="space-y-1 text-xs">
-                {ord.items.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between text-[#0A0A0A]">
-                    <span>
-                      {item.quantity}x <strong>{item.product_name_snapshot}</strong> ({item.pack_size_snapshot})
-                    </span>
-                    <span className="font-semibold tabular-nums">
-                      {formatPaiseToINR(item.line_total_paise_snapshot)} (incl. GST {formatPaiseToINR(item.tax_paise_snapshot)})
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Buyer Price/Weight Approval Prompt (SHOP-05 / Test 6) */}
-              {ord.status === 'awaiting_buyer_approval' && ord.proposed_total_paise && (
-                <div className="p-3.5 rounded-xl bg-[#FEF3C7] border border-amber-400 space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-[#B45309]">
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4" />
-                      Shop Proposed Pack/Price Adjustment (Requires Buyer Approval — SHOP-05)
-                    </span>
-                    <span className="tabular-nums">
-                      {formatPaiseToINR(ord.total_paise)} → {formatPaiseToINR(ord.proposed_total_paise)}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-800">{ord.price_change_reason}</p>
-                  {ord.buyer_id === actorId ? (
-                    <div className="flex items-center gap-2 pt-1">
-                      <button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => handlePriceChangeDecision(ord.id, true)}
-                        className="px-3.5 py-1.5 rounded-lg bg-[#6366F1] text-white text-xs font-bold cursor-pointer"
-                      >
-                        Approve Revised Total ({formatPaiseToINR(ord.proposed_total_paise)})
-                      </button>
-                      <button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => handlePriceChangeDecision(ord.id, false)}
-                        className="px-3.5 py-1.5 rounded-lg bg-white border border-red-300 text-red-700 text-xs font-bold cursor-pointer"
-                      >
-                        Decline & Cancel Order
-                      </button>
-                    </div>
-                  ) : (
-                    <p className="text-[11px] text-amber-900">
-                      Only buyer {ord.buyer_name_snapshot} can approve or reject this adjustment.
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Prescription Privacy Verification (SHOP-11 / Test 5) */}
-              {ord.has_restricted_prescription && (
-                <div className="p-3 rounded-xl bg-white border border-[#E8E8EC] text-xs flex items-center justify-between">
-                  {ord.prescription_attachment ? (
-                    <div className="flex items-center gap-2 text-emerald-800 font-semibold">
-                      <CheckCircle2 className="w-4 h-4 shrink-0" />
-                      <span>
-                        Authorised Prescription Access ({ord.prescription_attachment.storage_bucket}/
-                        {ord.prescription_attachment.storage_path}) • Verified by Pharmacist
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Lock className="w-4 h-4 shrink-0 text-amber-700" />
-                      <span>
-                        Prescription Attachment Redacted by Server (SHOP-11 / Test 5): Only patient or licensed shop pharmacist Dr. Zoya Merchant can view Rx files.
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Itemised Invoice & Revision Trail (SHOP-07..09) */}
-              {ord.invoice && (
-                <div className="p-3 rounded-xl bg-white border border-[#E8E8EC] text-xs space-y-2">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-bold text-[#0A0A0A] flex items-center gap-1.5">
-                      <FileText className="w-3.5 h-3.5 text-[#6366F1]" />
-                      Invoice {ord.invoice.invoice_number} (Rev #{ord.invoice.current_revision_number} •{' '}
-                      {ord.invoice.status.toUpperCase()})
-                    </span>
-                    <span className="font-bold text-sm text-[#0A0A0A] tabular-nums">
-                      Total: {formatPaiseToINR(ord.invoice.total_paise)}
-                    </span>
-                  </div>
-                  {ord.invoice.revisions && ord.invoice.revisions.length > 0 && (
-                    <div className="pt-1 border-t border-[#E8E8EC] text-[11px] text-[#6B6B6B]">
-                      {ord.invoice.revisions.map((rev) => (
-                        <div key={rev.revision_number}>
-                          <strong>Revision #{rev.revision_number}:</strong>{' '}
-                          {formatPaiseToINR(rev.previous_total_paise)} →{' '}
-                          {formatPaiseToINR(rev.new_total_paise)} ({rev.adjustment_reason})
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </article>
-          ))}
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC]">
+          <button
+            type="button"
+            onClick={() => setActiveTab('catalog')}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+              activeTab === 'catalog'
+                ? 'bg-[#10B981] text-white shadow-2xs'
+                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+            }`}
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span>Store Catalogue</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('orders')}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+              activeTab === 'orders'
+                ? 'bg-[#6366F1] text-white shadow-2xs'
+                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+            }`}
+          >
+            <Receipt className="w-3.5 h-3.5" />
+            <span>My Orders & Invoices ({orders.length})</span>
+          </button>
         </div>
-      </section>
+      </div>
+
+      {feedback && (
+        <div className="p-3.5 rounded-[10px] bg-[#10B981]/10 border border-[#10B981]/30 text-[13px] text-[#0A0A0A] flex items-center justify-between">
+          <span>{feedback}</span>
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            className="text-xs font-medium text-[#6B6B6B] hover:text-[#0A0A0A]"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* TAB 1: STORE CATALOGUE */}
+      {activeTab === 'catalog' && (
+        <div className="space-y-4">
+          {/* Store Switcher Pills */}
+          <div className="flex flex-wrap gap-2">
+            {shops.map((shop) => {
+              const selected = shop.id === activeShop?.id;
+              return (
+                <button
+                  key={shop.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedShopId(shop.id);
+                    setProductPage(1);
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[10px] border text-[13px] font-medium transition cursor-pointer ${
+                    selected
+                      ? 'bg-[#10B981] text-white border-[#10B981] shadow-2xs'
+                      : 'bg-white text-[#0A0A0A] border-[#E8E8EC] hover:border-[#10B981]'
+                  }`}
+                >
+                  {shop.is_pharmacy_gated ? (
+                    <Pill className="w-4 h-4" />
+                  ) : (
+                    <ShoppingBag className="w-4 h-4" />
+                  )}
+                  <span>{shop.name}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {activeShop && (
+            <div className="bg-white border border-[#E8E8EC] rounded-[16px] p-5 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#E8E8EC]">
+                <div>
+                  <h2 className="text-[17px] font-display font-bold text-[#0A0A0A]">
+                    {activeShop.name}
+                  </h2>
+                  <p className="text-[12px] text-[#6B6B6B]">
+                    {activeShop.unit_location} • {activeShop.operating_hours}
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-[#10B981]/10 text-[#059669] text-[11px] font-medium capitalize">
+                  {activeShop.category}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {pagedProducts.map((prod: ProductItem) => {
+                  const outOfStock = !prod.is_active || prod.stock_quantity <= 0;
+                  return (
+                    <div
+                      key={prod.id}
+                      onClick={() => setSelectedProduct(prod)}
+                      className={`p-4 rounded-[12px] border flex flex-col justify-between gap-3 transition cursor-pointer ${
+                        outOfStock
+                          ? 'bg-[#FAFAFA] border-[#E8E8EC] opacity-65'
+                          : 'bg-[#FAFAFA] border-[#E8E8EC] hover:border-[#10B981]'
+                      }`}
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] text-[#6B6B6B]">
+                            {prod.pack_size} ({prod.unit_label})
+                          </span>
+                          {prod.requires_prescription && (
+                            <span className="px-2 py-0.5 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-[10px] font-bold">
+                              Rx Required
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="font-display font-bold text-[15px] text-[#0A0A0A] line-clamp-1">
+                          {prod.name}
+                        </h3>
+                        <div className="text-[15px] font-display font-bold text-[#10B981]">
+                          {formatPaiseToINR(prod.price_paise)}
+                        </div>
+                      </div>
+
+                      <div
+                        className="pt-2.5 border-t border-[#E8E8EC] flex items-center justify-between"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setSelectedProduct(prod)}
+                          className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#0A0A0A] inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>View Details</span>
+                        </button>
+
+                        {outOfStock ? (
+                          <span className="text-[11px] font-semibold text-[#EF4444]">
+                            Out of Stock
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={isPending}
+                            onClick={() => handleQuickOrder(prod)}
+                            className="h-[32px] px-3 rounded-[8px] bg-[#10B981] hover:bg-[#059669] text-white text-[12px] font-medium cursor-pointer"
+                          >
+                            Order Now
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <PaginationBar
+                currentPage={productPage}
+                totalItems={products.length}
+                pageSize={PRODUCTS_PER_PAGE}
+                onPageChange={setProductPage}
+                itemLabel="products"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 2: MY ORDERS & INVOICES */}
+      {activeTab === 'orders' && (
+        <div className="bg-white border border-[#E8E8EC] rounded-[16px] p-5 space-y-4">
+          <div className="space-y-3">
+            {pagedOrders.map((ord) => (
+              <div
+                key={ord.id}
+                onClick={() => setSelectedOrder(ord)}
+                className="p-4 rounded-[12px] bg-[#FAFAFA] border border-[#E8E8EC] hover:border-[#6366F1] flex flex-wrap items-center justify-between gap-4 transition cursor-pointer"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[11px] font-bold text-[#6366F1]">
+                      {ord.invoice?.invoice_number ?? ord.id.slice(0, 8)}
+                    </span>
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium capitalize ${
+                        ord.status === 'awaiting_buyer_approval'
+                          ? 'bg-[#F59E0B]/15 text-[#D97706]'
+                          : 'bg-[#10B981]/15 text-[#059669]'
+                      }`}
+                    >
+                      {ord.status.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  <h3 className="font-display font-bold text-[15px] text-[#0A0A0A]">
+                    {ord.shop_name}
+                  </h3>
+                  <p className="text-[12px] text-[#6B6B6B]">
+                    {ord.items.length} item(s) • Total:{' '}
+                    <strong className="text-[#0A0A0A]">{formatPaiseToINR(ord.total_paise)}</strong>
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedOrder(ord);
+                  }}
+                  className="h-[34px] px-3.5 rounded-[8px] bg-white border border-[#E8E8EC] hover:border-[#6366F1] text-[12px] font-medium inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Eye className="w-3.5 h-3.5 text-[#6366F1]" />
+                  <span>View Invoice</span>
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <PaginationBar
+            currentPage={orderPage}
+            totalItems={orders.length}
+            pageSize={ORDERS_PER_PAGE}
+            onPageChange={setOrderPage}
+            itemLabel="orders"
+          />
+        </div>
+      )}
+
+      {/* MODAL 1: Product Detail & Checkout Options */}
+      <DetailModal
+        open={Boolean(selectedProduct)}
+        onClose={() => setSelectedProduct(null)}
+        title={selectedProduct?.name ?? ''}
+        subtitle={activeShop?.name}
+        badge={
+          selectedProduct && (
+            <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/10 text-[#059669] text-[11px] font-medium">
+              {selectedProduct.pack_size}
+            </span>
+          )
+        }
+      >
+        {selectedProduct && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC] text-[13px]">
+              <div>
+                <span className="text-[#6B6B6B] block text-xs">Unit Price</span>
+                <strong className="text-[16px] text-[#10B981]">
+                  {formatPaiseToINR(selectedProduct.price_paise)}
+                </strong>
+              </div>
+              <div>
+                <span className="text-[#6B6B6B] block text-xs">Stock Status</span>
+                <strong className="text-[#0A0A0A]">
+                  {selectedProduct.stock_quantity > 0
+                    ? `${selectedProduct.stock_quantity} units available`
+                    : 'Out of Stock'}
+                </strong>
+              </div>
+            </div>
+
+            {selectedProduct.requires_prescription && (
+              <div className="p-3 rounded-[10px] bg-[#F59E0B]/10 border border-[#F59E0B]/30 text-[12px] text-[#D97706]">
+                Requires valid doctor prescription verification before pharmacy dispatch.
+              </div>
+            )}
+
+            <div className="space-y-2 text-[13px]">
+              <div>
+                <label className="block font-medium mb-1">Payment Method</label>
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value as typeof paymentMethod)}
+                  className="w-full rounded-[8px] border border-[#E8E8EC] px-3 py-2 bg-white"
+                >
+                  <option value="pay_on_delivery">Pay on Delivery</option>
+                  <option value="direct_upi">Direct Merchant UPI</option>
+                  <option value="counter_pickup">Counter Pickup</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Delivery Note</label>
+                <input
+                  type="text"
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                  className="w-full rounded-[8px] border border-[#E8E8EC] px-3 py-2"
+                />
+              </div>
+            </div>
+
+            {selectedProduct.stock_quantity > 0 && (
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => handleQuickOrder(selectedProduct)}
+                className="w-full h-[40px] rounded-[8px] bg-[#10B981] text-white text-[13px] font-medium cursor-pointer"
+              >
+                {isPending ? 'Placing Order...' : 'Place Order Now'}
+              </button>
+            )}
+          </div>
+        )}
+      </DetailModal>
+
+      {/* MODAL 2: Order & Invoice Detail */}
+      <DetailModal
+        open={Boolean(selectedOrder)}
+        onClose={() => setSelectedOrder(null)}
+        title={
+          selectedOrder
+            ? `Invoice ${selectedOrder.invoice?.invoice_number ?? selectedOrder.id.slice(0, 8)}`
+            : ''
+        }
+        subtitle={
+          selectedOrder
+            ? `${selectedOrder.shop_name} • Buyer: ${selectedOrder.buyer_name_snapshot}`
+            : ''
+        }
+      >
+        {selectedOrder && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              {selectedOrder.items.map((line) => (
+                <div
+                  key={line.id}
+                  className="flex items-center justify-between text-[13px] border-b border-[#E8E8EC] pb-2"
+                >
+                  <div>
+                    <div className="font-medium text-[#0A0A0A]">{line.product_name_snapshot}</div>
+                    <div className="text-[11px] text-[#6B6B6B]">
+                      {line.quantity} × {formatPaiseToINR(line.unit_price_paise_snapshot)}
+                    </div>
+                  </div>
+                  <div className="font-mono font-bold">
+                    {formatPaiseToINR(line.line_total_paise_snapshot)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC] text-[13px]">
+              <div>
+                <span className="text-[#6B6B6B] block text-xs">Order Total</span>
+                <strong className="text-[16px] text-[#0A0A0A]">
+                  {formatPaiseToINR(selectedOrder.total_paise)}
+                </strong>
+              </div>
+              <div>
+                <span className="text-[#6B6B6B] block text-xs">Status</span>
+                <strong className="capitalize text-[#6366F1]">
+                  {selectedOrder.status.replace(/_/g, ' ')}
+                </strong>
+              </div>
+            </div>
+
+            {selectedOrder.status === 'awaiting_buyer_approval' && (
+              <div className="p-4 rounded-[12px] bg-[#F59E0B]/10 border border-[#F59E0B]/40 space-y-3">
+                <div className="text-[13px] font-bold text-[#D97706] flex items-center gap-1.5">
+                  <Clock className="w-4 h-4" />
+                  <span>
+                    Revised Total:{' '}
+                    {formatPaiseToINR(
+                      selectedOrder.proposed_total_paise ?? selectedOrder.total_paise
+                    )}
+                  </span>
+                </div>
+                <p className="text-[12px] text-[#0A0A0A]">{selectedOrder.price_change_reason}</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => handlePriceRevisionResponse(selectedOrder.id, true)}
+                    className="h-[36px] px-4 rounded-[8px] bg-[#10B981] text-white text-[12px] font-medium inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Approve Revision</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => handlePriceRevisionResponse(selectedOrder.id, false)}
+                    className="h-[36px] px-4 rounded-[8px] bg-[#EF4444] text-white text-[12px] font-medium inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Decline & Cancel</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </DetailModal>
     </div>
   );
 }

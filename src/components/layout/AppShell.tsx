@@ -19,12 +19,14 @@ import {
   AlertTriangle,
   PhoneCall,
   Lock,
-  Menu,
+  LayoutGrid,
   X,
   ChevronRight,
   Bell,
   ShieldCheck,
   LogOut,
+  KeyRound,
+  UserPlus,
 } from 'lucide-react';
 import type { BuildingInfo, CommunityBootstrapState } from '@/lib/types/domain';
 import {
@@ -40,21 +42,77 @@ interface AppShellProps {
 }
 
 const RESIDENT_NAV = [
-  { href: '/', label: 'Home', shortLabel: 'Home', icon: Home, color: 'text-[#6366F1]' },
-  { href: '/community', label: 'Directory & Feed', shortLabel: 'Directory', icon: Users, color: 'text-[#0EA5E9]' },
-  { href: '/shops', label: 'Local Shops & Rx', shortLabel: 'Shops', icon: ShoppingBag, color: 'text-[#10B981]' },
-  { href: '/social-service', label: 'Social Exchange', shortLabel: 'Exchange', icon: HeartHandshake, color: 'text-[#8B5CF6]' },
-  { href: '/services', label: 'Service Providers', shortLabel: 'Services', icon: Wrench, color: 'text-[#F59E0B]' },
-  { href: '/help-complaints', label: 'Help & Complaints', shortLabel: 'Complaints', icon: FileWarning, color: 'text-[#EC4899]' },
-  { href: '/safety', label: 'Safety & CCTV', shortLabel: 'Safety', icon: ShieldAlert, color: 'text-[#EF4444]' },
-  { href: '/account', label: 'My Profile', shortLabel: 'Profile', icon: UserCheck, color: 'text-[#6366F1]' },
+  {
+    href: '/',
+    label: 'Home Dashboard',
+    shortLabel: 'Home',
+    icon: Home,
+    color: 'text-[#6366F1]',
+    tileBg: 'bg-[#6366F1]/10 text-[#6366F1]',
+  },
+  {
+    href: '/community',
+    label: 'Directory & Feed',
+    shortLabel: 'Directory',
+    icon: Users,
+    color: 'text-[#0EA5E9]',
+    tileBg: 'bg-[#0EA5E9]/10 text-[#0EA5E9]',
+  },
+  {
+    href: '/shops',
+    label: 'Local Shops & Rx',
+    shortLabel: 'Shops',
+    icon: ShoppingBag,
+    color: 'text-[#10B981]',
+    tileBg: 'bg-[#10B981]/10 text-[#10B981]',
+  },
+  {
+    href: '/social-service',
+    label: 'Social Exchange',
+    shortLabel: 'Exchange',
+    icon: HeartHandshake,
+    color: 'text-[#8B5CF6]',
+    tileBg: 'bg-[#8B5CF6]/10 text-[#8B5CF6]',
+  },
+  {
+    href: '/services',
+    label: 'Service Providers',
+    shortLabel: 'Services',
+    icon: Wrench,
+    color: 'text-[#F59E0B]',
+    tileBg: 'bg-[#F59E0B]/10 text-[#F59E0B]',
+  },
+  {
+    href: '/help-complaints',
+    label: 'Help & Complaints',
+    shortLabel: 'Helpdesk',
+    icon: FileWarning,
+    color: 'text-[#EC4899]',
+    tileBg: 'bg-[#EC4899]/10 text-[#EC4899]',
+  },
+  {
+    href: '/safety',
+    label: 'Safety & CCTV',
+    shortLabel: 'Safety',
+    icon: ShieldAlert,
+    color: 'text-[#EF4444]',
+    tileBg: 'bg-[#EF4444]/10 text-[#EF4444]',
+  },
+  {
+    href: '/account',
+    label: 'My Profile',
+    shortLabel: 'Profile',
+    icon: UserCheck,
+    color: 'text-[#6366F1]',
+    tileBg: 'bg-[#6366F1]/10 text-[#6366F1]',
+  },
 ];
 
 export function AppShell({ bootstrap, children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
 
   // SOS Hold-to-Send & Form State
@@ -75,9 +133,11 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
   const buildings: BuildingInfo[] = bootstrap.buildings ?? [];
   const notificationCount = bootstrap.notifications?.length ?? 0;
   const isUnauthenticated = bootstrap.membership_status === 'unauthenticated';
-  const isAuthRoute = pathname === '/login' || pathname === '/register';
+  const isAuthRoute =
+    pathname === '/login' || pathname === '/register' || pathname === '/forgot-password';
 
   function handleLogout() {
+    setMobileMenuOpen(false);
     startTransition(async () => {
       await logoutAction();
       router.push('/login');
@@ -87,21 +147,48 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
 
   // Strictly Gate All Content Until User Logs In
   if (isUnauthenticated) {
+    const authMode =
+      pathname === '/register'
+        ? 'register'
+        : pathname === '/forgot-password'
+        ? 'forgot'
+        : 'login';
+
     return (
       <div className="min-h-screen flex flex-col bg-[#FAFAFA] text-[#0A0A0A] genesis-dot-grid">
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E8E8EC]">
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-[60px] flex items-center justify-between">
-            <MyCircleLogo size="md" showBadge={true} />
-            <span className="text-[12px] text-[#6B6B6B] font-medium hidden sm:inline">
-              Private Residential Community Platform
-            </span>
+            <Link href="/login" aria-label="MyCircle Home">
+              <MyCircleLogo size="md" showBadge={true} />
+            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/login"
+                className={`inline-flex items-center gap-1.5 h-[36px] px-3.5 rounded-[8px] text-[13px] font-medium transition ${
+                  authMode === 'login'
+                    ? 'bg-[#6366F1] text-white'
+                    : 'bg-white border border-[#E8E8EC] text-[#0A0A0A] hover:border-[#6366F1]'
+                }`}
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </Link>
+              <Link
+                href="/register"
+                className={`inline-flex items-center gap-1.5 h-[36px] px-3.5 rounded-[8px] text-[13px] font-medium transition ${
+                  authMode === 'register'
+                    ? 'bg-[#10B981] text-white'
+                    : 'bg-white border border-[#E8E8EC] text-[#0A0A0A] hover:border-[#10B981]'
+                }`}
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Register</span>
+              </Link>
+            </div>
           </div>
         </header>
         <main className="flex-1">
-          <AuthPortalClient
-            initialMode={pathname === '/register' ? 'register' : 'login'}
-            buildings={buildings}
-          />
+          <AuthPortalClient initialMode={authMode} buildings={buildings} />
         </main>
       </div>
     );
@@ -224,26 +311,26 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFA] text-[#0A0A0A] genesis-dot-grid">
-      {/* Clean Sticky Top Navigation — No Member Dropdown Exposed */}
+      {/* Sticky Top App Header — Compact on Mobile, Full on Desktop */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E8E8EC]">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 h-[60px] flex items-center justify-between gap-3">
+        <div className="max-w-[1280px] mx-auto px-3.5 sm:px-6 h-[58px] flex items-center justify-between gap-2">
           {/* Logo Left */}
           <Link href="/" aria-label="MyCircle Home">
-            <MyCircleLogo size="md" showBadge={false} />
+            <MyCircleLogo size="sm" showBadge={false} />
           </Link>
 
           {/* Right Controls: User Profile Pill, Notifications, SOS Alert & Sign Out */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             {/* Logged-in User Profile Pill */}
             <Link
               href="/account"
-              className="flex items-center gap-2.5 pl-1.5 pr-3 py-1 rounded-full bg-[#FAFAFA] border border-[#E8E8EC] hover:border-[#6366F1] transition"
+              className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-[#FAFAFA] border border-[#E8E8EC] hover:border-[#6366F1] transition"
             >
               <span className="w-7 h-7 rounded-full bg-gradient-to-br from-[#6366F1] to-[#4F46E5] text-white text-[11px] font-bold flex items-center justify-center">
                 {initials}
               </span>
               <div className="hidden sm:flex flex-col text-left leading-tight">
-                <span className="text-[13px] font-medium text-[#0A0A0A]">
+                <span className="text-[12px] font-medium text-[#0A0A0A]">
                   {actor?.display_name}
                 </span>
                 <span className="text-[10px] text-[#6366F1] font-medium">
@@ -257,7 +344,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
               href="/account"
               title="Notifications"
               aria-label={`Notifications (${notificationCount})`}
-              className="relative inline-flex items-center justify-center w-9 h-9 rounded-[8px] bg-white border border-[#E8E8EC] hover:border-[#6366F1] text-[#0A0A0A] transition"
+              className="relative inline-flex items-center justify-center w-9 h-9 rounded-[10px] bg-white border border-[#E8E8EC] hover:border-[#6366F1] text-[#0A0A0A] transition"
             >
               <Bell className="w-4 h-4 text-[#6B6B6B]" />
               {notificationCount > 0 && (
@@ -275,20 +362,20 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                 setHoldProgress(0);
                 setSosModalOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-[8px] bg-gradient-to-r from-[#EF4444] to-[#DC2626] hover:from-[#DC2626] hover:to-[#B91C1C] text-white font-medium text-[13px] shadow-2xs transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 h-9 px-3 rounded-[10px] bg-gradient-to-r from-[#EF4444] to-[#DC2626] hover:from-[#DC2626] hover:to-[#B91C1C] text-white font-medium text-[12px] shadow-2xs transition cursor-pointer"
               aria-label="Open Emergency SOS"
             >
               <AlertTriangle className="w-3.5 h-3.5" />
               <span>SOS</span>
             </button>
 
-            {/* Sign Out Button */}
+            {/* Desktop Sign Out Button */}
             <button
               type="button"
               onClick={handleLogout}
               disabled={isPending}
               title="Sign Out"
-              className="inline-flex items-center gap-1.5 h-9 px-3 rounded-[8px] bg-white border border-[#E8E8EC] hover:border-[#EF4444] text-[#6B6B6B] hover:text-[#EF4444] text-[13px] font-medium transition cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-1.5 h-9 px-3 rounded-[10px] bg-white border border-[#E8E8EC] hover:border-[#EF4444] text-[#6B6B6B] hover:text-[#EF4444] text-[12px] font-medium transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Sign Out</span>
@@ -298,7 +385,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
       </header>
 
       {/* Main Layout Container */}
-      <div className="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-6 flex gap-6">
+      <div className="flex-1 max-w-[1280px] w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-6 flex gap-6">
         {/* Clean Desktop Sidebar */}
         <aside className="hidden lg:flex flex-col w-60 shrink-0 gap-4">
           <div className="bg-white border border-[#E8E8EC] rounded-[14px] p-3.5">
@@ -313,6 +400,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={true}
                     className={`flex items-center justify-between px-3 py-2.5 rounded-[8px] text-[14px] font-medium transition ${
                       active
                         ? 'bg-gradient-to-r from-[#6366F1] to-[#4F46E5] text-white shadow-2xs'
@@ -344,6 +432,7 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
                     <Link
                       key={ws.href}
                       href={ws.href}
+                      prefetch={true}
                       className={`flex items-center justify-between px-3 py-2.5 rounded-[8px] text-[13px] font-medium transition ${
                         active
                           ? ws.color
@@ -398,100 +487,152 @@ export function AppShell({ bootstrap, children }: AppShellProps) {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Native-Style Mobile App Bottom Navigation Bar */}
       <nav
         aria-label="Mobile Primary Navigation"
-        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E8E8EC] px-2 py-1 flex items-center justify-around"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E8E8EC] px-2 py-1.5 flex items-center justify-around shadow-lg"
       >
-        {[RESIDENT_NAV[0], RESIDENT_NAV[1], RESIDENT_NAV[2], RESIDENT_NAV[7]].map((item) => {
+        {[RESIDENT_NAV[0], RESIDENT_NAV[1], RESIDENT_NAV[2], RESIDENT_NAV[3]].map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`min-h-[44px] min-w-[60px] flex flex-col items-center justify-center gap-0.5 px-2.5 py-1 rounded-[8px] text-[11px] font-medium ${
-                active ? 'text-[#6366F1] bg-[#6366F1]/10' : 'text-[#6B6B6B]'
+              prefetch={true}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`min-h-[46px] min-w-[62px] flex flex-col items-center justify-center gap-0.5 px-2.5 py-1 rounded-[12px] text-[11px] font-medium transition ${
+                active
+                  ? 'bg-[#6366F1] text-white shadow-2xs'
+                  : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
               }`}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-4 h-4" />
               <span>{item.shortLabel}</span>
             </Link>
           );
         })}
         <button
           type="button"
-          onClick={() => setMobileMoreOpen(true)}
-          className="min-h-[44px] min-w-[60px] flex flex-col items-center justify-center gap-0.5 px-2.5 py-1 rounded-[8px] text-[11px] font-medium text-[#6B6B6B] cursor-pointer"
+          onClick={() => setMobileMenuOpen((prev) => !prev)}
+          className={`min-h-[46px] min-w-[62px] flex flex-col items-center justify-center gap-0.5 px-2.5 py-1 rounded-[12px] text-[11px] font-medium transition cursor-pointer ${
+            mobileMenuOpen ? 'bg-[#0A0A0A] text-white' : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+          }`}
         >
-          <Menu className="w-5 h-5" />
-          <span>More</span>
+          <LayoutGrid className="w-4 h-4" />
+          <span>App Menu</span>
         </button>
       </nav>
 
-      {/* Mobile Drawer */}
-      {mobileMoreOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end lg:hidden">
-          <div className="w-72 max-w-full bg-white h-full p-5 overflow-y-auto space-y-5 border-l border-[#E8E8EC]">
-            <div className="flex items-center justify-between border-b border-[#E8E8EC] pb-3">
-              <MyCircleLogo size="sm" showBadge={false} />
+      {/* Mobile App Slide-Up Bottom Sheet Menu */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div
+            className="w-full bg-white rounded-t-[24px] p-5 pb-8 space-y-4 border-t border-[#E8E8EC] shadow-2xl max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Pull Handle */}
+            <div className="w-10 h-1.5 rounded-full bg-[#E8E8EC] mx-auto" />
+
+            {/* User Header inside Mobile Sheet */}
+            <div className="flex items-center justify-between pb-3 border-b border-[#E8E8EC]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#6366F1] to-[#4F46E5] text-white text-xs font-bold flex items-center justify-center">
+                  {initials}
+                </div>
+                <div>
+                  <div className="text-[14px] font-display font-bold text-[#0A0A0A]">
+                    {actor?.display_name}
+                  </div>
+                  <div className="text-[11px] text-[#6366F1] font-medium">
+                    {activeRoleSummary}
+                  </div>
+                </div>
+              </div>
               <button
                 type="button"
-                onClick={() => setMobileMoreOpen(false)}
-                className="p-2 rounded-[8px] bg-[#FAFAFA] border border-[#E8E8EC]"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-full bg-[#FAFAFA] border border-[#E8E8EC] text-[#6B6B6B]"
                 aria-label="Close menu"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="space-y-1">
-              {RESIDENT_NAV.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMoreOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-[8px] text-[14px] font-medium text-[#0A0A0A] hover:bg-[#FAFAFA]"
-                  >
-                    <Icon className={`w-4 h-4 ${item.color}`} />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-            {allowedWorkspaces.length > 0 && (
-              <div className="border-t border-[#E8E8EC] pt-3 space-y-1.5">
-                <div className="text-[11px] font-mono uppercase text-[#9C9C9C] px-2">
-                  My Role Workspace
-                </div>
-                {allowedWorkspaces.map((ws) => {
-                  const Icon = ws.icon;
+
+            {/* 2-Column Colorful App Launcher Grid */}
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C] mb-2">
+                MyCircle Modules
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                {RESIDENT_NAV.map((item) => {
+                  const Icon = item.icon;
+                  const active = pathname === item.href;
                   return (
                     <Link
-                      key={ws.href}
-                      href={ws.href}
-                      onClick={() => setMobileMoreOpen(false)}
-                      className="flex items-center justify-between px-3 py-2.5 rounded-[8px] bg-[#FAFAFA] border border-[#E8E8EC] text-[13px] font-medium"
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-2.5 p-3 rounded-[12px] border text-[13px] font-medium transition ${
+                        active
+                          ? 'bg-[#6366F1] text-white border-[#6366F1]'
+                          : 'bg-[#FAFAFA] text-[#0A0A0A] border-[#E8E8EC]'
+                      }`}
                     >
-                      <span className="flex items-center gap-2">
-                        <Icon className="w-4 h-4 text-[#6366F1]" />
-                        <span>{ws.label}</span>
-                      </span>
-                      <ChevronRight className="w-4 h-4 text-[#9C9C9C]" />
+                      <div
+                        className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 ${
+                          active ? 'bg-white/20 text-white' : item.tileBg
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className="truncate">{item.shortLabel}</span>
                     </Link>
                   );
                 })}
               </div>
+            </div>
+
+            {/* Role Workspaces inside Mobile App Sheet */}
+            {allowedWorkspaces.length > 0 && (
+              <div className="pt-2 border-t border-[#E8E8EC] space-y-2">
+                <div className="text-[11px] font-mono uppercase tracking-wider text-[#9C9C9C]">
+                  My Role Workspaces
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {allowedWorkspaces.map((ws) => {
+                    const Icon = ws.icon;
+                    return (
+                      <Link
+                        key={ws.href}
+                        href={ws.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-[10px] text-[13px] font-medium ${ws.color}`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Icon className="w-4 h-4" />
+                          <span>{ws.label}</span>
+                        </span>
+                        <ChevronRight className="w-4 h-4 opacity-80" />
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
             )}
-            <div className="border-t border-[#E8E8EC] pt-3">
+
+            {/* Sign Out Button */}
+            <div className="pt-2 border-t border-[#E8E8EC]">
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full py-2.5 rounded-[8px] bg-[#EF4444]/10 text-[#EF4444] text-[13px] font-medium flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full h-[42px] rounded-[10px] bg-[#EF4444]/10 text-[#EF4444] text-[13px] font-semibold flex items-center justify-center gap-2 cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
+                <span>Sign Out of MyCircle</span>
               </button>
             </div>
           </div>
