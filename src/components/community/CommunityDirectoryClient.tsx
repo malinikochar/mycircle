@@ -12,10 +12,12 @@ import {
   Star,
   Eye,
   Layers,
+  MapPin,
 } from 'lucide-react';
 import type { CommunityGroup, DirectoryMember, PostItem } from '@/lib/types/domain';
 import { PaginationBar } from '@/components/ui/PaginationBar';
 import { DetailModal } from '@/components/ui/DetailModal';
+import { MemberAvatar } from '@/components/ui/MemberAvatar';
 
 interface CommunityDirectoryClientProps {
   actorId: string;
@@ -74,27 +76,30 @@ export function CommunityDirectoryClient({
   );
 
   return (
-    <div className="space-y-5">
-      {/* Compact Header & Tab Switcher */}
-      <div className="rounded-[16px] bg-white border border-[#E8E8EC] p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-[22px] sm:text-[26px] font-display font-bold tracking-[-0.03em] text-[#0A0A0A]">
+    <div className="space-y-6">
+      {/* Spacious Apple-style Header & Tab Switcher */}
+      <div className="rounded-[24px] bg-white border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8 flex flex-wrap items-center justify-between gap-5">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[11px] font-semibold">
+            <MapPin className="w-3.5 h-3.5" />
+            <span>Bugis Residences @ Victoria • Verified Member Circle</span>
+          </div>
+          <h1 className="text-[24px] sm:text-[28px] font-display font-bold tracking-[-0.03em] text-[#1D1D1F]">
             Directory & Community Feed
           </h1>
-          <p className="text-[13px] text-[#6B6B6B]">
-            {totalSocietyMembers.toLocaleString()} verified members • Private-by-default directory.
-            Click any card for details.
+          <p className="text-[13px] text-[#6E6E73]">
+            {totalSocietyMembers.toLocaleString()} verified members • Private-by-default directory with verified portraits.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 bg-[#FAFAFA] p-1 rounded-[10px] border border-[#E8E8EC]">
+        <div className="flex flex-wrap gap-1.5 bg-[#F5F5F7] p-1.5 rounded-full border border-black/[0.05]">
           <button
             type="button"
             onClick={() => setActiveTab('directory')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold transition cursor-pointer ${
               activeTab === 'directory'
-                ? 'bg-[#0EA5E9] text-white shadow-2xs'
-                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+                ? 'bg-[#0071E3] text-white shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -103,10 +108,10 @@ export function CommunityDirectoryClient({
           <button
             type="button"
             onClick={() => setActiveTab('feed')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold transition cursor-pointer ${
               activeTab === 'feed'
-                ? 'bg-[#6366F1] text-white shadow-2xs'
-                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+                ? 'bg-[#6366F1] text-white shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -115,10 +120,10 @@ export function CommunityDirectoryClient({
           <button
             type="button"
             onClick={() => setActiveTab('groups')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold transition cursor-pointer ${
               activeTab === 'groups'
-                ? 'bg-[#10B981] text-white shadow-2xs'
-                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+                ? 'bg-[#10B981] text-white shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -127,13 +132,13 @@ export function CommunityDirectoryClient({
         </div>
       </div>
 
-      {/* TAB 1: MEMBER DIRECTORY (Concise Cards + Pagination + Click for Profile Modal) */}
+      {/* TAB 1: MEMBER DIRECTORY (Spacious Cards + Studio Portraits + Pagination) */}
       {activeTab === 'directory' && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Search & Tower Filter */}
-          <div className="bg-white border border-[#E8E8EC] rounded-[14px] p-4 flex flex-col sm:flex-row gap-3">
+          <div className="bg-white border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.02)] rounded-[22px] p-5 flex flex-col sm:flex-row gap-3.5">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-[#9C9C9C] absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-[#86868B] absolute left-4 top-3.5" />
               <input
                 type="text"
                 value={searchQuery}
@@ -142,7 +147,7 @@ export function CommunityDirectoryClient({
                   setMemberPage(1);
                 }}
                 placeholder="Search by name, profession, skill, or business..."
-                className="w-full pl-10 pr-4 py-2 rounded-[8px] border border-[#E8E8EC] text-[14px]"
+                className="w-full pl-11 pr-4 py-2.5 rounded-full border border-black/[0.1] text-[14px]"
               />
             </div>
             <select
@@ -152,7 +157,7 @@ export function CommunityDirectoryClient({
                 setMemberPage(1);
               }}
               aria-label="Filter by Tower"
-              className="rounded-[8px] border border-[#E8E8EC] px-3.5 py-2 text-[14px] bg-white"
+              className="rounded-full border border-black/[0.1] px-4 py-2.5 text-[14px] bg-white"
             >
               <option value="all">All Towers</option>
               {buildings.map((b) => (
@@ -163,64 +168,58 @@ export function CommunityDirectoryClient({
             </select>
           </div>
 
-          {/* Concise Member Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {pagedMembers.map((member) => {
-              const initials = member.display_name
-                .split(' ')
-                .map((n: string) => n[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase();
-
-              return (
-                <article
-                  key={member.id}
-                  onClick={() => setSelectedMember(member)}
-                  className="bg-white border border-[#E8E8EC] hover:border-[#0EA5E9] rounded-[14px] p-4 flex items-center justify-between gap-4 transition cursor-pointer"
-                >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0EA5E9] to-[#6366F1] text-white font-display font-bold text-sm flex items-center justify-center shrink-0">
-                      {initials}
+          {/* Spacious Member Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {pagedMembers.map((member) => (
+              <article
+                key={member.id}
+                onClick={() => setSelectedMember(member)}
+                className="bg-white border border-black/[0.06] hover:border-[#0071E3]/40 rounded-[22px] p-6 flex items-center justify-between gap-4 transition cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.02)]"
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <MemberAvatar
+                    name={member.display_name}
+                    avatarUrl={member.avatar_url}
+                    size="lg"
+                    ring
+                  />
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="font-display font-bold text-[16px] text-[#1D1D1F] truncate">
+                        {member.display_name}
+                      </h2>
+                      {member.building_code && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[10px] font-semibold shrink-0">
+                          {member.building_code}
+                        </span>
+                      )}
                     </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h2 className="font-display font-bold text-[15px] text-[#0A0A0A] truncate">
-                          {member.display_name}
-                        </h2>
-                        {member.building_code && (
-                          <span className="px-2 py-0.5 rounded-full bg-[#0EA5E9]/10 text-[#0284C7] text-[10px] font-medium shrink-0">
-                            {member.building_code}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[12px] text-[#6366F1] font-medium truncate">
-                        {member.profession ?? 'Verified Resident Member'}
-                      </p>
-                      <p className="text-[12px] text-[#6B6B6B] truncate mt-0.5">
-                        {member.unit_number ? `Flat ${member.unit_number}` : 'Unit Private'} •{' '}
-                        {member.personal_phone ?? 'Phone Private'}
-                      </p>
-                    </div>
+                    <p className="text-[13px] text-[#0071E3] font-medium truncate">
+                      {member.profession ?? 'Verified Resident Member'}
+                    </p>
+                    <p className="text-[12px] text-[#6E6E73] truncate">
+                      {member.unit_number ? `Flat ${member.unit_number}` : 'Unit Private'} •{' '}
+                      {member.personal_phone ?? 'Phone Private'}
+                    </p>
                   </div>
+                </div>
 
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedMember(member);
-                    }}
-                    className="shrink-0 h-[34px] px-3 rounded-[8px] bg-[#FAFAFA] border border-[#E8E8EC] hover:border-[#0EA5E9] text-[#0A0A0A] text-[12px] font-medium inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Eye className="w-3.5 h-3.5 text-[#0EA5E9]" />
-                    <span>Profile</span>
-                  </button>
-                </article>
-              );
-            })}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedMember(member);
+                  }}
+                  className="shrink-0 h-[38px] px-4 rounded-full bg-[#F5F5F7] hover:bg-[#0071E3] hover:text-white text-[#1D1D1F] text-[12px] font-semibold inline-flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Profile</span>
+                </button>
+              </article>
+            ))}
           </div>
 
-          <div className="bg-white border border-[#E8E8EC] rounded-[14px] px-4 pb-3">
+          <div className="bg-white border border-black/[0.06] rounded-[22px] px-6 py-2">
             <PaginationBar
               currentPage={memberPage}
               totalItems={filteredMembers.length}
@@ -232,29 +231,34 @@ export function CommunityDirectoryClient({
         </div>
       )}
 
-      {/* TAB 2: COMMUNITY DISCUSSIONS (Concise Cards + Pagination + Click for Details) */}
+      {/* TAB 2: COMMUNITY DISCUSSIONS (Spacious Cards + Author Avatars + Short Titles) */}
       {activeTab === 'feed' && (
-        <div className="space-y-4">
-          <div className="space-y-3">
+        <div className="space-y-5">
+          <div className="space-y-4">
             {pagedPosts.map((post) => (
               <article
                 key={post.id}
                 onClick={() => setSelectedPost(post)}
-                className="bg-white border border-[#E8E8EC] hover:border-[#6366F1] rounded-[14px] p-4 flex items-center justify-between gap-4 transition cursor-pointer"
+                className="bg-white border border-black/[0.06] hover:border-[#0071E3]/40 rounded-[22px] p-6 flex items-center justify-between gap-5 transition cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.02)]"
               >
-                <div className="space-y-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#6366F1]/10 text-[#6366F1] text-[11px] font-medium capitalize">
-                      {post.category.replace(/_/g, ' ')}
-                    </span>
-                    <span className="text-[12px] text-[#6B6B6B]">
-                      by {post.author_name} ({post.building_name ?? 'Resident'})
-                    </span>
+                <div className="flex items-start gap-4 min-w-0">
+                  <MemberAvatar name={post.author_name} size="md" />
+                  <div className="space-y-1.5 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="px-3 py-0.5 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[11px] font-semibold capitalize">
+                        {post.category.replace(/_/g, ' ')}
+                      </span>
+                      <span className="text-[12px] text-[#6E6E73]">
+                        by <strong className="text-[#1D1D1F]">{post.author_name}</strong> ({post.building_name ?? 'Resident'})
+                      </span>
+                    </div>
+                    <h3 className="text-[16px] font-display font-bold text-[#1D1D1F] truncate">
+                      {post.title}
+                    </h3>
+                    <p className="text-[13px] text-[#6E6E73] leading-relaxed line-clamp-1">
+                      {post.body}
+                    </p>
                   </div>
-                  <h3 className="text-[15px] font-display font-bold text-[#0A0A0A] truncate">
-                    {post.title}
-                  </h3>
-                  <p className="text-[13px] text-[#6B6B6B] line-clamp-1">{post.body}</p>
                 </div>
 
                 <button
@@ -263,16 +267,16 @@ export function CommunityDirectoryClient({
                     e.stopPropagation();
                     setSelectedPost(post);
                   }}
-                  className="shrink-0 h-[34px] px-3 rounded-[8px] bg-[#FAFAFA] border border-[#E8E8EC] hover:border-[#6366F1] text-[12px] font-medium inline-flex items-center gap-1.5 cursor-pointer"
+                  className="shrink-0 h-[38px] px-4 rounded-full bg-[#F5F5F7] hover:bg-[#0071E3] hover:text-white text-[#1D1D1F] text-[12px] font-semibold inline-flex items-center gap-1.5 transition cursor-pointer"
                 >
-                  <Eye className="w-3.5 h-3.5 text-[#6366F1]" />
+                  <Eye className="w-3.5 h-3.5" />
                   <span>Read ({post.comments?.length ?? 0})</span>
                 </button>
               </article>
             ))}
           </div>
 
-          <div className="bg-white border border-[#E8E8EC] rounded-[14px] px-4 pb-3">
+          <div className="bg-white border border-black/[0.06] rounded-[22px] px-6 py-2">
             <PaginationBar
               currentPage={postPage}
               totalItems={posts.length}
@@ -286,22 +290,22 @@ export function CommunityDirectoryClient({
 
       {/* TAB 3: SOCIETY GROUPS */}
       {activeTab === 'groups' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {groups.map((grp) => (
             <div
               key={grp.id}
-              className="bg-white border border-[#E8E8EC] rounded-[14px] p-4 space-y-1.5"
+              className="bg-white border border-black/[0.06] rounded-[22px] p-6 space-y-2.5 shadow-[0_8px_30px_rgba(0,0,0,0.02)]"
             >
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/10 text-[#059669] text-[11px] font-medium capitalize">
+                <span className="px-3 py-1 rounded-full bg-[#10B981]/10 text-[#059669] text-[11px] font-semibold capitalize">
                   {grp.group_type} Group
                 </span>
                 {grp.building_name && (
-                  <span className="text-[11px] text-[#6B6B6B]">{grp.building_name}</span>
+                  <span className="text-[12px] text-[#6E6E73] font-medium">{grp.building_name}</span>
                 )}
               </div>
-              <h3 className="font-display font-bold text-[15px] text-[#0A0A0A]">{grp.name}</h3>
-              <p className="text-[12px] text-[#6B6B6B]">{grp.moderation_policy}</p>
+              <h3 className="font-display font-bold text-[16px] text-[#1D1D1F]">{grp.name}</h3>
+              <p className="text-[13px] text-[#6E6E73] leading-relaxed">{grp.moderation_policy}</p>
             </div>
           ))}
         </div>
@@ -319,7 +323,7 @@ export function CommunityDirectoryClient({
         }
         badge={
           selectedMember && (
-            <span className="px-2.5 py-0.5 rounded-full bg-[#0EA5E9]/10 text-[#0284C7] text-[11px] font-medium">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[11px] font-semibold">
               {selectedMember.building_name ?? 'Society Member'}
             </span>
           )
@@ -327,28 +331,44 @@ export function CommunityDirectoryClient({
       >
         {selectedMember && (
           <div className="space-y-4">
-            {selectedMember.bio && (
-              <p className="text-[14px] text-[#0A0A0A] leading-relaxed">{selectedMember.bio}</p>
-            )}
-
-            {selectedMember.member_rating_avg && (
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-[12px] font-medium">
-                <Star className="w-3.5 h-3.5 fill-[#F59E0B]" />
-                <span>
-                  {selectedMember.member_rating_avg} Rating ({selectedMember.member_review_count}{' '}
-                  reviews • {selectedMember.completed_interactions_count} exchanges)
-                </span>
+            <div className="flex items-center gap-4 p-4 rounded-[18px] bg-[#F5F5F7] border border-black/[0.05]">
+              <MemberAvatar
+                name={selectedMember.display_name}
+                avatarUrl={selectedMember.avatar_url}
+                size="xl"
+                ring
+              />
+              <div className="space-y-1">
+                <div className="font-display font-bold text-[17px] text-[#1D1D1F]">
+                  {selectedMember.display_name}
+                </div>
+                <div className="text-[13px] text-[#0071E3] font-medium">
+                  {selectedMember.profession ?? 'Verified Resident'}
+                </div>
+                {selectedMember.member_rating_avg && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-[11px] font-semibold">
+                    <Star className="w-3 h-3 fill-[#F59E0B]" />
+                    <span>
+                      {selectedMember.member_rating_avg} Rating ({selectedMember.member_review_count}{' '}
+                      reviews)
+                    </span>
+                  </div>
+                )}
               </div>
+            </div>
+
+            {selectedMember.bio && (
+              <p className="text-[14px] text-[#1D1D1F] leading-relaxed">{selectedMember.bio}</p>
             )}
 
             {selectedMember.skills && selectedMember.skills.length > 0 && (
               <div className="space-y-1.5">
-                <div className="text-[12px] font-medium text-[#6B6B6B]">Skills & Interests</div>
+                <div className="text-[12px] font-semibold text-[#6E6E73]">Skills & Interests</div>
                 <div className="flex flex-wrap gap-1.5">
                   {selectedMember.skills.map((skill: string) => (
                     <span
                       key={skill}
-                      className="px-2.5 py-1 rounded-full bg-[#6366F1]/10 text-[#6366F1] text-[11px] font-medium"
+                      className="px-3 py-1 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[11px] font-semibold"
                     >
                       {skill}
                     </span>
@@ -358,30 +378,30 @@ export function CommunityDirectoryClient({
             )}
 
             {selectedMember.business_name && (
-              <div className="p-3 rounded-[10px] bg-[#10B981]/5 border border-[#10B981]/25 space-y-1 text-[12px]">
-                <div className="font-semibold text-[#0A0A0A] flex items-center gap-1.5">
+              <div className="p-4 rounded-[14px] bg-[#10B981]/5 border border-[#10B981]/25 space-y-1 text-[12px]">
+                <div className="font-semibold text-[#1D1D1F] flex items-center gap-1.5">
                   <Briefcase className="w-3.5 h-3.5 text-[#10B981]" />
                   <span>{selectedMember.business_name}</span>
                 </div>
                 {selectedMember.business_description && (
-                  <p className="text-[#6B6B6B]">{selectedMember.business_description}</p>
+                  <p className="text-[#6E6E73]">{selectedMember.business_description}</p>
                 )}
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC] text-[12px]">
+            <div className="grid grid-cols-2 gap-3 p-4 rounded-[14px] bg-[#F5F5F7] border border-black/[0.06] text-[12px]">
               <div>
-                <span className="text-[#6B6B6B] block">Flat / Unit</span>
-                <strong className="text-[#0A0A0A] inline-flex items-center gap-1 mt-0.5">
-                  <Building2 className="w-3.5 h-3.5 text-[#6B6B6B]" />
+                <span className="text-[#6E6E73] block">Flat / Unit</span>
+                <strong className="text-[#1D1D1F] inline-flex items-center gap-1 mt-0.5">
+                  <Building2 className="w-3.5 h-3.5 text-[#6E6E73]" />
                   {selectedMember.unit_number
                     ? `Flat ${selectedMember.unit_number}`
                     : 'Private (Opt-in Only)'}
                 </strong>
               </div>
               <div>
-                <span className="text-[#6B6B6B] block">Phone Contact</span>
-                <strong className="text-[#0A0A0A] inline-flex items-center gap-1 mt-0.5">
+                <span className="text-[#6E6E73] block">Phone Contact</span>
+                <strong className="text-[#1D1D1F] inline-flex items-center gap-1 mt-0.5">
                   {selectedMember.personal_phone ? (
                     <>
                       <Phone className="w-3.5 h-3.5 text-[#10B981]" />
@@ -412,7 +432,7 @@ export function CommunityDirectoryClient({
         }
         badge={
           selectedPost && (
-            <span className="px-2.5 py-0.5 rounded-full bg-[#6366F1]/10 text-[#6366F1] text-[11px] font-medium capitalize">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[11px] font-semibold capitalize">
               {selectedPost.category.replace(/_/g, ' ')}
             </span>
           )
@@ -420,19 +440,22 @@ export function CommunityDirectoryClient({
       >
         {selectedPost && (
           <div className="space-y-4">
-            <p className="text-[14px] text-[#0A0A0A] leading-relaxed">{selectedPost.body}</p>
+            <p className="text-[14px] text-[#1D1D1F] leading-relaxed">{selectedPost.body}</p>
             {selectedPost.comments && selectedPost.comments.length > 0 && (
-              <div className="pt-3 border-t border-[#E8E8EC] space-y-2">
-                <div className="text-[12px] font-bold text-[#0A0A0A]">
+              <div className="pt-3 border-t border-black/[0.06] space-y-2.5">
+                <div className="text-[12px] font-bold text-[#1D1D1F]">
                   Comments ({selectedPost.comments.length})
                 </div>
                 {selectedPost.comments.map((c) => (
                   <div
                     key={c.id}
-                    className="p-2.5 rounded-[8px] bg-[#FAFAFA] border border-[#E8E8EC] text-[12px]"
+                    className="p-3.5 rounded-[12px] bg-[#F5F5F7] border border-black/[0.05] text-[12px] flex items-start gap-2.5"
                   >
-                    <strong>{c.author_name}: </strong>
-                    <span className="text-[#6B6B6B]">{c.body}</span>
+                    <MemberAvatar name={c.author_name} size="xs" />
+                    <div>
+                      <strong className="text-[#1D1D1F]">{c.author_name}: </strong>
+                      <span className="text-[#6E6E73]">{c.body}</span>
+                    </div>
                   </div>
                 ))}
               </div>

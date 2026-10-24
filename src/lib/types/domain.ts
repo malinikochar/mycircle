@@ -45,6 +45,7 @@ export interface ProviderMembership {
 export interface StaffProfileSummary {
   user_id?: string;
   display_name?: string;
+  avatar_url?: string | null;
   staff_code: string;
   employer_team?: string;
   role_title: 'security_guard' | 'head_guard' | 'housekeeping' | 'technician' | 'estate_manager';
@@ -64,6 +65,7 @@ export interface ProfileVisibility {
 export interface ActorContext {
   id: string;
   display_name: string;
+  avatar_url?: string | null;
   bio?: string;
   profession: string | null;
   skills?: string[];
@@ -89,6 +91,7 @@ export interface ActorContext {
 export interface PersonaOption {
   id: string;
   display_name: string;
+  avatar_url?: string | null;
   profession: string | null;
   membership_status: MembershipStatus;
   building_code: string | null;
@@ -105,6 +108,7 @@ export interface PersonaOption {
 export interface DirectoryMember {
   id: string;
   display_name: string;
+  avatar_url?: string | null;
   bio: string | null;
   profession: string | null;
   skills: string[];

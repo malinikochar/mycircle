@@ -467,12 +467,12 @@ describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verif
     expect(locForResident?.latitude).toBeNull();
     expect(locForResident?.longitude).toBeNull();
 
-    // Safety Sub-Admin Col. Pratap Chauhan has 'precise' grant -> receives exact latitude & longitude
+    // Safety Sub-Admin Col. Pratap Chauhan has 'precise' grant -> receives exact Singapore Bugis MRT latitude & longitude
     const safetyAdminState = await loadCommunityBootstrapState(PERSONA_IDS.SUBADMIN_10_SAFETY_PRATAP);
     const locForSafetyAdmin = safetyAdminState.staff_and_locations?.active_locations[0];
     expect(locForSafetyAdmin?.precision_granted).toBe('precise');
-    expect(locForSafetyAdmin?.latitude).toBeCloseTo(19.1364, 4);
-    expect(locForSafetyAdmin?.longitude).toBeCloseTo(72.8296, 4);
+    expect(locForSafetyAdmin?.latitude).toBeCloseTo(1.3006, 4);
+    expect(locForSafetyAdmin?.longitude).toBeCloseTo(103.8559, 4);
   });
 
   it('Test 18: Common-Area Camera Permission & Audit — denies ungranted camera and mints 60s token for granted camera', async () => {
@@ -682,5 +682,37 @@ describe('CommunityCircle PRD v1.0 — 20 Acceptance Tests & Live Supabase Verif
     expect(sosMail.to).toEqual(['admin@ensure.in', 'safety.admin@ensure.in', 'security@ensure.in']);
     expect(sosMail.subject).toContain('URGENT SOS');
     expect(sosMail.html).toContain('Tower B Lobby');
+  });
+
+  it('Test 23: Singapore Bugis MRT Relocation, Realistic Member Portraits, Avatar Upload & Notification Center RPCs', async () => {
+    const supabase = createSupabaseServerClient();
+    const priyaState = await loadCommunityBootstrapState(PERSONA_IDS.RESIDENT_PRIYA);
+
+    // 1. Verify Singapore Bugis MRT community relocation
+    expect(priyaState.community.name).toBe('Bugis Residences @ Victoria');
+    expect(priyaState.community.city).toContain('Singapore');
+
+    // 2. Verify all directory members and actor have matching studio avatar_url
+    expect(priyaState.actor.avatar_url).toBe('/avatars/priya-nair.jpg');
+    expect((priyaState.directory ?? []).length).toBeGreaterThan(0);
+    for (const member of priyaState.directory ?? []) {
+      expect(member.avatar_url).toMatch(/^\/avatars\/.+\.jpg$/);
+    }
+
+    // 3. Verify cc_update_user_avatar RPC updates and restores avatar_url
+    const { data: avatarUpdate, error: avatarErr } = await supabase.rpc('cc_update_user_avatar', {
+      p_actor_id: PERSONA_IDS.RESIDENT_PRIYA,
+      p_avatar_url: '/avatars/priya-nair.jpg',
+    });
+    expect(avatarErr).toBeNull();
+    expect(avatarUpdate?.ok).toBe(true);
+
+    // 4. Verify notifications exist for Priya and cc_mark_notifications_read works
+    expect((priyaState.notifications ?? []).length).toBeGreaterThanOrEqual(2);
+    const { data: markRead, error: markErr } = await supabase.rpc('cc_mark_notifications_read', {
+      p_actor_id: PERSONA_IDS.RESIDENT_PRIYA,
+    });
+    expect(markErr).toBeNull();
+    expect(markRead?.ok).toBe(true);
   });
 });

@@ -524,3 +524,39 @@ export async function acknowledgeSOSIncidentAction(incidentId: string) {
   revalidatePath('/');
   return { ok: true, data };
 }
+
+export async function updateMemberAvatarAction(avatarUrl: string) {
+  const actorId = await getActivePersonaId();
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase.rpc('cc_update_user_avatar', {
+    p_actor_id: actorId,
+    p_avatar_url: avatarUrl,
+  });
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/account');
+  revalidatePath('/community');
+  return { ok: true, data };
+}
+
+export async function markNotificationsReadAction(notificationId?: string) {
+  const actorId = await getActivePersonaId();
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase.rpc('cc_mark_notifications_read', {
+    p_actor_id: actorId,
+    p_notification_id: notificationId ?? null,
+  });
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath('/', 'layout');
+  return { ok: true, data };
+}

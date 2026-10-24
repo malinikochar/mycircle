@@ -18,6 +18,7 @@ import type {
 import { formatPaiseToINR } from '@/lib/workflows/transactions';
 import { PaginationBar } from '@/components/ui/PaginationBar';
 import { DetailModal } from '@/components/ui/DetailModal';
+import { MemberAvatar } from '@/components/ui/MemberAvatar';
 
 interface ServicesClientProps {
   providers: ServiceProviderItem[];
@@ -51,26 +52,30 @@ export function ServicesClient({
   );
 
   return (
-    <div className="space-y-5">
-      {/* Compact Header & Tabs */}
-      <div className="rounded-[16px] bg-white border border-[#E8E8EC] p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-[22px] sm:text-[26px] font-display font-bold tracking-[-0.03em] text-[#0A0A0A]">
+    <div className="space-y-6">
+      {/* Spacious Apple-style Header & Tabs */}
+      <div className="rounded-[24px] bg-white border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8 flex flex-wrap items-center justify-between gap-5">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-[11px] font-semibold">
+            <Wrench className="w-3.5 h-3.5" />
+            <span>Verified Technicians & Specialists</span>
+          </div>
+          <h1 className="text-[24px] sm:text-[28px] font-display font-bold tracking-[-0.03em] text-[#1D1D1F]">
             Local Service Providers
           </h1>
-          <p className="text-[13px] text-[#6B6B6B]">
+          <p className="text-[13px] text-[#6E6E73]">
             Verified technicians and neighbour-recommended specialists. Click any card for details.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 p-1 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC]">
+        <div className="flex flex-wrap gap-1.5 p-1.5 rounded-full bg-[#F5F5F7] border border-black/[0.05]">
           <button
             type="button"
             onClick={() => setActiveTab('providers')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold transition cursor-pointer ${
               activeTab === 'providers'
-                ? 'bg-[#F59E0B] text-white shadow-2xs'
-                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+                ? 'bg-[#F59E0B] text-white shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
             }`}
           >
             <Wrench className="w-3.5 h-3.5" />
@@ -79,10 +84,10 @@ export function ServicesClient({
           <button
             type="button"
             onClick={() => setActiveTab('bookings')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold transition cursor-pointer ${
               activeTab === 'bookings'
-                ? 'bg-[#6366F1] text-white shadow-2xs'
-                : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+                ? 'bg-[#0071E3] text-white shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />
@@ -91,22 +96,22 @@ export function ServicesClient({
         </div>
       </div>
 
-      {/* TAB 1: CONCISE PROVIDER CARDS + PAGINATION */}
+      {/* TAB 1: SPACIOUS PROVIDER CARDS + PAGINATION */}
       {activeTab === 'providers' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {pagedProviders.map((prov) => (
               <article
                 key={prov.id}
                 onClick={() => setSelectedProvider(prov)}
-                className="bg-white border border-[#E8E8EC] hover:border-[#F59E0B] rounded-[14px] p-4 flex flex-col justify-between gap-3 transition cursor-pointer"
+                className="bg-white border border-black/[0.06] hover:border-[#F59E0B]/40 rounded-[22px] p-6 flex flex-col justify-between gap-4 transition cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.02)]"
               >
-                <div className="space-y-1.5">
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-[11px] font-medium">
+                    <span className="px-3 py-1 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-[11px] font-semibold">
                       {prov.category_name}
                     </span>
-                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAFAFA] border border-[#E8E8EC] text-[11px] font-bold text-[#0A0A0A]">
+                    <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F5F5F7] border border-black/[0.05] text-[11px] font-bold text-[#1D1D1F]">
                       <Star className="w-3 h-3 text-[#F59E0B] fill-[#F59E0B]" />
                       <span>
                         {prov.verified_rating_avg
@@ -116,20 +121,24 @@ export function ServicesClient({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-[16px] font-display font-bold text-[#0A0A0A] truncate">
-                      {prov.display_name}
-                    </h2>
-                    {prov.listing_mode === 'provider_managed' && (
-                      <ShieldCheck className="w-4 h-4 text-[#10B981] shrink-0" />
-                    )}
+                  <div className="flex items-center gap-3 pt-1">
+                    <MemberAvatar name={prov.display_name} size="md" ring />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h2 className="text-[16px] font-display font-bold text-[#1D1D1F] truncate">
+                          {prov.display_name}
+                        </h2>
+                        {prov.listing_mode === 'provider_managed' && (
+                          <ShieldCheck className="w-4 h-4 text-[#10B981] shrink-0" />
+                        )}
+                      </div>
+                      <p className="text-[12px] text-[#6E6E73] line-clamp-1">{prov.description}</p>
+                    </div>
                   </div>
-
-                  <p className="text-[12px] text-[#6B6B6B] line-clamp-1">{prov.description}</p>
                 </div>
 
-                <div className="pt-2.5 border-t border-[#E8E8EC] flex items-center justify-between text-[12px]">
-                  <span className="font-medium text-[#0A0A0A] truncate">
+                <div className="pt-3.5 border-t border-black/[0.06] flex items-center justify-between text-[12px]">
+                  <span className="font-semibold text-[#1D1D1F] truncate">
                     {prov.indicative_pricing_text}
                   </span>
                   <span className="shrink-0 font-semibold text-[#D97706] inline-flex items-center gap-1">
@@ -141,7 +150,7 @@ export function ServicesClient({
             ))}
           </div>
 
-          <div className="bg-white border border-[#E8E8EC] rounded-[14px] px-4 pb-3">
+          <div className="bg-white border border-black/[0.06] rounded-[22px] px-6 py-2">
             <PaginationBar
               currentPage={providerPage}
               totalItems={providers.length}
@@ -155,34 +164,37 @@ export function ServicesClient({
 
       {/* TAB 2: MY BOOKINGS & QUOTES */}
       {activeTab === 'bookings' && (
-        <div className="bg-white border border-[#E8E8EC] rounded-[16px] p-5 space-y-4">
-          <div className="space-y-3">
+        <div className="bg-white border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] rounded-[24px] p-6 sm:p-8 space-y-5">
+          <div className="space-y-4">
             {pagedBookings.map((bk) => (
               <div
                 key={bk.id}
                 onClick={() => setSelectedBooking(bk)}
-                className="p-4 rounded-[12px] bg-[#FAFAFA] border border-[#E8E8EC] hover:border-[#6366F1] flex flex-wrap items-center justify-between gap-4 cursor-pointer transition"
+                className="p-6 rounded-[20px] bg-[#F5F5F7]/70 hover:bg-white border border-black/[0.06] hover:border-[#0071E3]/40 flex flex-wrap items-center justify-between gap-4 cursor-pointer transition"
               >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#6366F1]/10 text-[#6366F1] text-[11px] font-medium uppercase">
-                      {bk.status.replace(/_/g, ' ')}
-                    </span>
-                    <span className="text-[12px] text-[#6B6B6B]">
-                      {new Date(bk.scheduled_for).toLocaleDateString('en-IN')}
-                    </span>
+                <div className="flex items-center gap-3.5">
+                  <MemberAvatar name={bk.provider_name} size="md" />
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-0.5 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[11px] font-semibold uppercase">
+                        {bk.status.replace(/_/g, ' ')}
+                      </span>
+                      <span className="text-[12px] text-[#6E6E73]">
+                        {new Date(bk.scheduled_for).toLocaleDateString('en-SG')}
+                      </span>
+                    </div>
+                    <h3 className="font-display font-bold text-[16px] text-[#1D1D1F]">
+                      {bk.provider_name}
+                    </h3>
+                    <p className="text-[12px] text-[#6E6E73]">Resident: {bk.resident_name}</p>
                   </div>
-                  <h3 className="font-display font-bold text-[15px] text-[#0A0A0A]">
-                    {bk.provider_name}
-                  </h3>
-                  <p className="text-[12px] text-[#6B6B6B]">Resident: {bk.resident_name}</p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="font-display font-bold text-[15px] text-[#10B981]">
+                  <span className="font-display font-bold text-[16px] text-[#10B981]">
                     {formatPaiseToINR(bk.agreed_price_paise)}
                   </span>
-                  <span className="text-[12px] font-semibold text-[#6366F1] inline-flex items-center gap-1">
+                  <span className="h-[36px] px-4 rounded-full bg-white border border-black/[0.08] text-[12px] font-semibold text-[#0071E3] inline-flex items-center gap-1.5">
                     <Eye className="w-3.5 h-3.5" />
                     <span>Details</span>
                   </span>
@@ -213,7 +225,7 @@ export function ServicesClient({
         }
         badge={
           selectedProvider && (
-            <span className="px-2.5 py-0.5 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-[11px] font-medium">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-[11px] font-semibold">
               {selectedProvider.listing_mode === 'provider_managed'
                 ? 'Verified Provider Account'
                 : 'Neighbour Recommended'}
@@ -223,23 +235,23 @@ export function ServicesClient({
       >
         {selectedProvider && (
           <div className="space-y-4">
-            <p className="text-[14px] text-[#0A0A0A] leading-relaxed">
+            <p className="text-[14px] text-[#1D1D1F] leading-relaxed">
               {selectedProvider.description}
             </p>
 
-            <div className="p-3 rounded-[10px] bg-[#10B981]/10 border border-[#10B981]/25 text-[12px] text-[#059669] flex items-center gap-2">
+            <div className="p-3.5 rounded-[12px] bg-[#10B981]/10 border border-[#10B981]/25 text-[12px] text-[#059669] flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 shrink-0" />
               <span>{selectedProvider.verification_badge_scope}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC] text-[12px]">
+            <div className="grid grid-cols-2 gap-3 p-4 rounded-[14px] bg-[#F5F5F7] border border-black/[0.06] text-[12px]">
               <div>
-                <span className="text-[#6B6B6B] block">Availability</span>
-                <strong className="text-[#0A0A0A]">{selectedProvider.availability_summary}</strong>
+                <span className="text-[#6E6E73] block">Availability</span>
+                <strong className="text-[#1D1D1F]">{selectedProvider.availability_summary}</strong>
               </div>
               <div>
-                <span className="text-[#6B6B6B] block">Contact</span>
-                <strong className="text-[#0A0A0A] inline-flex items-center gap-1">
+                <span className="text-[#6E6E73] block">Contact</span>
+                <strong className="text-[#1D1D1F] inline-flex items-center gap-1">
                   <Phone className="w-3.5 h-3.5 text-[#10B981]" />
                   {selectedProvider.public_phone ?? 'Book via App'}
                 </strong>
@@ -248,8 +260,8 @@ export function ServicesClient({
 
             {selectedProvider.recommendations.length > 0 && (
               <div className="space-y-2">
-                <div className="text-[12px] font-bold text-[#0A0A0A] flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-[#6366F1]" />
+                <div className="text-[12px] font-bold text-[#1D1D1F] flex items-center gap-1.5">
+                  <MessageSquare className="w-3.5 h-3.5 text-[#0071E3]" />
                   <span>
                     Neighbour Recommendations ({selectedProvider.recommendations.length})
                   </span>
@@ -258,16 +270,16 @@ export function ServicesClient({
                   {selectedProvider.recommendations.map((rec) => (
                     <div
                       key={rec.id}
-                      className="p-2.5 rounded-[8px] bg-[#FAFAFA] border border-[#E8E8EC] text-[12px]"
+                      className="p-3.5 rounded-[12px] bg-[#F5F5F7] border border-black/[0.05] text-[12px]"
                     >
                       <div className="flex items-center justify-between">
                         <strong>{rec.member_name}</strong>
-                        <span className="text-[#6B6B6B] text-[11px]">{rec.approx_month_year}</span>
+                        <span className="text-[#6E6E73] text-[11px]">{rec.approx_month_year}</span>
                       </div>
-                      <div className="text-[#6366F1] font-medium text-[11px] mt-0.5">
+                      <div className="text-[#0071E3] font-semibold text-[11px] mt-0.5">
                         {rec.work_summary}
                       </div>
-                      <p className="text-[#6B6B6B] mt-0.5">{rec.endorsement_note}</p>
+                      <p className="text-[#6E6E73] mt-0.5">{rec.endorsement_note}</p>
                     </div>
                   ))}
                 </div>
@@ -286,26 +298,26 @@ export function ServicesClient({
       >
         {selectedBooking && (
           <div className="space-y-3 text-[13px]">
-            <div className="p-3.5 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC] space-y-1.5">
+            <div className="p-4 rounded-[14px] bg-[#F5F5F7] border border-black/[0.06] space-y-1.5">
               <div>
-                <span className="text-[#6B6B6B]">Status: </span>
-                <strong className="uppercase text-[#6366F1]">
+                <span className="text-[#6E6E73]">Status: </span>
+                <strong className="uppercase text-[#0071E3]">
                   {selectedBooking.status.replace(/_/g, ' ')}
                 </strong>
               </div>
               <div>
-                <span className="text-[#6B6B6B]">Scheduled For: </span>
-                <strong>{new Date(selectedBooking.scheduled_for).toLocaleString('en-IN')}</strong>
+                <span className="text-[#6E6E73]">Scheduled For: </span>
+                <strong>{new Date(selectedBooking.scheduled_for).toLocaleString('en-SG')}</strong>
               </div>
               <div>
-                <span className="text-[#6B6B6B]">Agreed Price: </span>
+                <span className="text-[#6E6E73]">Agreed Price: </span>
                 <strong className="text-[#10B981]">
                   {formatPaiseToINR(selectedBooking.agreed_price_paise)}
                 </strong>
               </div>
             </div>
             {selectedBooking.outcome_notes && (
-              <p className="text-[#0A0A0A]">{selectedBooking.outcome_notes}</p>
+              <p className="text-[#1D1D1F]">{selectedBooking.outcome_notes}</p>
             )}
           </div>
         )}

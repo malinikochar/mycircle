@@ -8,6 +8,7 @@ import {
   MapPin,
   Star,
   CheckCircle2,
+  HeartHandshake,
 } from 'lucide-react';
 import type {
   ExchangeAgreementItem,
@@ -19,6 +20,7 @@ import { createExchangeListingAction } from '@/app/actions/community-actions';
 import { formatPaiseToINR } from '@/lib/workflows/transactions';
 import { PaginationBar } from '@/components/ui/PaginationBar';
 import { DetailModal } from '@/components/ui/DetailModal';
+import { MemberAvatar } from '@/components/ui/MemberAvatar';
 
 interface SocialServiceClientProps {
   listings: ExchangeListingItem[];
@@ -99,27 +101,31 @@ export function SocialServiceClient({
   }
 
   return (
-    <div className="space-y-5">
-      {/* Compact Header & Actions */}
-      <div className="rounded-[16px] bg-white border border-[#E8E8EC] p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-[22px] sm:text-[26px] font-display font-bold tracking-[-0.03em] text-[#0A0A0A]">
+    <div className="space-y-6">
+      {/* Spacious Apple-style Header & Actions */}
+      <div className="rounded-[24px] bg-white border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8 flex flex-wrap items-center justify-between gap-5">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8B5CF6]/10 text-[#8B5CF6] text-[11px] font-semibold">
+            <HeartHandshake className="w-3.5 h-3.5" />
+            <span>Peer-to-Peer Neighbour Exchange</span>
+          </div>
+          <h1 className="text-[24px] sm:text-[28px] font-display font-bold tracking-[-0.03em] text-[#1D1D1F]">
             Social Exchange & Sharing
           </h1>
-          <p className="text-[13px] text-[#6B6B6B]">
+          <p className="text-[13px] text-[#6E6E73]">
             Donate, lend, borrow, or swap items with verified neighbours. Click any card for details.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap gap-1.5 p-1 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC]">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap gap-1.5 p-1.5 rounded-full bg-[#F5F5F7] border border-black/[0.05]">
             <button
               type="button"
               onClick={() => setActiveTab('listings')}
-              className={`px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-[13px] font-semibold transition cursor-pointer ${
                 activeTab === 'listings'
-                  ? 'bg-[#8B5CF6] text-white shadow-2xs'
-                  : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+                  ? 'bg-[#8B5CF6] text-white shadow-xs'
+                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
               }`}
             >
               Listings ({filteredListings.length})
@@ -127,10 +133,10 @@ export function SocialServiceClient({
             <button
               type="button"
               onClick={() => setActiveTab('agreements')}
-              className={`px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-[13px] font-semibold transition cursor-pointer ${
                 activeTab === 'agreements'
-                  ? 'bg-[#10B981] text-white shadow-2xs'
-                  : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+                  ? 'bg-[#10B981] text-white shadow-xs'
+                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
               }`}
             >
               Agreements ({agreements.length})
@@ -138,10 +144,10 @@ export function SocialServiceClient({
             <button
               type="button"
               onClick={() => setActiveTab('reviews')}
-              className={`px-3.5 py-2 rounded-[8px] text-[13px] font-medium transition cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-[13px] font-semibold transition cursor-pointer ${
                 activeTab === 'reviews'
-                  ? 'bg-[#F59E0B] text-white shadow-2xs'
-                  : 'text-[#6B6B6B] hover:text-[#0A0A0A]'
+                  ? 'bg-[#F59E0B] text-white shadow-xs'
+                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
               }`}
             >
               Reviews ({reviews.length})
@@ -151,7 +157,7 @@ export function SocialServiceClient({
           <button
             type="button"
             onClick={() => setCreateModalOpen(true)}
-            className="inline-flex items-center gap-1.5 h-[38px] px-4 rounded-[8px] bg-gradient-to-r from-[#6366F1] to-[#4F46E5] text-white text-[13px] font-medium shadow-2xs cursor-pointer"
+            className="inline-flex items-center gap-1.5 h-[40px] px-4.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white text-[13px] font-semibold shadow-xs cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Post Listing</span>
@@ -160,21 +166,21 @@ export function SocialServiceClient({
       </div>
 
       {feedback && (
-        <div className="p-3.5 rounded-[10px] bg-[#10B981]/10 border border-[#10B981]/30 text-[13px] text-[#0A0A0A] flex items-center justify-between">
+        <div className="p-4 rounded-[16px] bg-[#10B981]/10 border border-[#10B981]/30 text-[13px] text-[#1D1D1F] flex items-center justify-between">
           <span>{feedback}</span>
           <button
             type="button"
             onClick={() => setFeedback(null)}
-            className="text-xs font-medium text-[#6B6B6B] hover:text-[#0A0A0A]"
+            className="text-xs font-semibold text-[#6E6E73] hover:text-[#1D1D1F]"
           >
             Dismiss
           </button>
         </div>
       )}
 
-      {/* TAB 1: CONCISE LISTINGS + PAGINATION */}
+      {/* TAB 1: SPACIOUS LISTINGS + PAGINATION */}
       {activeTab === 'listings' && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div className="flex flex-wrap gap-2">
             {(['all', 'offer', 'need'] as const).map((dir) => (
               <button
@@ -184,10 +190,10 @@ export function SocialServiceClient({
                   setDirectionFilter(dir);
                   setPage(1);
                 }}
-                className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium border transition cursor-pointer ${
+                className={`px-4 py-2 rounded-full text-[12px] font-semibold border transition cursor-pointer ${
                   directionFilter === dir
-                    ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]'
-                    : 'bg-white text-[#6B6B6B] border-[#E8E8EC] hover:text-[#0A0A0A]'
+                    ? 'bg-[#1D1D1F] text-white border-[#1D1D1F]'
+                    : 'bg-white text-[#6E6E73] border-black/[0.08] hover:text-[#1D1D1F]'
                 }`}
               >
                 {dir === 'all'
@@ -199,17 +205,17 @@ export function SocialServiceClient({
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {pagedListings.map((item) => (
               <article
                 key={item.id}
                 onClick={() => setSelectedListing(item)}
-                className="bg-white border border-[#E8E8EC] hover:border-[#8B5CF6] rounded-[14px] p-4 flex flex-col justify-between gap-3 transition cursor-pointer"
+                className="bg-white border border-black/[0.06] hover:border-[#8B5CF6]/40 rounded-[22px] p-6 flex flex-col justify-between gap-4 transition cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.02)]"
               >
-                <div className="space-y-1.5">
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium capitalize ${
+                      className={`px-3 py-1 rounded-full text-[11px] font-semibold capitalize ${
                         item.direction === 'offer'
                           ? 'bg-[#10B981]/15 text-[#059669]'
                           : 'bg-[#F59E0B]/15 text-[#D97706]'
@@ -218,7 +224,7 @@ export function SocialServiceClient({
                       {item.direction === 'offer' ? 'Offering' : 'Needed'} •{' '}
                       {item.exchange_mode.replace(/_/g, ' ')}
                     </span>
-                    <span className="text-[12px] font-bold text-[#6366F1]">
+                    <span className="text-[13px] font-bold text-[#0071E3]">
                       {item.price_paise > 0
                         ? formatPaiseToINR(item.price_paise)
                         : item.deposit_paise > 0
@@ -226,16 +232,19 @@ export function SocialServiceClient({
                         : 'Free'}
                     </span>
                   </div>
-                  <h2 className="text-[15px] font-display font-bold text-[#0A0A0A] line-clamp-1">
+                  <h2 className="text-[16px] font-display font-bold text-[#1D1D1F] leading-snug line-clamp-1">
                     {item.title}
                   </h2>
-                  <p className="text-[13px] text-[#6B6B6B] line-clamp-1">{item.description}</p>
+                  <p className="text-[13px] text-[#6E6E73] leading-relaxed line-clamp-2">
+                    {item.description}
+                  </p>
                 </div>
 
-                <div className="pt-2.5 border-t border-[#E8E8EC] flex items-center justify-between text-[12px]">
-                  <span className="text-[#6B6B6B]">
-                    By <strong className="text-[#0A0A0A]">{item.owner_name}</strong>
-                  </span>
+                <div className="pt-3.5 border-t border-black/[0.06] flex items-center justify-between text-[12px]">
+                  <div className="flex items-center gap-2">
+                    <MemberAvatar name={item.owner_name} size="xs" />
+                    <span className="text-[#1D1D1F] font-semibold">{item.owner_name}</span>
+                  </div>
                   <span className="font-semibold text-[#8B5CF6] inline-flex items-center gap-1">
                     <Eye className="w-3.5 h-3.5" />
                     <span>View Details</span>
@@ -245,7 +254,7 @@ export function SocialServiceClient({
             ))}
           </div>
 
-          <div className="bg-white border border-[#E8E8EC] rounded-[14px] px-4 pb-3">
+          <div className="bg-white border border-black/[0.06] rounded-[22px] px-6 py-2">
             <PaginationBar
               currentPage={page}
               totalItems={filteredListings.length}
@@ -259,32 +268,32 @@ export function SocialServiceClient({
 
       {/* TAB 2: HANDOVER AGREEMENTS */}
       {activeTab === 'agreements' && (
-        <div className="bg-white border border-[#E8E8EC] rounded-[16px] p-5 space-y-4">
-          <div className="space-y-3">
+        <div className="bg-white border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] rounded-[24px] p-6 sm:p-8 space-y-5">
+          <div className="space-y-4">
             {pagedAgreements.map((agr) => (
               <div
                 key={agr.id}
                 onClick={() => setSelectedAgreement(agr)}
-                className="p-4 rounded-[12px] bg-[#FAFAFA] border border-[#E8E8EC] hover:border-[#10B981] flex flex-wrap items-center justify-between gap-4 transition cursor-pointer"
+                className="p-6 rounded-[20px] bg-[#F5F5F7]/70 hover:bg-white border border-black/[0.06] hover:border-[#10B981]/40 flex flex-wrap items-center justify-between gap-4 transition cursor-pointer"
               >
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#6366F1]/10 text-[#6366F1] text-[11px] font-medium uppercase">
+                    <span className="px-3 py-0.5 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[11px] font-semibold uppercase">
                       {agr.status.replace(/_/g, ' ')}
                     </span>
-                    <span className="text-[12px] text-[#6B6B6B]">
+                    <span className="text-[12px] text-[#6E6E73]">
                       {agr.owner_name} ↔ {agr.counterparty_name}
                     </span>
                   </div>
-                  <h3 className="font-display font-bold text-[15px] text-[#0A0A0A]">
+                  <h3 className="font-display font-bold text-[16px] text-[#1D1D1F]">
                     {agr.listing_title}
                   </h3>
-                  <p className="text-[12px] text-[#6B6B6B]">
+                  <p className="text-[13px] text-[#6E6E73]">
                     Handover: {agr.handover_location_label}
                   </p>
                 </div>
 
-                <span className="h-[34px] px-3 rounded-[8px] bg-white border border-[#E8E8EC] text-[12px] font-medium inline-flex items-center gap-1.5 text-[#10B981]">
+                <span className="h-[38px] px-4 rounded-full bg-white border border-black/[0.08] text-[12px] font-semibold inline-flex items-center gap-1.5 text-[#10B981]">
                   <Eye className="w-3.5 h-3.5" />
                   <span>Details</span>
                 </span>
@@ -304,23 +313,28 @@ export function SocialServiceClient({
 
       {/* TAB 3: EXCHANGE REVIEWS */}
       {activeTab === 'reviews' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {reviews.map((rev) => (
             <div
               key={rev.id}
-              className="p-4 rounded-[14px] bg-white border border-[#E8E8EC] space-y-2"
+              className="p-6 rounded-[22px] bg-white border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.02)] space-y-3"
             >
               <div className="flex items-center justify-between">
-                <span className="font-display font-bold text-[14px] text-[#0A0A0A]">
-                  {rev.reviewer_name} → {rev.subject_user_name}
-                </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-xs font-bold">
+                <div className="flex items-center gap-2.5">
+                  <MemberAvatar name={rev.reviewer_name} size="sm" />
+                  <span className="font-display font-bold text-[14px] text-[#1D1D1F]">
+                    {rev.reviewer_name} → {rev.subject_user_name}
+                  </span>
+                </div>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#F59E0B]/15 text-[#D97706] text-xs font-bold">
                   <Star className="w-3 h-3 fill-[#F59E0B]" />
                   {rev.overall_rating}/5
                 </span>
               </div>
               {rev.written_feedback && (
-                <p className="text-[13px] text-[#6B6B6B]">{rev.written_feedback}</p>
+                <p className="text-[13px] text-[#6E6E73] leading-relaxed">
+                  {rev.written_feedback}
+                </p>
               )}
             </div>
           ))}
@@ -339,7 +353,7 @@ export function SocialServiceClient({
         }
         badge={
           selectedListing && (
-            <span className="px-2.5 py-0.5 rounded-full bg-[#8B5CF6]/10 text-[#8B5CF6] text-[11px] font-medium capitalize">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#8B5CF6]/10 text-[#8B5CF6] text-[11px] font-semibold capitalize">
               {selectedListing.exchange_mode.replace(/_/g, ' ')}
             </span>
           )
@@ -347,20 +361,20 @@ export function SocialServiceClient({
       >
         {selectedListing && (
           <div className="space-y-4">
-            <p className="text-[14px] text-[#0A0A0A] leading-relaxed">
+            <p className="text-[14px] text-[#1D1D1F] leading-relaxed">
               {selectedListing.description}
             </p>
-            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC] text-[12px]">
+            <div className="grid grid-cols-2 gap-3 p-4 rounded-[14px] bg-[#F5F5F7] border border-black/[0.06] text-[12px]">
               <div>
-                <span className="text-[#6B6B6B] block">Handover Options</span>
-                <strong className="text-[#0A0A0A] inline-flex items-center gap-1 mt-0.5">
+                <span className="text-[#6E6E73] block">Handover Options</span>
+                <strong className="text-[#1D1D1F] inline-flex items-center gap-1 mt-0.5">
                   <MapPin className="w-3.5 h-3.5 text-[#8B5CF6]" />
                   {selectedListing.handover_options}
                 </strong>
               </div>
               <div>
-                <span className="text-[#6B6B6B] block">Price / Deposit</span>
-                <strong className="text-[#6366F1]">
+                <span className="text-[#6E6E73] block">Price / Deposit</span>
+                <strong className="text-[#0071E3]">
                   {selectedListing.price_paise > 0
                     ? formatPaiseToINR(selectedListing.price_paise)
                     : selectedListing.deposit_paise > 0
@@ -369,13 +383,13 @@ export function SocialServiceClient({
                 </strong>
               </div>
               <div>
-                <span className="text-[#6B6B6B] block">Condition</span>
-                <strong className="text-[#0A0A0A] capitalize">
+                <span className="text-[#6E6E73] block">Condition</span>
+                <strong className="text-[#1D1D1F] capitalize">
                   {selectedListing.item_condition}
                 </strong>
               </div>
               <div>
-                <span className="text-[#6B6B6B] block">Availability</span>
+                <span className="text-[#6E6E73] block">Availability</span>
                 <strong className="text-[#10B981]">
                   {selectedListing.remaining_quantity} of {selectedListing.total_quantity} available
                 </strong>
@@ -398,25 +412,25 @@ export function SocialServiceClient({
       >
         {selectedAgreement && (
           <div className="space-y-3 text-[13px]">
-            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-[10px] bg-[#FAFAFA] border border-[#E8E8EC]">
+            <div className="grid grid-cols-2 gap-3 p-4 rounded-[14px] bg-[#F5F5F7] border border-black/[0.06]">
               <div>
-                <span className="text-[#6B6B6B] block text-xs">Status</span>
-                <strong className="uppercase text-[#6366F1]">
+                <span className="text-[#6E6E73] block text-xs">Status</span>
+                <strong className="uppercase text-[#0071E3]">
                   {selectedAgreement.status.replace(/_/g, ' ')}
                 </strong>
               </div>
               <div>
-                <span className="text-[#6B6B6B] block text-xs">Location</span>
+                <span className="text-[#6E6E73] block text-xs">Location</span>
                 <strong>{selectedAgreement.handover_location_label}</strong>
               </div>
             </div>
             {selectedAgreement.responsibility_terms && (
-              <p className="text-[#6B6B6B]">{selectedAgreement.responsibility_terms}</p>
+              <p className="text-[#6E6E73]">{selectedAgreement.responsibility_terms}</p>
             )}
             {selectedAgreement.condition_reports.map((cr, idx) => (
               <div
                 key={idx}
-                className="p-3 rounded-[8px] bg-[#10B981]/10 border border-[#10B981]/30 flex items-center gap-2 text-xs"
+                className="p-3.5 rounded-[12px] bg-[#10B981]/10 border border-[#10B981]/30 flex items-center gap-2 text-xs"
               >
                 <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
                 <span>
@@ -435,15 +449,15 @@ export function SocialServiceClient({
         title="Post a Social Exchange Listing"
         subtitle="Share tools, donate items, or request help from a neighbour"
       >
-        <form onSubmit={handleCreateListing} className="space-y-3.5 text-[13px]">
-          <div className="grid grid-cols-2 gap-2">
+        <form onSubmit={handleCreateListing} className="space-y-4 text-[13px]">
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={() => setDirection('offer')}
-              className={`py-2 rounded-[8px] font-medium border cursor-pointer ${
+              className={`py-2.5 rounded-full font-semibold border cursor-pointer ${
                 direction === 'offer'
                   ? 'bg-[#10B981] text-white border-[#10B981]'
-                  : 'bg-[#FAFAFA] text-[#0A0A0A] border-[#E8E8EC]'
+                  : 'bg-[#F5F5F7] text-[#1D1D1F] border-black/[0.06]'
               }`}
             >
               I Have / Offering
@@ -451,10 +465,10 @@ export function SocialServiceClient({
             <button
               type="button"
               onClick={() => setDirection('need')}
-              className={`py-2 rounded-[8px] font-medium border cursor-pointer ${
+              className={`py-2.5 rounded-full font-semibold border cursor-pointer ${
                 direction === 'need'
                   ? 'bg-[#F59E0B] text-white border-[#F59E0B]'
-                  : 'bg-[#FAFAFA] text-[#0A0A0A] border-[#E8E8EC]'
+                  : 'bg-[#F5F5F7] text-[#1D1D1F] border-black/[0.06]'
               }`}
             >
               I Need / Requesting
@@ -463,11 +477,11 @@ export function SocialServiceClient({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-medium mb-1">Exchange Mode</label>
+              <label className="block font-semibold mb-1">Exchange Mode</label>
               <select
                 value={exchangeMode}
                 onChange={(e) => setExchangeMode(e.target.value)}
-                className="w-full rounded-[8px] border border-[#E8E8EC] px-3 py-2 bg-white"
+                className="w-full rounded-[12px] border border-black/[0.1] px-3.5 py-2.5 bg-white"
               >
                 <option value="loan">Lend / Borrow</option>
                 <option value="giveaway">Donate Free</option>
@@ -477,90 +491,90 @@ export function SocialServiceClient({
               </select>
             </div>
             <div>
-              <label className="block font-medium mb-1">Quantity</label>
+              <label className="block font-semibold mb-1">Quantity</label>
               <input
                 type="number"
                 min="1"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full rounded-[8px] border border-[#E8E8EC] px-3 py-2"
+                className="w-full rounded-[12px] border border-black/[0.1] px-3.5 py-2.5"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Category</label>
+            <label className="block font-semibold mb-1">Category</label>
             <input
               type="text"
               required
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-[8px] border border-[#E8E8EC] px-3.5 py-2"
+              className="w-full rounded-[12px] border border-black/[0.1] px-3.5 py-2.5"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Title</label>
+            <label className="block font-semibold mb-1">Short Title</label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Bosch Cordless Drill Kit"
-              className="w-full rounded-[8px] border border-[#E8E8EC] px-3.5 py-2"
+              placeholder="e.g. Bosch Drill Kit"
+              className="w-full rounded-[12px] border border-black/[0.1] px-3.5 py-2.5"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Description</label>
+            <label className="block font-semibold mb-1">Description</label>
             <textarea
               rows={2}
               required
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Condition and handover details..."
-              className="w-full rounded-[8px] border border-[#E8E8EC] px-3.5 py-2"
+              className="w-full rounded-[12px] border border-black/[0.1] px-3.5 py-2.5"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-medium mb-1">Price (₹)</label>
+              <label className="block font-semibold mb-1">Price (₹)</label>
               <input
                 type="number"
                 min="0"
                 value={priceRupees}
                 onChange={(e) => setPriceRupees(e.target.value)}
-                className="w-full rounded-[8px] border border-[#E8E8EC] px-3 py-2"
+                className="w-full rounded-[12px] border border-black/[0.1] px-3.5 py-2.5"
               />
             </div>
             <div>
-              <label className="block font-medium mb-1">Deposit (₹)</label>
+              <label className="block font-semibold mb-1">Deposit (₹)</label>
               <input
                 type="number"
                 min="0"
                 value={depositRupees}
                 onChange={(e) => setDepositRupees(e.target.value)}
-                className="w-full rounded-[8px] border border-[#E8E8EC] px-3 py-2"
+                className="w-full rounded-[12px] border border-black/[0.1] px-3.5 py-2.5"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Handover Location</label>
+            <label className="block font-semibold mb-1">Handover Location</label>
             <input
               type="text"
               required
               value={handoverOptions}
               onChange={(e) => setHandoverOptions(e.target.value)}
-              className="w-full rounded-[8px] border border-[#E8E8EC] px-3.5 py-2"
+              className="w-full rounded-[12px] border border-black/[0.1] px-3.5 py-2.5"
             />
           </div>
 
           <button
             type="submit"
             disabled={isPending}
-            className="w-full h-[40px] rounded-[8px] bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium cursor-pointer"
+            className="w-full h-[42px] rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold cursor-pointer"
           >
             {isPending ? 'Publishing...' : 'Publish Listing'}
           </button>
